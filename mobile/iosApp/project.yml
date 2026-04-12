@@ -28,13 +28,12 @@ targets:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: app.myfaq.ios
         INFOPLIST_FILE: iosApp/Info.plist
-        FRAMEWORK_SEARCH_PATHS:
-          - "$(SRCROOT)/../shared/build/XCFrameworks/debug"
-          - "$(SRCROOT)/../shared/build/XCFrameworks/release"
         OTHER_LDFLAGS:
-          - "-framework"
-          - "Shared"
-    dependencies: []
+          - "$(inherited)"
+          - "-lsqlite3"
+    dependencies:
+      - framework: ../shared/build/XCFrameworks/debug/Shared.xcframework
+        embed: true
     preBuildScripts:
       - name: "Build Shared KMP Framework"
         script: |

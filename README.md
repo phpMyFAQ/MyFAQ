@@ -270,3 +270,7 @@ Phase 0 details.
 ## License
 
 [Mozilla Public License 2.0](LICENSE)
+
+## Copyright
+
+© 2026 Thorsten Rinne. All rights reserved.

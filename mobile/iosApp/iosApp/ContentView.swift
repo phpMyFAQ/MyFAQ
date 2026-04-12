@@ -56,6 +56,6 @@ struct ContentView: View {
 private enum MetaLoaderHelper {
     static func create() -> MetaLoader {
         let koin = SharedModuleKt.koinApp.koin
-        return koin.get(objCClass: MetaLoader.self, qualifier: nil, parameters: nil) as! MetaLoader
+        return koin.get(qualifier: nil, parameters: nil) as! MetaLoader
     }
 }
