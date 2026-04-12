@@ -8,7 +8,7 @@ with multi-instance support and full offline browsing.
 - **Domain**: <https://myfaq.app> (owned by the phpMyFAQ project)
 - **Business model**: freemium. All read and offline features are free
   forever. Write features (ask a question, post a comment, rate, register)
-  are gated behind a paid Pro unlock introduced in a later release (see
+  are gated behind a paid Pro unlocked introduced in a later release (see
   "Monetization and freemium gating" below).
 
 This is a planning document, not a commitment. Phases, milestones, and tech
@@ -21,7 +21,7 @@ choices should be revisited before any implementation work begins.
 - Native iOS and Android apps, branded MyFAQ.app, that read any phpMyFAQ
   4.2+ instance via its public `v3.2` REST API, and (in a later paid
   release) write to it.
-- Multi-instance support: a single install of the app can register and
+- Multi-instance support: a single installation of the app can register and
   switch between several phpMyFAQ installations, similar to how a mail
   app manages multiple accounts.
 - Full offline browsing of cached categories, FAQs, tags, news, glossary,
@@ -45,7 +45,7 @@ choices should be revisited before any implementation work begins.
 
 ## Platforms and tech stack
 
-MyFAQ.app uses **Kotlin Multiplatform (KMP) with native UI on each
+MyFAQ.app uses **Kotlin Multiplatform (KMP) with a native UI on each
 platform**. This decision is final for v1.
 
 - **Shared module (Kotlin Multiplatform)**: networking, models, database,
@@ -56,7 +56,7 @@ platform**. This decision is final for v1.
 - **Android UI**: Jetpack Compose.
 - **Rationale**: one copy of the API client, cache layer, and sync logic;
   native look and feel on both platforms; no JavaScript runtime on
-  device; straightforward path to watchOS and Wear OS later if desired.
+  a device; straightforward path to watchOS and Wear OS later if desired.
 
 ### Shared libraries
 
@@ -157,8 +157,8 @@ updated_at           timestamp
    `https://host/api/v3.2` and rejects `http://` outside of a dev build.
 2. The app calls `GET /api/v3.2/meta` for the bootstrap payload
    (version, title, language, available languages, enabled features,
-   logo URL, OAuth discovery metadata). On success it shows a
-   confirmation sheet with the detected title and version. On failure
+   logo URL, OAuth discovery metadata). On success, it shows a
+   confirmation sheet with the detected title and version. On failure,
    it shows a precise diagnostic (DNS, TLS, HTTP status, JSON shape).
    The legacy `GET /version` + `/title` + `/language` fan-out is kept
    only as a fallback for instances that do not yet expose `/meta`.
@@ -173,12 +173,12 @@ updated_at           timestamp
   version, last sync timestamp, and an online status dot.
 - Tapping an instance sets it as the active context; all data-bound
   screens scope their queries by `instance_id`.
-- Long-press opens rename, re-authenticate, clear cache, and delete.
+- Long press opens rename, re-authenticate, clear cache, and delete.
 - QR-code add: scan a QR that encodes `{base_url, token?}` — useful for
   enterprise rollouts.
 - Deep-link handler for the custom scheme `myfaq://add?url=...&token=...`
   and universal links under `https://myfaq.app/add?url=...`, so any
-  phpMyFAQ web install can offer an "Open in MyFAQ.app" button on the
+  phpMyFAQ web installation can offer an "Open in MyFAQ.app" button on the
   admin landing page.
 
 ## Authentication
@@ -201,7 +201,7 @@ existing surface:
    supports personalized content and rate-limit exemptions.
 4. **OAuth2** — the existing `/oauth/authorize` plus `/oauth/token`
    endpoints with PKCE. This is the preferred mode for multi-user
-   corporate installs.
+   corporate installations.
 
 A biometric gate (Face ID or fingerprint) is required to unlock any
 instance whose auth mode is not `NONE`. The gate unlocks the Keychain or
@@ -233,7 +233,7 @@ pending_writes  (id, instance_id, kind, payload_json, created,
 
 ### Cache policy
 
-- Default TTL per resource: categories 24 hours, FAQs 6 hours, news 1
+- Default TTL per resource: categories are 24 hours, FAQs 6 hours, news 1
   hour, search results 10 minutes, attachments until cache eviction.
 - Honor HTTP `ETag` / `If-None-Match` when the server sends them; fall
   back to `Last-Modified`; fall back to a client-side `fetched_at + ttl`
@@ -265,7 +265,7 @@ typical FAQ sizes). This is tracked as a server-side feature request
 
 ### Sync triggers
 
-- App launch, if the last sync is older than 15 minutes.
+- App launches if the last sync is older than 15 minutes.
 - Pull-to-refresh on any list screen.
 - Instance switch.
 - Background: every 6 hours on both platforms via WorkManager /
@@ -296,7 +296,7 @@ Only relevant once the Pro write release ships:
 
 - All writes go through `pending_writes` first and are replayed once the
   instance is reachable.
-- A failed write keeps its original payload, increments `attempts`, and
+- A failed writing keeps its original payload, increments `attempts`, and
   shows a persistent banner in the affected screen until resolved or
   dismissed.
 
@@ -338,7 +338,7 @@ The mobile app is a mobile-first adaptation of the existing web UI:
 
 ### Theming
 
-- Match phpMyFAQ's Bootstrap look lightly, but defer to platform norms:
+- Match phpMyFAQ's Bootstrap looks light but defers to platform norms:
   iOS uses SF Symbols for navigation icons and Android uses Material 3.
 - Do not ship the phpMyFAQ CSS bundle inside the WebView. Use a tuned
   minimal stylesheet that respects system dark mode.
@@ -377,14 +377,14 @@ phpMyFAQ community rather than only read it.
 - Theming, language override, biometric protection of per-instance
   secrets
 
-### What requires a Pro unlock
+### What requires a Pro unlocked
 
 - User session login and OAuth2 sign-in
 - `POST /api/v3.2/question` — ask a new question
-- `POST /api/v3.2/register` — create a user on a phpMyFAQ install
+- `POST /api/v3.2/register` — create a user on a phpMyFAQ installation
 - FAQ rating submission
 - Comment posting
-- The offline write queue (`pending_writes`) and the retry banner
+- The offline writing queue (`pending_writes`) and the retry banner
 - Any future write endpoint added to the public API
 
 ### Entitlement storage and enforcement
@@ -417,7 +417,7 @@ plan supports either SKU existing in isolation or both together.
 
 - Apple requires that any external purchase path (e.g., buying Pro on
   myfaq.app with a credit card) either is not mentioned at all in the
-  iOS build, or goes through StoreKit External Purchase Link Entitlement
+  iOS build or goes through StoreKit External Purchase Link Entitlement
   for eligible regions. Simplest path for v1: in-app purchase only.
 - Google Play permits alternative billing in some regions, but the v1
   build uses Google Play Billing only.
@@ -447,11 +447,11 @@ plan supports either SKU existing in isolation or both together.
 - **Signing**: iOS via an App Store Connect API key stored in GitHub
   encrypted secrets. Android via the Play Publisher API, with the
   upload key rotated through Play App Signing.
-- **Distribution**: Apple App Store, Google Play, plus a sideload APK
+- **Distribution**: Apple App Store, Google Play, plus a sideloaded APK
   published on GitHub Releases and signed with the project release key
-  (see `release.md` section 13). The sideload APK must include the
-  billing library stub but hide Pro upsells — sideload users never see
-  a broken purchase button, they see a "managed by Play" notice.
+  (see `release.md` section 13). The sideloaded APK must include the
+  billing library stub, but hide Pro upsells — sideload users never see
+  a broken purchase button; they see a "managed by Play" notice.
 - **Crash-free budget**: block a release if crash-free sessions drop
   below 99.5% during staged rollout.
 
@@ -459,7 +459,7 @@ plan supports either SKU existing in isolation or both together.
 
 - **Unit tests** (shared module): HTTP mapping, cache invalidation, sync
   state machine, and search ranking. Run against a recorded set of JSON
-  fixtures captured from a real phpMyFAQ dev install.
+  fixtures captured from a real phpMyFAQ dev installation.
 - **Contract tests**: replay the committed OpenAPI specification against
   the client with schemathesis-style fuzzing to catch drift.
 - **End-to-end**: a dockerized phpMyFAQ running in CI (the existing
@@ -509,7 +509,7 @@ Detailed plan: [`phase-0-foundations.md`](phase-0-foundations.md).
 
 - Repository and CI skeleton.
 - KMP module scaffolding, SwiftUI and Compose shells.
-- Generated API client from the committed OpenAPI spec.
+- Generated an API client from the committed OpenAPI spec.
 - Instance model, Keychain / Keystore wrappers, encrypted database.
 - `Entitlements` facade stub (always returns `false` — real
   implementation lands in Phase 3).
