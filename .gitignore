@@ -1,0 +1,42 @@
+# macOS
+.DS_Store
+
+# IDE
+.idea/
+*.iml
+.vscode/
+*.swp
+
+# Gradle / Kotlin
+mobile/.gradle/
+mobile/build/
+mobile/**/build/
+mobile/buildSrc/build/
+mobile/local.properties
+mobile/.kotlin/
+
+# Android
+mobile/**/captures/
+mobile/**/release/
+mobile/**/debug/
+*.apk
+*.aab
+
+# Xcode / iOS
+mobile/iosApp/iosApp.xcodeproj/
+mobile/iosApp/iosApp.xcworkspace/
+mobile/iosApp/Pods/
+mobile/iosApp/*.xcuserstate
+mobile/iosApp/DerivedData/
+xcuserdata/
+*.xcworkspace/xcuserdata/
+
+# Generated API client — kept under version control, but build outputs are not
+mobile/shared/build/generated/
+
+# Secrets
+*.keystore
+*.jks
+!debug.keystore
+google-services.json
+GoogleService-Info.plist

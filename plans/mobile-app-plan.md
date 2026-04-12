@@ -68,7 +68,7 @@ platform**. This decision is final for v1.
   via an expect/actual wrapper
 - **Dependency injection**: Koin
 - **OpenAPI codegen**: `openapi-generator`, run from the committed
-  `docs/openapi.yaml`
+  `https://github.com/thorsten/phpMyFAQ/blob/main/docs/openapi.yaml`
 - **Background sync**: WorkManager on Android, BGTaskScheduler on iOS
 - **Image loading**: Coil on Android, SDWebImageSwiftUI on iOS
 - **In-app purchase / entitlements**: StoreKit 2 on iOS, Google Play
@@ -79,12 +79,16 @@ platform**. This decision is final for v1.
 ## API surface used by the app
 
 The plan is grounded in the current phpMyFAQ route inventory (public API
-`v3.2`, specification at `docs/openapi.yaml`).
+`v3.2`, specification at `https://github.com/thorsten/phpMyFAQ/blob/main/docs/openapi.yaml`).
 
 ### Read path (anonymous, cached) — free tier
 
-- `GET /api/v3.2/version`, `/title`, `/language` — instance metadata for
-  the selector.
+- `GET /api/v3.2/meta` — single bootstrap call returning version,
+  title, language, available languages, enabled features, logo URL,
+  and OAuth discovery metadata. Used by the instance selector and the
+  sync pipeline bootstrap step.
+- `GET /api/v3.2/version`, `/title`, `/language` — legacy fallback for
+  instances that predate `/meta`.
 - `GET /api/v3.2/categories`
 - `GET /api/v3.2/faqs`, `/faqs/{categoryId}`, `/faqs/tags/{tagId}`
 - `GET /api/v3.2/faqs/popular`, `/latest`, `/trending`, `/sticky`
@@ -151,10 +155,13 @@ updated_at           timestamp
 
 1. The user enters a base URL. The app normalizes it to
    `https://host/api/v3.2` and rejects `http://` outside of a dev build.
-2. The app calls `GET /version`, `/title`, and `/language` in parallel.
-   On success it shows a confirmation sheet with the detected title and
-   version. On failure it shows a precise diagnostic (DNS, TLS, HTTP
-   status, JSON shape).
+2. The app calls `GET /api/v3.2/meta` for the bootstrap payload
+   (version, title, language, available languages, enabled features,
+   logo URL, OAuth discovery metadata). On success it shows a
+   confirmation sheet with the detected title and version. On failure
+   it shows a precise diagnostic (DNS, TLS, HTTP status, JSON shape).
+   The legacy `GET /version` + `/title` + `/language` fan-out is kept
+   only as a fallback for instances that do not yet expose `/meta`.
 3. Optional step: the user enters an `x-pmf-token` or signs in. Credentials
    go straight into the Keychain / Keystore, never into the SQLite
    database.
@@ -268,7 +275,8 @@ typical FAQ sizes). This is tracked as a server-side feature request
 
 ### Sync pipeline per instance
 
-1. Bootstrap: `version`, `title`, `language`. Detect a breaking version
+1. Bootstrap: `GET /meta` (falling back to `version` + `title` +
+   `language` for pre-`/meta` installs). Detect a breaking version
    change and force a schema re-sync if the major version changes.
 2. Structural: `categories`, `tags`, `glossary`.
 3. Content: `faqs` paginated per category, plus `faqs/sticky`,
@@ -419,16 +427,17 @@ plan supports either SKU existing in isolation or both together.
 
 ## CI/CD and distribution
 
-- **Repository**: a fresh public repository `phpmyfaq/myfaq-app`,
-  separate from the main monorepo. Tagged releases track phpMyFAQ minor
-  versions — a `1.0.0` app targets phpMyFAQ `4.2.x`.
+- **Repository**: `phpMyFAQ/MyFAQ` on GitHub
+  (<https://github.com/phpMyFAQ/MyFAQ>). The mobile app source tree
+  lives in this repo alongside the plans; it is not a separate
+  monorepo. Tagged releases track phpMyFAQ minor versions — a `1.0.0`
+  app targets phpMyFAQ `4.2.x`.
 - **App identifiers**:
-  - iOS bundle ID: `app.myfaq.ios` (or `de.phpmyfaq.myfaq` if the
-    project prefers the reverse-DNS under the existing domain)
+  - iOS bundle ID: `app.myfaq.ios`
   - Android application ID: `app.myfaq.android`
-- **Store listing names**: "MyFAQ" (display) and "MyFAQ — phpMyFAQ for
-  iOS / Android" (subtitle). The domain `myfaq.app` is the primary
-  marketing landing page.
+- **Store listing names**: "MyFAQ.app" (display) and "MyFAQ.app —
+  phpMyFAQ for iOS / Android" (subtitle). The domain `myfaq.app` is
+  the primary marketing landing page.
 - **CI**: GitHub Actions with a platform matrix (iOS on a macOS runner,
   Android on an Ubuntu runner). Jobs: lint, unit tests, UI tests, and
   signed-artifact builds.
@@ -468,24 +477,26 @@ plan supports either SKU existing in isolation or both together.
 The plan is viable today, but a few small server-side additions make it
 materially better. File these as phpMyFAQ issues:
 
-1. **API metadata endpoint** — a single `GET /api/v3.2/meta` returning
-   version, title, language, available languages, enabled features,
-   public logo URL, and OAuth discovery metadata. This replaces the
-   current three-call bootstrap.
-2. **Tombstones** — `GET /api/v3.2/faqs/deleted?since=…` returning FAQ
+1. **Tombstones** — `GET /api/v3.2/faqs/deleted?since=…` returning FAQ
    IDs deleted since a cursor. Without it, the app must diff full lists
    per sync window.
-3. **ETag and If-None-Match** on list endpoints — the app can already
+2. **ETag and If-None-Match** on list endpoints — the app can already
    use `fetched_at + ttl`, but HTTP-native caching is cheaper and
    correct.
-4. **Per-instance logo URL** in the `title` response — used as the
-   instance avatar in the Workspaces screen.
-5. **OAuth discovery** at `/.well-known/oauth-authorization-server` —
+3. **OAuth discovery** at `/.well-known/oauth-authorization-server` —
    removes the need for users to enter `client_id` and `client_secret`
    manually.
-6. **Push registration endpoint** — for future push notifications of new
+4. **Push registration endpoint** — for future push notifications of new
    FAQs or answered questions. Out of v1 scope but worth sketching the
    contract now.
+
+### Already shipped upstream
+
+- **`GET /api/v3.2/meta`** — single bootstrap call (version, title,
+  language, available languages, enabled features, logo URL, OAuth
+  discovery metadata). Now implemented in phpMyFAQ; the app uses it
+  for the instance selector and the sync bootstrap step, and only
+  falls back to the legacy three-call fan-out for older installs.
 
 These are nice-to-have and not blockers. File them separately so the
 mobile work can proceed against today's API.
@@ -493,6 +504,8 @@ mobile work can proceed against today's API.
 ## Phased milestones
 
 ### Phase 0 — foundations
+
+Detailed plan: [`phase-0-foundations.md`](phase-0-foundations.md).
 
 - Repository and CI skeleton.
 - KMP module scaffolding, SwiftUI and Compose shells.
@@ -563,21 +576,21 @@ deliberate revisit:
 - **Commercial model**: freemium. Reads and offline are free forever.
   Writes (login, ask, comment, rate, register) ship behind a Pro
   unlock in Phase 3.
+- **Minimum phpMyFAQ version**: `4.2.0`. No back-compat to `v3.1`. The
+  generated OpenAPI client targets the 4.2.x specification only, and
+  the sync bootstrap assumes the 4.2 route inventory.
+- **iOS bundle ID**: `app.myfaq.ios`. Irreversible in the App Store
+  once submitted.
+- **Marketing site**: `https://myfaq.app` ships at launch as a single
+  landing page with App Store and Play download badges. Docs are not
+  mirrored from this repository.
 
 ## Open questions
 
 Decide each of these before the relevant phase starts:
 
-1. **Minimum phpMyFAQ version** — target `4.2.0` only, or also
-   back-compat to `v3.1`? Affects the generated OpenAPI client and the
-   sync bootstrap. Decide before Phase 1.
-2. **Pro pricing** — lifetime only, subscription only, or both? Local
+1. **Pro pricing** — lifetime only, subscription only, or both? Local
    price points per territory? Decide before Phase 3.
-3. **Push roadmap** — do we want a self-hosted push relay under the
+2. **Push roadmap** — do we want a self-hosted push relay under the
    phpMyFAQ project, or lean on APNs / FCM directly with server
    endpoints that store device tokens per user? Decide before Phase 5.
-4. **iOS bundle ID** — `app.myfaq.ios` versus `de.phpmyfaq.myfaq`.
-   Cosmetic but irreversible in the store.
-5. **Marketing site** — scope of <https://myfaq.app> at launch: a
-   single landing page with download badges, or a full product site
-   with docs mirrored from this repository?

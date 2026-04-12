@@ -1,0 +1,116 @@
+name: mobile-ci
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'mobile/**'
+      - '.github/workflows/mobile-*.yml'
+  pull_request:
+    paths:
+      - 'mobile/**'
+      - '.github/workflows/mobile-*.yml'
+
+concurrency:
+  group: mobile-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+defaults:
+  run:
+    working-directory: mobile
+
+jobs:
+  lint:
+    name: Lint (ktlint + detekt)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: gradle/actions/setup-gradle@v4
+      - run: ./gradlew ktlintCheck detekt --stacktrace
+
+  shared-unit:
+    name: Shared unit tests
+    runs-on: ubuntu-latest
+    needs: lint
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: gradle/actions/setup-gradle@v4
+      - run: ./gradlew :shared:testDebugUnitTest :shared:jvmTest --stacktrace
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: shared-unit-reports
+          path: mobile/shared/build/reports/tests/
+
+  android-build:
+    name: Android debug build
+    runs-on: ubuntu-latest
+    needs: shared-unit
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: gradle/actions/setup-gradle@v4
+      - run: ./gradlew :androidApp:assembleDebug --stacktrace
+      - uses: actions/upload-artifact@v4
+        with:
+          name: androidApp-debug-apk
+          path: mobile/androidApp/build/outputs/apk/debug/*.apk
+
+  ios-build:
+    name: iOS simulator build
+    runs-on: macos-latest
+    needs: lint
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: gradle/actions/setup-gradle@v4
+      - name: Install XcodeGen
+        run: brew install xcodegen
+      - name: Generate Xcode project
+        working-directory: mobile/iosApp
+        run: xcodegen generate
+      - name: Assemble shared XCFramework
+        run: ./gradlew :shared:assembleSharedDebugXCFramework --stacktrace
+      - name: Build iOS app
+        working-directory: mobile/iosApp
+        run: |
+          xcodebuild \
+            -project iosApp.xcodeproj \
+            -scheme iosApp \
+            -configuration Debug \
+            -destination 'generic/platform=iOS Simulator' \
+            -skipPackagePluginValidation \
+            CODE_SIGNING_ALLOWED=NO \
+            build
+
+  shared-ios-test:
+    name: Shared iOS simulator tests
+    runs-on: macos-latest
+    needs: shared-unit
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: gradle/actions/setup-gradle@v4
+      - run: ./gradlew :shared:iosSimulatorArm64Test --stacktrace
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: shared-ios-reports
+          path: mobile/shared/build/reports/tests/

@@ -1,0 +1,27 @@
+name: mobile-release
+
+# Phase 0: committed but inactive. The first real use lands in Phase 1
+# once the `mobile-v0.1.0` tag is cut and signing secrets are added
+# to the repository.
+
+on:
+  push:
+    tags:
+      - 'mobile-v*'
+  workflow_dispatch:
+
+defaults:
+  run:
+    working-directory: mobile
+
+jobs:
+  placeholder:
+    name: Release pipeline placeholder
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Phase 0 notice
+        run: |
+          echo "Phase 0 release workflow is a placeholder."
+          echo "Signed artifact production lands in Phase 1."
+          exit 0

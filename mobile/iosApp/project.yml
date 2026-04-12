@@ -1,0 +1,43 @@
+name: iosApp
+
+options:
+  bundleIdPrefix: app.myfaq
+  deploymentTarget:
+    iOS: "16.0"
+  xcodeVersion: "15.0"
+  generateEmptyDirectories: true
+  groupSortPosition: top
+
+settings:
+  base:
+    MARKETING_VERSION: "0.0.0"
+    CURRENT_PROJECT_VERSION: 1
+    DEVELOPMENT_TEAM: ""
+    CODE_SIGN_STYLE: Automatic
+    SWIFT_VERSION: "5.9"
+    ENABLE_USER_SCRIPT_SANDBOXING: "NO"
+
+targets:
+  iosApp:
+    type: application
+    platform: iOS
+    sources:
+      - path: iosApp
+        type: group
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: app.myfaq.ios
+        INFOPLIST_FILE: iosApp/Info.plist
+        FRAMEWORK_SEARCH_PATHS:
+          - "$(SRCROOT)/../shared/build/XCFrameworks/debug"
+          - "$(SRCROOT)/../shared/build/XCFrameworks/release"
+        OTHER_LDFLAGS:
+          - "-framework"
+          - "Shared"
+    dependencies: []
+    preBuildScripts:
+      - name: "Build Shared KMP Framework"
+        script: |
+          cd "$SRCROOT/.."
+          ./gradlew :shared:assembleSharedDebugXCFramework
+        basedOnDependencyAnalysis: false

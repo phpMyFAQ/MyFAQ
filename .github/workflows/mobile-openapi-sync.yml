@@ -1,0 +1,59 @@
+name: mobile-openapi-sync
+
+on:
+  workflow_dispatch:
+    inputs:
+      phpmyfaq_ref:
+        description: 'phpMyFAQ git ref (tag or branch) to pull the spec from'
+        required: true
+        default: '4.2.0'
+  repository_dispatch:
+    types: [phpmyfaq-release]
+
+jobs:
+  sync:
+    name: Regenerate API client
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Resolve phpMyFAQ ref
+        id: resolve
+        run: |
+          if [[ "${{ github.event_name }}" == "repository_dispatch" ]]; then
+            echo "ref=${{ github.event.client_payload.ref }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "ref=${{ inputs.phpmyfaq_ref }}" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Download OpenAPI spec
+        run: |
+          curl -fsSL \
+            "https://raw.githubusercontent.com/thorsten/phpMyFAQ/${{ steps.resolve.outputs.ref }}/docs/openapi.yaml" \
+            -o mobile/spec/openapi/v3.2.yaml
+          echo "${{ steps.resolve.outputs.ref }}" > mobile/spec/openapi/VERSION
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Regenerate client
+        run: mobile/scripts/generate-api-client.sh
+
+      - name: Open pull request
+        uses: peter-evans/create-pull-request@v6
+        with:
+          branch: mobile/openapi-sync-${{ steps.resolve.outputs.ref }}
+          title: "mobile: regenerate API client for phpMyFAQ ${{ steps.resolve.outputs.ref }}"
+          commit-message: "mobile: regenerate API client for phpMyFAQ ${{ steps.resolve.outputs.ref }}"
+          body: |
+            Automated sync of the pinned OpenAPI spec and generated Kotlin client.
+
+            Source ref: `${{ steps.resolve.outputs.ref }}`
+
+            Review the diff carefully before merging — generator changes can
+            subtly shift serialization behaviour.
+          labels: mobile, openapi-sync
