@@ -20,6 +20,8 @@ kotlin {
         }
     }
 
+    val xcf = org.jetbrains.kotlin.gradle.plugin.mpp.apple.XCFrameworkConfig(project, "Shared")
+
     listOf(
         iosX64(),
         iosArm64(),
@@ -28,6 +30,7 @@ kotlin {
         target.binaries.framework {
             baseName = "Shared"
             isStatic = true
+            xcf.add(this)
         }
     }
 

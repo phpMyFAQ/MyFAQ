@@ -1,13 +1,25 @@
 package app.myfaq.shared.platform
 
-import kotlinx.cinterop.BetaInteropApi
 import kotlinx.cinterop.ExperimentalForeignApi
+import kotlinx.cinterop.alloc
+import kotlinx.cinterop.memScoped
+import kotlinx.cinterop.ptr
+import kotlinx.cinterop.value
+import platform.CoreFoundation.CFDictionaryCreateMutable
+import platform.CoreFoundation.CFDictionaryRef
+import platform.CoreFoundation.CFDictionarySetValue
+import platform.CoreFoundation.CFMutableDictionaryRef
+import platform.CoreFoundation.CFTypeRefVar
+import platform.CoreFoundation.kCFAllocatorDefault
+import platform.CoreFoundation.kCFTypeDictionaryKeyCallBacks
+import platform.CoreFoundation.kCFTypeDictionaryValueCallBacks
+import platform.Foundation.CFBridgingRelease
+import platform.Foundation.CFBridgingRetain
 import platform.Foundation.NSData
 import platform.Foundation.NSString
 import platform.Foundation.NSUTF8StringEncoding
 import platform.Foundation.create
 import platform.Foundation.dataUsingEncoding
-import platform.Foundation.NSMutableDictionary
 import platform.Security.SecItemAdd
 import platform.Security.SecItemCopyMatching
 import platform.Security.SecItemDelete
@@ -21,63 +33,75 @@ import platform.Security.kSecMatchLimit
 import platform.Security.kSecMatchLimitOne
 import platform.Security.kSecReturnData
 import platform.Security.kSecValueData
-import platform.darwin.NSObject
+import platform.Security.errSecSuccess
 
 /**
  * iOS [SecureStore] backed by Keychain Services with
  * `kSecAttrAccessibleAfterFirstUnlock` so values survive reboots
  * but are unavailable until the user unlocks the device once.
- *
- * Service: `app.myfaq.ios`. Callers namespace their keys by
- * instance UUID. `clear()` enumerates by service tag so a user-
- * initiated "wipe" removes every per-instance secret atomically.
  */
-@OptIn(ExperimentalForeignApi::class, BetaInteropApi::class)
+@OptIn(ExperimentalForeignApi::class)
 actual class SecureStore {
 
     actual fun put(key: String, value: String) {
         remove(key)
-        val data = (value as NSString).dataUsingEncoding(NSUTF8StringEncoding)
-            ?: return
-        val add = baseQuery(key).apply {
-            setObject(data, kSecValueData as NSObject)
-            setObject(kSecAttrAccessibleAfterFirstUnlock as NSObject, kSecAttrAccessible as NSObject)
+        val data = (value as NSString).dataUsingEncoding(NSUTF8StringEncoding) ?: return
+
+        val query = cfMutableDict(6).apply {
+            cfSet(kSecClass, kSecClassGenericPassword)
+            cfSet(kSecAttrService, CFBridgingRetain(SERVICE))
+            cfSet(kSecAttrAccount, CFBridgingRetain(key))
+            cfSet(kSecValueData, CFBridgingRetain(data))
+            cfSet(kSecAttrAccessible, kSecAttrAccessibleAfterFirstUnlock)
         }
-        SecItemAdd(add, null)
+        SecItemAdd(query as CFDictionaryRef, null)
     }
 
     actual fun get(key: String): String? {
-        val query = baseQuery(key).apply {
-            setObject(kSecMatchLimitOne as NSObject, kSecMatchLimit as NSObject)
-            setObject(true as NSObject, kSecReturnData as NSObject)
+        val query = cfMutableDict(5).apply {
+            cfSet(kSecClass, kSecClassGenericPassword)
+            cfSet(kSecAttrService, CFBridgingRetain(SERVICE))
+            cfSet(kSecAttrAccount, CFBridgingRetain(key))
+            cfSet(kSecMatchLimit, kSecMatchLimitOne)
+            cfSet(kSecReturnData, CFBridgingRetain(true))
         }
-        val result = kotlinx.cinterop.memScoped {
-            val ref = kotlinx.cinterop.alloc<kotlinx.cinterop.CPointerVar<platform.CoreFoundation.__CFType>>()
-            val status = SecItemCopyMatching(query, ref.ptr)
-            if (status != 0) return@memScoped null
-            val data = ref.value ?: return@memScoped null
-            @Suppress("UNCHECKED_CAST")
-            (data as? NSData)
-        } ?: return null
-        return NSString.create(result, NSUTF8StringEncoding) as String?
+
+        memScoped {
+            val result = alloc<CFTypeRefVar>()
+            val status = SecItemCopyMatching(query as CFDictionaryRef, result.ptr)
+            if (status != errSecSuccess) return null
+            val data = CFBridgingRelease(result.value) as? NSData ?: return null
+            return NSString.create(data, NSUTF8StringEncoding) as? String
+        }
     }
 
     actual fun remove(key: String) {
-        SecItemDelete(baseQuery(key))
+        val query = cfMutableDict(3).apply {
+            cfSet(kSecClass, kSecClassGenericPassword)
+            cfSet(kSecAttrService, CFBridgingRetain(SERVICE))
+            cfSet(kSecAttrAccount, CFBridgingRetain(key))
+        }
+        SecItemDelete(query as CFDictionaryRef)
     }
 
     actual fun clear() {
-        val query = NSMutableDictionary().apply {
-            setObject(kSecClassGenericPassword as NSObject, kSecClass as NSObject)
-            setObject(SERVICE as NSObject, kSecAttrService as NSObject)
+        val query = cfMutableDict(2).apply {
+            cfSet(kSecClass, kSecClassGenericPassword)
+            cfSet(kSecAttrService, CFBridgingRetain(SERVICE))
         }
-        SecItemDelete(query)
+        SecItemDelete(query as CFDictionaryRef)
     }
 
-    private fun baseQuery(account: String): NSMutableDictionary = NSMutableDictionary().apply {
-        setObject(kSecClassGenericPassword as NSObject, kSecClass as NSObject)
-        setObject(SERVICE as NSObject, kSecAttrService as NSObject)
-        setObject(account as NSObject, kSecAttrAccount as NSObject)
+    private fun cfMutableDict(capacity: Int): CFMutableDictionaryRef =
+        CFDictionaryCreateMutable(
+            kCFAllocatorDefault,
+            capacity.toLong(),
+            kCFTypeDictionaryKeyCallBacks.ptr,
+            kCFTypeDictionaryValueCallBacks.ptr,
+        )!!
+
+    private fun CFMutableDictionaryRef.cfSet(key: Any?, value: Any?) {
+        CFDictionarySetValue(this, CFBridgingRetain(key), CFBridgingRetain(value))
     }
 
     private companion object {
