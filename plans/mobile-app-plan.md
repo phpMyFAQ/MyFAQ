@@ -516,6 +516,8 @@ Detailed plan: [`phase-0-foundations.md`](phase-0-foundations.md).
 
 ### Phase 1 — read-only MVP (free tier, first public release)
 
+Detailed plan: [`phase-1-read-only-mvp.md`](phase-1-read-only-mvp.md).
+
 - Workspaces and instance-add flow.
 - Categories, FAQ list, FAQ detail (online-only).
 - Basic caching with TTL (no FTS yet).

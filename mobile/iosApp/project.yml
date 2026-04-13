@@ -24,6 +24,8 @@ targets:
     sources:
       - path: iosApp
         type: group
+        excludes:
+          - "**/.DS_Store"
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: app.myfaq.ios

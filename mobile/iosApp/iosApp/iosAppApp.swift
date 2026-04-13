@@ -4,7 +4,7 @@ import Shared
 @main
 struct MyFaqApp: App {
     init() {
-        SharedModuleKt.doInitKoin(appDeclaration: { _ in })
+        IosPlatformModuleKt.doInitKoinIos()
     }
 
     var body: some Scene {

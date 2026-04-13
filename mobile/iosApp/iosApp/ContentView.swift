@@ -1,61 +1,171 @@
 import SwiftUI
 import Shared
 
-/// Phase 0 placeholder screen. Proves that the shared KMP framework,
-/// Koin graph, generated client, and serialization are all wired up
-/// end-to-end on iOS. Real screens land in Phase 1.
+/// Root view. Shows Workspaces if no instance is selected,
+/// otherwise shows the main TabView with NavigationStacks.
 struct ContentView: View {
-    @State private var metaSummary: String = "Loading..."
-    @State private var hasError: Bool = false
+    @State private var hasActiveInstance = false
+
+    private var aim: ActiveInstanceManager { KoinHelper.activeInstanceManager }
 
     var body: some View {
-        VStack(spacing: 16) {
-            Text("MyFAQ.app")
-                .font(.title)
-                .fontWeight(.bold)
-
-            Text("Phase 0 foundations")
-                .font(.title3)
-                .foregroundColor(.secondary)
-
-            if hasError {
-                Text(metaSummary)
-                    .font(.body)
-                    .foregroundColor(.red)
+        Group {
+            if hasActiveInstance {
+                MainTabView(
+                    onSwitchInstance: {
+                        aim.clear()
+                        hasActiveInstance = false
+                    }
+                )
             } else {
-                Text(metaSummary)
-                    .font(.body)
+                NavigationStack {
+                    WorkspacesScreen(onInstanceSelected: {
+                        hasActiveInstance = true
+                    })
+                }
             }
-
-            Text("Pro unlocked: \(Entitlements.shared.isPro() ? "true" : "false")")
-                .font(.caption)
-                .foregroundColor(.secondary)
         }
-        .padding()
         .onAppear {
-            let loader = MetaLoaderHelper.create()
-            loader.load(
-                onSuccess: { summary in
-                    DispatchQueue.main.async {
-                        metaSummary = summary
-                    }
-                },
-                onError: { reason in
-                    DispatchQueue.main.async {
-                        metaSummary = "Bootstrap failed: \(reason)"
-                        hasError = true
-                    }
+            hasActiveInstance = aim.activeInstance.value != nil
+        }
+    }
+}
+
+// MARK: - Main tab view
+
+private struct MainTabView: View {
+    let onSwitchInstance: () -> Void
+
+    var body: some View {
+        TabView {
+            homeTab
+            categoriesTab
+            searchTab
+            settingsTab
+        }
+    }
+
+    private var homeTab: some View {
+        HomeNavigationView()
+            .tabItem {
+                Label("Home", systemImage: "house")
+            }
+    }
+
+    private var categoriesTab: some View {
+        NavigationStack {
+            CategoriesNavigationView()
+        }
+        .tabItem {
+            Label("Categories", systemImage: "list.bullet")
+        }
+    }
+
+    private var searchTab: some View {
+        NavigationStack {
+            SearchNavigationView()
+        }
+        .tabItem {
+            Label("Search", systemImage: "magnifyingglass")
+        }
+    }
+
+    private var settingsTab: some View {
+        NavigationStack {
+            SettingsScreen(onSwitchInstance: onSwitchInstance)
+        }
+        .tabItem {
+            Label("Settings", systemImage: "gearshape")
+        }
+    }
+}
+
+// MARK: - Navigation containers with drill-down
+
+/// Home tab with FAQ detail drill-down.
+private struct HomeNavigationView: View {
+    @State private var path = NavigationPath()
+
+    var body: some View {
+        NavigationStack(path: $path) {
+            HomeScreen(onFaqClick: { categoryId, faqId in
+                path.append(FaqRoute(categoryId: categoryId, faqId: faqId))
+            })
+            .navigationDestination(for: FaqRoute.self) { route in
+                FaqDetailScreen(
+                    categoryId: route.categoryId,
+                    faqId: route.faqId,
+                    onPaywall: { path.append(PaywallRoute()) }
+                )
+            }
+            .navigationDestination(for: PaywallRoute.self) { _ in
+                PaywallScreen()
+            }
+        }
+    }
+}
+
+/// Categories tab: categories → FAQ list → FAQ detail.
+private struct CategoriesNavigationView: View {
+    @State private var path = NavigationPath()
+
+    var body: some View {
+        CategoriesScreen(onCategoryClick: { categoryId, categoryName in
+            path.append(CategoryFaqListRoute(categoryId: categoryId, categoryName: categoryName))
+        })
+        .navigationDestination(for: CategoryFaqListRoute.self) { route in
+            FaqListScreen(
+                categoryId: route.categoryId,
+                categoryName: route.categoryName,
+                onFaqClick: { faqId in
+                    path.append(FaqRoute(categoryId: route.categoryId, faqId: faqId))
                 }
             )
         }
+        .navigationDestination(for: FaqRoute.self) { route in
+            FaqDetailScreen(
+                categoryId: route.categoryId,
+                faqId: route.faqId,
+                onPaywall: { path.append(PaywallRoute()) }
+            )
+        }
+        .navigationDestination(for: PaywallRoute.self) { _ in
+            PaywallScreen()
+        }
     }
 }
 
-/// Helper to resolve MetaLoader from the Koin graph without exposing
-/// Koin types to Swift directly.
-private enum MetaLoaderHelper {
-    static func create() -> MetaLoader {
-        let koin = SharedModuleKt.koinApp.koin
-        return koin.get(qualifier: nil, parameters: nil) as! MetaLoader
+/// Search tab: search → FAQ detail.
+private struct SearchNavigationView: View {
+    @State private var path = NavigationPath()
+
+    var body: some View {
+        SearchScreen(onFaqClick: { categoryId, faqId in
+            path.append(FaqRoute(categoryId: categoryId, faqId: faqId))
+        })
+        .navigationDestination(for: FaqRoute.self) { route in
+            FaqDetailScreen(
+                categoryId: route.categoryId,
+                faqId: route.faqId,
+                onPaywall: { path.append(PaywallRoute()) }
+            )
+        }
+        .navigationDestination(for: PaywallRoute.self) { _ in
+            PaywallScreen()
+        }
     }
 }
+
+// MARK: - Navigation routes
+
+private struct FaqRoute: Hashable {
+    let categoryId: Int32
+    let faqId: Int32
+}
+
+private struct CategoryFaqListRoute: Hashable {
+    let categoryId: Int32
+    let categoryName: String
+}
+
+private struct PaywallRoute: Hashable {}
