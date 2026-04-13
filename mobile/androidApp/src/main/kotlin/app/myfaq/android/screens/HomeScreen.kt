@@ -1,5 +1,7 @@
 package app.myfaq.android.screens
 
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -27,11 +29,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import app.myfaq.android.screens.components.ErrorRetry
 import app.myfaq.android.screens.components.FaqCard
 import app.myfaq.android.screens.components.LoadingIndicator
-import app.myfaq.shared.api.dto.FaqSummary
+import app.myfaq.shared.api.dto.FaqPopularItem
 import app.myfaq.shared.api.dto.NewsItem
 import app.myfaq.shared.data.ActiveInstanceManager
 import app.myfaq.shared.ui.HomeViewModel
@@ -53,6 +56,7 @@ fun HomeScreen(
 ) {
     val vm = remember { HomeViewModel(aim) }
     var selectedTab by remember { mutableIntStateOf(0) }
+    val context = LocalContext.current
 
     LaunchedEffect(Unit) { vm.loadAll() }
 
@@ -80,19 +84,31 @@ fun HomeScreen(
                     state = vm.sticky.collectAsState().value,
                     onRetry = { vm.loadSticky() },
                     onRefresh = { vm.loadSticky() },
-                    onFaqClick = onFaqClick,
+                    onItemClick = { item ->
+                        item.url?.let { url ->
+                            context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
+                        }
+                    },
                 )
                 HomeTab.Popular -> FaqTabContent(
                     state = vm.popular.collectAsState().value,
                     onRetry = { vm.loadPopular() },
                     onRefresh = { vm.loadPopular() },
-                    onFaqClick = onFaqClick,
+                    onItemClick = { item ->
+                        item.url?.let { url ->
+                            context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
+                        }
+                    },
                 )
                 HomeTab.Latest -> FaqTabContent(
                     state = vm.latest.collectAsState().value,
                     onRetry = { vm.loadLatest() },
                     onRefresh = { vm.loadLatest() },
-                    onFaqClick = onFaqClick,
+                    onItemClick = { item ->
+                        item.url?.let { url ->
+                            context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
+                        }
+                    },
                 )
                 HomeTab.News -> NewsTabContent(
                     state = vm.news.collectAsState().value,
@@ -107,10 +123,10 @@ fun HomeScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun FaqTabContent(
-    state: UiState<List<FaqSummary>>,
+    state: UiState<List<FaqPopularItem>>,
     onRetry: () -> Unit,
     onRefresh: () -> Unit,
-    onFaqClick: (categoryId: Int, faqId: Int) -> Unit,
+    onItemClick: (FaqPopularItem) -> Unit,
 ) {
     when (state) {
         is UiState.Loading -> LoadingIndicator()
@@ -138,11 +154,11 @@ private fun FaqTabContent(
                         contentPadding = PaddingValues(16.dp),
                         verticalArrangement = Arrangement.spacedBy(12.dp),
                     ) {
-                        items(state.data, key = { it.id }) { faq ->
+                        items(state.data, key = { it.id ?: it.question.hashCode() }) { faq ->
                             FaqCard(
                                 question = faq.question,
-                                updated = faq.updated,
-                                onClick = { onFaqClick(faq.categoryId, faq.id) },
+                                updated = faq.date,
+                                onClick = { onItemClick(faq) },
                             )
                         }
                     }
@@ -200,12 +216,12 @@ private fun NewsCard(news: NewsItem) {
     Card(modifier = Modifier.fillMaxWidth()) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(
-                text = news.title,
+                text = news.header,
                 style = MaterialTheme.typography.titleSmall,
             )
-            if (!news.created.isNullOrBlank()) {
+            if (!news.date.isNullOrBlank()) {
                 Text(
-                    text = news.created,
+                    text = news.date!!,
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.padding(top = 4.dp),

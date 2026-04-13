@@ -1,6 +1,6 @@
 package app.myfaq.shared.ui
 
-import app.myfaq.shared.api.dto.FaqSummary
+import app.myfaq.shared.api.dto.FaqPopularItem
 import app.myfaq.shared.api.dto.NewsItem
 import app.myfaq.shared.data.ActiveInstanceManager
 import kotlinx.coroutines.CoroutineScope
@@ -15,14 +15,14 @@ class HomeViewModel(
     private val aim: ActiveInstanceManager,
     private val scope: CoroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Default),
 ) {
-    private val _sticky = MutableStateFlow<UiState<List<FaqSummary>>>(UiState.Loading)
-    val sticky: StateFlow<UiState<List<FaqSummary>>> = _sticky.asStateFlow()
+    private val _sticky = MutableStateFlow<UiState<List<FaqPopularItem>>>(UiState.Loading)
+    val sticky: StateFlow<UiState<List<FaqPopularItem>>> = _sticky.asStateFlow()
 
-    private val _popular = MutableStateFlow<UiState<List<FaqSummary>>>(UiState.Loading)
-    val popular: StateFlow<UiState<List<FaqSummary>>> = _popular.asStateFlow()
+    private val _popular = MutableStateFlow<UiState<List<FaqPopularItem>>>(UiState.Loading)
+    val popular: StateFlow<UiState<List<FaqPopularItem>>> = _popular.asStateFlow()
 
-    private val _latest = MutableStateFlow<UiState<List<FaqSummary>>>(UiState.Loading)
-    val latest: StateFlow<UiState<List<FaqSummary>>> = _latest.asStateFlow()
+    private val _latest = MutableStateFlow<UiState<List<FaqPopularItem>>>(UiState.Loading)
+    val latest: StateFlow<UiState<List<FaqPopularItem>>> = _latest.asStateFlow()
 
     private val _news = MutableStateFlow<UiState<List<NewsItem>>>(UiState.Loading)
     val news: StateFlow<UiState<List<NewsItem>>> = _news.asStateFlow()

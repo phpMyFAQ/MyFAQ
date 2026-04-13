@@ -30,7 +30,7 @@ class ActiveInstanceManager(
         if (_activeInstance.value?.id == instance.id) return
         _activeInstance.value = instance
         val client = createPlatformHttpClient()
-        _api = MyFaqApiImpl(client, instance.baseUrl)
+        _api = MyFaqApiImpl(client, instance.baseUrl, instance.language)
         _repository = FaqRepository(_api!!, cacheStore, instance.id)
     }
 

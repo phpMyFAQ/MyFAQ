@@ -172,17 +172,17 @@ private struct CommentCard: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
             HStack {
-                Text(comment.author)
+                Text(comment.username)
                     .font(.caption)
                     .fontWeight(.medium)
                 Spacer()
-                if let created = comment.created, !created.isEmpty {
-                    Text(created)
+                if let date = comment.date, !date.isEmpty {
+                    Text(date)
                         .font(.caption2)
                         .foregroundStyle(.secondary)
                 }
             }
-            Text(comment.body)
+            Text(comment.comment)
                 .font(.caption)
         }
         .padding(12)

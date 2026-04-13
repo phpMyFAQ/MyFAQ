@@ -12,6 +12,7 @@ data class Instance(
     val displayName: String,
     val baseUrl: String,
     val apiVersion: String,
+    val language: String = "en",
     val authMode: AuthMode,
     val lastSuccessfulPing: Long?,
     val createdAt: Long,

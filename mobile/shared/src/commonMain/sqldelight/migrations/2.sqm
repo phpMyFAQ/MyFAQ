@@ -1,0 +1,3 @@
+-- Phase 1: add language column so the API client can send Accept-Language.
+ALTER TABLE instances ADD COLUMN language TEXT NOT NULL DEFAULT 'en';
+

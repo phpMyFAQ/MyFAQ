@@ -7,6 +7,7 @@ CREATE TABLE instances (
     display_name         TEXT NOT NULL,
     base_url             TEXT NOT NULL,
     api_version          TEXT NOT NULL,
+    language             TEXT NOT NULL DEFAULT 'en',
     auth_mode            TEXT NOT NULL,
     last_successful_ping INTEGER,
     created_at           INTEGER NOT NULL,
@@ -15,9 +16,9 @@ CREATE TABLE instances (
 
 insert:
 INSERT INTO instances (
-    id, display_name, base_url, api_version, auth_mode,
+    id, display_name, base_url, api_version, language, auth_mode,
     last_successful_ping, created_at, updated_at
-) VALUES (?, ?, ?, ?, ?, ?, ?, ?);
+) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);
 
 selectAll:
 SELECT * FROM instances ORDER BY display_name;

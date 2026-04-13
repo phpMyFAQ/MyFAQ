@@ -262,12 +262,12 @@ private fun CommentCard(comment: Comment) {
         Column(modifier = Modifier.padding(12.dp)) {
             Row(horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth()) {
                 Text(
-                    text = comment.author,
+                    text = comment.username,
                     style = MaterialTheme.typography.labelMedium,
                 )
-                if (!comment.created.isNullOrBlank()) {
+                if (!comment.date.isNullOrBlank()) {
                     Text(
-                        text = comment.created,
+                        text = comment.date!!,
                         style = MaterialTheme.typography.labelSmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
@@ -275,7 +275,7 @@ private fun CommentCard(comment: Comment) {
             }
             Spacer(modifier = Modifier.height(4.dp))
             Text(
-                text = comment.body,
+                text = comment.comment,
                 style = MaterialTheme.typography.bodySmall,
             )
         }

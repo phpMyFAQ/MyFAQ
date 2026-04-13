@@ -11,13 +11,13 @@ final class FlowObserver<T>: ObservableObject {
 
     init(flow: Kotlinx_coroutines_coreStateFlow, initial: T) {
         self.value = (flow.value as? T) ?? initial
-        self.collector = FlowCollectorKt.collectFlow(flow: flow) { [weak self] newValue in
+        self.collector = FlowCollectorKt.collectFlow(flow: flow, onEach: { [weak self] newValue in
             DispatchQueue.main.async {
                 if let v = newValue as? T {
                     self?.value = v
                 }
             }
-        }
+        })
     }
 
     deinit {

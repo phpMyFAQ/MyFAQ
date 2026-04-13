@@ -5,6 +5,7 @@ import app.myfaq.shared.api.MyFaqApi
 import app.myfaq.shared.api.dto.Category
 import app.myfaq.shared.api.dto.Comment
 import app.myfaq.shared.api.dto.FaqDetail
+import app.myfaq.shared.api.dto.FaqPopularItem
 import app.myfaq.shared.api.dto.FaqSummary
 import app.myfaq.shared.api.dto.Meta
 import app.myfaq.shared.api.dto.NewsItem
@@ -54,16 +55,16 @@ class FaqRepository(
             json.encodeToString(api.faqDetail(categoryId, faqId))
         }.let { json.decodeFromString(it) }
 
-    suspend fun faqsPopular(): List<FaqSummary> =
+    suspend fun faqsPopular(): List<FaqPopularItem> =
         cachedList("faqs/popular", CacheTtl.FAQS) { api.faqsPopular() }
 
-    suspend fun faqsLatest(): List<FaqSummary> =
+    suspend fun faqsLatest(): List<FaqPopularItem> =
         cachedList("faqs/latest", CacheTtl.FAQS) { api.faqsLatest() }
 
-    suspend fun faqsTrending(): List<FaqSummary> =
+    suspend fun faqsTrending(): List<FaqPopularItem> =
         cachedList("faqs/trending", CacheTtl.FAQS) { api.faqsTrending() }
 
-    suspend fun faqsSticky(): List<FaqSummary> =
+    suspend fun faqsSticky(): List<FaqPopularItem> =
         cachedList("faqs/sticky", CacheTtl.FAQS) { api.faqsSticky() }
 
     // --- Search ---

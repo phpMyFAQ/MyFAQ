@@ -1,14 +1,64 @@
 import SwiftUI
 import Shared
 
+struct HomeFaqItem {
+    let question: String
+    let date: String?
+    let url: String?
+
+    init?(rawValue: Any) {
+        guard
+            let object = rawValue as? NSObject,
+            let question = object.value(forKey: "question") as? String
+        else {
+            return nil
+        }
+
+        self.question = question
+        self.date = object.value(forKey: "date") as? String
+        self.url = object.value(forKey: "url") as? String
+    }
+}
+
+struct HomeNewsItem {
+    let id: String
+    let header: String
+    let date: String?
+
+    init?(rawValue: Any) {
+        guard
+            let object = rawValue as? NSObject,
+            let header = object.value(forKey: "header") as? String
+        else {
+            return nil
+        }
+
+        self.header = header
+        self.date = object.value(forKey: "date") as? String
+        if let rawId = object.value(forKey: "id") {
+            self.id = String(describing: rawId)
+        } else {
+            self.id = header
+        }
+    }
+}
+
+func mapFaqItems(_ value: Any?) -> [HomeFaqItem]? {
+    castList(value)?.compactMap(HomeFaqItem.init(rawValue:))
+}
+
+func mapNewsItems(_ value: Any?) -> [HomeNewsItem]? {
+    castList(value)?.compactMap(HomeNewsItem.init(rawValue:))
+}
+
 /// Observable wrapper around the shared HomeViewModel.
 final class HomeStore: ObservableObject {
     let vm: HomeViewModel
 
-    @Published var sticky: UiStateWrapper<[FaqSummary]> = .loading
-    @Published var popular: UiStateWrapper<[FaqSummary]> = .loading
-    @Published var latest: UiStateWrapper<[FaqSummary]> = .loading
-    @Published var news: UiStateWrapper<[NewsItem]> = .loading
+    @Published var sticky: UiStateWrapper<[HomeFaqItem]> = .loading
+    @Published var popular: UiStateWrapper<[HomeFaqItem]> = .loading
+    @Published var latest: UiStateWrapper<[HomeFaqItem]> = .loading
+    @Published var news: UiStateWrapper<[HomeNewsItem]> = .loading
 
     private var jobs: [Kotlinx_coroutines_coreJob] = []
 
@@ -21,22 +71,22 @@ final class HomeStore: ObservableObject {
     private func startObserving() {
         jobs.append(FlowCollectorKt.collectFlow(flow: vm.sticky) { [weak self] value in
             DispatchQueue.main.async {
-                self?.sticky = unwrapUiState(value) { castList($0) as [FaqSummary]? }
+                self?.sticky = unwrapUiState(value, cast: mapFaqItems)
             }
         })
         jobs.append(FlowCollectorKt.collectFlow(flow: vm.popular) { [weak self] value in
             DispatchQueue.main.async {
-                self?.popular = unwrapUiState(value) { castList($0) as [FaqSummary]? }
+                self?.popular = unwrapUiState(value, cast: mapFaqItems)
             }
         })
         jobs.append(FlowCollectorKt.collectFlow(flow: vm.latest) { [weak self] value in
             DispatchQueue.main.async {
-                self?.latest = unwrapUiState(value) { castList($0) as [FaqSummary]? }
+                self?.latest = unwrapUiState(value, cast: mapFaqItems)
             }
         })
         jobs.append(FlowCollectorKt.collectFlow(flow: vm.news) { [weak self] value in
             DispatchQueue.main.async {
-                self?.news = unwrapUiState(value) { castList($0) as [NewsItem]? }
+                self?.news = unwrapUiState(value, cast: mapNewsItems)
             }
         })
     }
@@ -93,7 +143,7 @@ struct HomeScreen: View {
     }
 
     @ViewBuilder
-    private func faqList(state: UiStateWrapper<[FaqSummary]>, onRetry: @escaping () -> Void) -> some View {
+    private func faqList(state: UiStateWrapper<[HomeFaqItem]>, onRetry: @escaping () -> Void) -> some View {
         switch state {
         case .loading:
             LoadingView()
@@ -103,11 +153,13 @@ struct HomeScreen: View {
             if faqs.isEmpty {
                 emptyView("No FAQs found")
             } else {
-                List(faqs, id: \.id) { faq in
+                List(faqs, id: \.question) { faq in
                     Button {
-                        onFaqClick(faq.categoryId, faq.id)
+                        if let urlString = faq.url, let url = URL(string: urlString) {
+                            UIApplication.shared.open(url)
+                        }
                     } label: {
-                        FaqRow(question: faq.question, updated: faq.updated)
+                        FaqRow(question: faq.question, updated: faq.date)
                     }
                     .foregroundStyle(.primary)
                 }
@@ -118,7 +170,7 @@ struct HomeScreen: View {
     }
 
     @ViewBuilder
-    private func newsList(state: UiStateWrapper<[NewsItem]>, onRetry: @escaping () -> Void) -> some View {
+    private func newsList(state: UiStateWrapper<[HomeNewsItem]>, onRetry: @escaping () -> Void) -> some View {
         switch state {
         case .loading:
             LoadingView()
@@ -128,17 +180,19 @@ struct HomeScreen: View {
             if items.isEmpty {
                 emptyView("No news")
             } else {
-                List(items, id: \.id) { item in
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text(item.title)
-                            .font(.headline)
-                        if let created = item.created, !created.isEmpty {
-                            Text(created)
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
+                List {
+                    ForEach(items, id: \.id) { item in
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text(item.header)
+                                .font(.headline)
+                            if let date = item.date, !date.isEmpty {
+                                Text(date)
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                            }
                         }
+                        .padding(.vertical, 4)
                     }
-                    .padding(.vertical, 4)
                 }
                 .listStyle(.plain)
                 .refreshable { onRetry() }
@@ -156,4 +210,5 @@ struct HomeScreen: View {
         }
         .frame(maxWidth: .infinity)
     }
+
 }

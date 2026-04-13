@@ -12,4 +12,12 @@ data class Category(
     val parentId: Int? = null,
     val lang: String? = null,
     val image: String? = null,
+    @SerialName("user_id")
+    val userId: Int? = null,
+    @SerialName("group_id")
+    val groupId: Int? = null,
+    val active: Int? = null,
+    @SerialName("show_home")
+    val showHome: Int? = null,
+    val level: Int? = null,
 )

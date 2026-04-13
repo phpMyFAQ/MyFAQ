@@ -16,6 +16,7 @@ import kotlin.test.assertTrue
 
 /**
  * Tests deserialization of all Phase 1 API endpoints using MockEngine.
+ * Updated for v4.0: paginated wrappers and new field names.
  */
 class EndpointDeserializationTest {
 
@@ -36,28 +37,30 @@ class EndpointDeserializationTest {
 
     private fun api(body: String) = MyFaqApiImpl(client(body), "https://test.example")
 
-    // ── Categories ──────────────────────────────────────────────────
+    // ── Categories (paginated) ─────────────────────────────────────
 
     @Test
-    fun `categories deserializes list`() = runTest {
+    fun `categories deserializes paginated response`() = runTest {
         val result = api(CATEGORIES_JSON).categories()
         assertEquals(2, result.size)
         assertEquals("Getting Started", result[0].name)
         assertEquals(1, result[0].id)
-        assertEquals(null, result[0].parentId)
+        assertEquals(0, result[0].parentId)
         assertEquals("Sub-Category", result[1].name)
         assertEquals(1, result[1].parentId)
+        assertEquals(1, result[0].level)
     }
 
     // ── FAQs ────────────────────────────────────────────────────────
 
     @Test
-    fun `faqs by category deserializes list`() = runTest {
+    fun `faqs by category deserializes paginated response with record_ fields`() = runTest {
         val result = api(FAQ_LIST_JSON).faqsByCategory(1)
         assertEquals(2, result.size)
         assertEquals("How do I install?", result[0].question)
         assertEquals(1, result[0].categoryId)
-        assertEquals("2024-01-15", result[0].updated)
+        assertEquals("20240115120000", result[0].updated)
+        assertEquals(10, result[0].id)
     }
 
     @Test
@@ -69,83 +72,101 @@ class EndpointDeserializationTest {
         assertEquals(listOf("reset", "password"), result.tags)
         assertEquals(1, result.attachments.size)
         assertEquals("guide.pdf", result.attachments[0].filename)
+        assertEquals(1, result.sticky)
+        assertTrue(result.isSticky)
     }
 
     @Test
-    fun `popular faqs deserializes`() = runTest {
-        val result = api(FAQ_LIST_JSON).faqsPopular()
-        assertEquals(2, result.size)
-    }
-
-    @Test
-    fun `sticky faqs deserializes`() = runTest {
-        val result = api(STICKY_JSON).faqsSticky()
+    fun `popular faqs deserializes plain array`() = runTest {
+        val result = api(POPULAR_FAQS_JSON).faqsPopular()
         assertEquals(1, result.size)
-        assertTrue(result[0].isSticky)
+        assertEquals("How can I survive without phpMyFAQ?", result[0].question)
+        assertEquals(10, result[0].visits)
+        assertEquals("2019-07-13T11:28:00+0200", result[0].date)
     }
 
-    // ── Search ──────────────────────────────────────────────────────
+    @Test
+    fun `sticky faqs deserializes plain array`() = runTest {
+        val result = api(STICKY_FAQS_JSON).faqsSticky()
+        assertEquals(2, result.size)
+        assertEquals("How can I survive without phpMyFAQ?", result[0].question)
+        assertEquals(8, result[0].id)
+        assertEquals(1, result[0].order)
+    }
+
+    // ── Search (paginated) ─────────────────────────────────────────
 
     @Test
-    fun `search results deserialize`() = runTest {
+    fun `search results deserialize from paginated wrapper`() = runTest {
         val result = api(SEARCH_RESULTS_JSON).search("test")
         assertEquals(1, result.size)
-        assertEquals("How do I test?", result[0].question)
-        assertEquals(3, result[0].categoryId)
+        assertEquals("Why are you using phpMyFAQ?", result[0].question)
+        assertEquals(15, result[0].categoryId)
+        assertEquals("Because it is cool!", result[0].answer)
+        assertEquals("en", result[0].lang)
     }
 
     @Test
-    fun `popular searches deserialize`() = runTest {
+    fun `popular searches deserialize plain array`() = runTest {
         val result = api(POPULAR_SEARCHES_JSON).popularSearches()
         assertEquals(2, result.size)
-        assertEquals("install", result[0].searchTerm)
-        assertEquals(42, result[0].count)
+        assertEquals("mac", result[0].searchTerm)
+        assertEquals(18, result[0].count)
+        assertEquals("en", result[0].lang)
     }
 
-    // ── News ────────────────────────────────────────────────────────
+    // ── News (paginated) ───────────────────────────────────────────
 
     @Test
-    fun `news items deserialize`() = runTest {
+    fun `news items deserialize from paginated wrapper`() = runTest {
         val result = api(NEWS_JSON).news()
         assertEquals(1, result.size)
-        assertEquals("New version released", result[0].title)
-        assertEquals("admin", result[0].author)
+        assertEquals("Hallo, World!", result[0].header)
+        assertEquals("phpMyFAQ User", result[0].authorName)
+        assertEquals(true, result[0].active)
+        assertEquals(true, result[0].allowComments)
     }
 
-    // ── Comments ────────────────────────────────────────────────────
+    // ── Comments (paginated) ───────────────────────────────────────
 
     @Test
-    fun `comments deserialize`() = runTest {
-        val result = api(COMMENTS_JSON).comments(42)
-        assertEquals(2, result.size)
-        assertEquals("alice", result[0].author)
-        assertEquals("Great answer!", result[0].body)
-        assertEquals(42, result[0].faqId)
+    fun `comments deserialize from paginated wrapper`() = runTest {
+        val result = api(COMMENTS_JSON).comments(142)
+        assertEquals(1, result.size)
+        assertEquals("phpMyFAQ User", result[0].username)
+        assertEquals("Foo! Bar?", result[0].comment)
+        assertEquals(142, result[0].recordId)
+        assertEquals("faq", result[0].type)
     }
 
-    // ── Open questions ──────────────────────────────────────────────
+    // ── Open questions (paginated) ─────────────────────────────────
 
     @Test
-    fun `open questions deserialize`() = runTest {
+    fun `open questions deserialize from paginated wrapper`() = runTest {
         val result = api(OPEN_QUESTIONS_JSON).openQuestions()
         assertEquals(1, result.size)
-        assertEquals("Why is the sky blue?", result[0].question)
+        assertEquals("Foo? Bar? Baz?", result[0].question)
+        assertEquals("phpMyFAQ User", result[0].username)
+        assertEquals(3, result[0].categoryId)
+        assertEquals("N", result[0].isVisible)
     }
 
-    // ── Tags ────────────────────────────────────────────────────────
+    // ── Tags (paginated) ───────────────────────────────────────────
 
     @Test
-    fun `tags deserialize`() = runTest {
+    fun `tags deserialize from paginated wrapper`() = runTest {
         val result = api(TAGS_JSON).tags()
-        assertEquals(3, result.size)
-        assertEquals("install", result[0].name)
+        assertEquals(2, result.size)
+        assertEquals("phpMyFAQ", result[0].name)
+        assertEquals(4, result[0].id)
+        assertEquals(3, result[0].frequency)
     }
 
     // ── Edge cases ──────────────────────────────────────────────────
 
     @Test
-    fun `empty list response`() = runTest {
-        val result = api("[]").categories()
+    fun `empty paginated response`() = runTest {
+        val result = api(EMPTY_PAGINATED_JSON).categories()
         assertTrue(result.isEmpty())
     }
 
@@ -160,23 +181,38 @@ class EndpointDeserializationTest {
         assertTrue(result.attachments.isEmpty())
     }
 
-    // ── Fixtures ────────────────────────────────────────────────────
+    // ── Fixtures (v4.0 format) ─────────────────────────────────────
 
     private companion object {
+        // Paginated: categories
         const val CATEGORIES_JSON = """
-        [
-          {"id": 1, "name": "Getting Started", "description": "Basics"},
-          {"id": 2, "name": "Sub-Category", "description": "Details", "parent_id": 1, "lang": "en"}
-        ]
+        {
+          "success": true,
+          "data": [
+            {"id": 1, "lang": "en", "parent_id": 0, "name": "Getting Started", "description": "Basics", "user_id": 1, "group_id": 1, "active": 1, "show_home": 1, "level": 1},
+            {"id": 2, "lang": "en", "parent_id": 1, "name": "Sub-Category", "description": "Details", "user_id": 1, "group_id": 1, "active": 1, "show_home": 0, "level": 2}
+          ],
+          "meta": {
+            "pagination": {"total": 2, "count": 2, "per_page": 25, "current_page": 1, "total_pages": 1}
+          }
+        }
         """
 
+        // Paginated: faqs by category (record_* field names)
         const val FAQ_LIST_JSON = """
-        [
-          {"id": 10, "category_id": 1, "question": "How do I install?", "updated": "2024-01-15"},
-          {"id": 11, "category_id": 1, "question": "How do I configure?", "updated": "2024-01-20"}
-        ]
+        {
+          "success": true,
+          "data": [
+            {"record_id": 10, "category_id": 1, "record_title": "How do I install?", "record_preview": "Steps to install", "record_updated": "20240115120000", "record_lang": "en", "visits": 5},
+            {"record_id": 11, "category_id": 1, "record_title": "How do I configure?", "record_preview": "Configuration guide", "record_updated": "20240120120000", "record_lang": "en", "visits": 3}
+          ],
+          "meta": {
+            "pagination": {"total": 2, "count": 2, "per_page": 25, "current_page": 1, "total_pages": 1}
+          }
+        }
         """
 
+        // Non-paginated: faq detail
         const val FAQ_DETAIL_JSON = """
         {
           "id": 42,
@@ -186,11 +222,11 @@ class EndpointDeserializationTest {
           "author": "admin",
           "created": "2024-01-01",
           "updated": "2024-03-15",
-          "is_sticky": false,
-          "is_active": true,
+          "sticky": 1,
+          "active": "yes",
           "tags": ["reset", "password"],
           "attachments": [
-            {"id": 1, "filename": "guide.pdf", "size": 12345, "mime": "application/pdf"}
+            {"id": 1, "filename": "guide.pdf", "filesize": 12345, "mime_type": "application/pdf"}
           ]
         }
         """
@@ -199,42 +235,104 @@ class EndpointDeserializationTest {
         {"id": 1, "question": "Q"}
         """
 
-        const val STICKY_JSON = """
-        [{"id": 5, "category_id": 1, "question": "Important notice", "is_sticky": true}]
+        // Plain array: popular/latest/trending FAQs
+        const val POPULAR_FAQS_JSON = """
+        [
+          {"date": "2019-07-13T11:28:00+0200", "question": "How can I survive without phpMyFAQ?", "answer": "A good question!", "visits": 10, "url": "https://www.example.org/content/1/36/de/how-can-i-survive-without-phpmyfaq.html"}
+        ]
         """
 
+        // Plain array: sticky FAQs (different shape)
+        const val STICKY_FAQS_JSON = """
+        [
+          {"question": "How can I survive without phpMyFAQ?", "url": "https://www.example.org/content/1/36/de/how-can-i-survive-without-phpmyfaq.html", "id": 8, "order": 1},
+          {"question": "Is there life after death?", "url": "https://www.example.org/content/1/1/de/is-there-life-after-death.html", "id": 10, "order": 2}
+        ]
+        """
+
+        // Paginated: search results
         const val SEARCH_RESULTS_JSON = """
-        [{"id": 7, "category_id": 3, "question": "How do I test?", "answer": "Like this..."}]
+        {
+          "success": true,
+          "data": [
+            {"id": 1, "lang": "en", "category_id": 15, "question": "Why are you using phpMyFAQ?", "answer": "Because it is cool!", "link": "https://www.example.org/content/15/1/en/why-are-you-using-phpmyfaq.html"}
+          ],
+          "meta": {
+            "pagination": {"total": 1, "count": 1, "per_page": 25, "current_page": 1, "total_pages": 1}
+          }
+        }
         """
 
+        // Plain array: popular searches (NOT paginated)
         const val POPULAR_SEARCHES_JSON = """
         [
-          {"search_term": "install", "count": 42},
-          {"search_term": "reset password", "count": 17}
+          {"id": 3, "searchterm": "mac", "number": "18", "lang": "en"},
+          {"id": 7, "searchterm": "test", "number": "9", "lang": "en"}
         ]
         """
 
+        // Paginated: news
         const val NEWS_JSON = """
-        [{"id": 1, "title": "New version released", "body": "<p>Details here</p>", "author": "admin", "created": "2024-06-01"}]
+        {
+          "success": true,
+          "data": [
+            {"id": 1, "lang": "en", "date": "2019-08-23T20:43:00+0200", "header": "Hallo, World!", "content": "Hello, phpMyFAQ!", "authorName": "phpMyFAQ User", "authorEmail": "user@example.org", "active": true, "allowComments": true, "link": "", "linkTitle": "", "target": "", "url": "https://www.example.org/news/1/de/hallo-phpmyfaq.html"}
+          ],
+          "meta": {
+            "pagination": {"total": 1, "count": 1, "per_page": 25, "current_page": 1, "total_pages": 1}
+          }
+        }
         """
 
+        // Paginated: comments
         const val COMMENTS_JSON = """
-        [
-          {"id": 1, "faq_id": 42, "author": "alice", "body": "Great answer!", "created": "2024-02-01"},
-          {"id": 2, "faq_id": 42, "author": "bob", "body": "Thanks!", "created": "2024-02-02"}
-        ]
+        {
+          "success": true,
+          "data": [
+            {"id": 2, "recordId": 142, "categoryId": null, "type": "faq", "username": "phpMyFAQ User", "comment": "Foo! Bar?", "date": "2019-12-24T12:24:57+0100", "helped": null}
+          ],
+          "meta": {
+            "pagination": {"total": 1, "count": 1, "per_page": 25, "current_page": 1, "total_pages": 1}
+          }
+        }
         """
 
+        // Paginated: open questions
         const val OPEN_QUESTIONS_JSON = """
-        [{"id": 1, "question": "Why is the sky blue?", "category_id": 2}]
+        {
+          "success": true,
+          "data": [
+            {"id": 1, "lang": "en", "username": "phpMyFAQ User", "email": "user@example.org", "categoryId": 3, "question": "Foo? Bar? Baz?", "created": "20190106180429", "answerId": 0, "isVisible": "N"}
+          ],
+          "meta": {
+            "pagination": {"total": 1, "count": 1, "per_page": 25, "current_page": 1, "total_pages": 1}
+          }
+        }
         """
 
+        // Paginated: tags
         const val TAGS_JSON = """
-        [
-          {"id": 1, "name": "install"},
-          {"id": 2, "name": "configuration"},
-          {"id": 3, "name": "troubleshooting"}
-        ]
+        {
+          "success": true,
+          "data": [
+            {"tagId": 4, "tagName": "phpMyFAQ", "tagFrequency": 3},
+            {"tagId": 1, "tagName": "PHP 8", "tagFrequency": 2}
+          ],
+          "meta": {
+            "pagination": {"total": 2, "count": 2, "per_page": 25, "current_page": 1, "total_pages": 1}
+          }
+        }
+        """
+
+        // Empty paginated response
+        const val EMPTY_PAGINATED_JSON = """
+        {
+          "success": true,
+          "data": [],
+          "meta": {
+            "pagination": {"total": 0, "count": 0, "per_page": 25, "current_page": 1, "total_pages": 0}
+          }
+        }
         """
     }
 }
