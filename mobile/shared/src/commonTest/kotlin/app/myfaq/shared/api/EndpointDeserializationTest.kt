@@ -165,6 +165,17 @@ class EndpointDeserializationTest {
     // ── Edge cases ──────────────────────────────────────────────────
 
     @Test
+    fun `glossary items deserialize from paginated wrapper`() = runTest {
+        val result = api(GLOSSARY_JSON).glossary()
+        assertEquals(2, result.size)
+        assertEquals("API", result[0].item)
+        assertEquals("Application Programming Interface", result[0].definition)
+        assertEquals(1, result[0].id)
+        assertEquals("en", result[0].language)
+        assertEquals("FAQ", result[1].item)
+    }
+
+    @Test
     fun `empty paginated response`() = runTest {
         val result = api(EMPTY_PAGINATED_JSON).categories()
         assertTrue(result.isEmpty())
@@ -317,6 +328,20 @@ class EndpointDeserializationTest {
           "data": [
             {"tagId": 4, "tagName": "phpMyFAQ", "tagFrequency": 3},
             {"tagId": 1, "tagName": "PHP 8", "tagFrequency": 2}
+          ],
+          "meta": {
+            "pagination": {"total": 2, "count": 2, "per_page": 25, "current_page": 1, "total_pages": 1}
+          }
+        }
+        """
+
+        // Paginated: glossary
+        const val GLOSSARY_JSON = """
+        {
+          "success": true,
+          "data": [
+            {"id": 1, "language": "en", "item": "API", "definition": "Application Programming Interface"},
+            {"id": 2, "language": "en", "item": "FAQ", "definition": "Frequently Asked Questions"}
           ],
           "meta": {
             "pagination": {"total": 2, "count": 2, "per_page": 25, "current_page": 1, "total_pages": 1}

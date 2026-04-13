@@ -5,6 +5,7 @@ import app.myfaq.shared.api.dto.Comment
 import app.myfaq.shared.api.dto.FaqDetail
 import app.myfaq.shared.api.dto.FaqPopularItem
 import app.myfaq.shared.api.dto.FaqSummary
+import app.myfaq.shared.api.dto.GlossaryItem
 import app.myfaq.shared.api.dto.Meta
 import app.myfaq.shared.api.dto.NewsItem
 import app.myfaq.shared.api.dto.OpenQuestion
@@ -27,7 +28,7 @@ import io.ktor.client.request.parameter
  * v4.0 changes:
  * - Most list endpoints return a paginated wrapper: `{ success, data, meta }`.
  * - Popular/latest/trending/sticky FAQs and popular searches remain plain arrays.
- * - `/meta` stays at the v3.2 path (not bumped in v4.0 spec).
+ * - `/meta` now at v4.0 path with updated field names (availableLanguages, enabledFeatures, etc.).
  */
 interface MyFaqApi {
     // Bootstrap
@@ -57,6 +58,9 @@ interface MyFaqApi {
     // Comments (paginated)
     suspend fun comments(recordId: Int): List<Comment>
 
+    // Glossary (paginated)
+    suspend fun glossary(): List<GlossaryItem>
+
     // Open questions (paginated)
     suspend fun openQuestions(): List<OpenQuestion>
 }
@@ -69,9 +73,8 @@ class MyFaqApiImpl(
 
     private val api get() = "$baseUrl/api/v4.0"
 
-    // /meta stays at v3.2 — it was not bumped in the v4.0 spec
     override suspend fun meta(): Meta =
-        http.get("$baseUrl/api/v3.2/meta").body()
+        http.get("$api/meta").body()
 
     // --- Paginated endpoints: unwrap { success, data, meta } ---
 
@@ -122,6 +125,10 @@ class MyFaqApiImpl(
     override suspend fun comments(recordId: Int): List<Comment> =
         http.get("$api/comments/$recordId") { header("Accept-Language", language) }
             .body<PaginatedResponse<List<Comment>>>().data
+
+    override suspend fun glossary(): List<GlossaryItem> =
+        http.get("$api/glossary") { header("Accept-Language", language) }
+            .body<PaginatedResponse<List<GlossaryItem>>>().data
 
     override suspend fun openQuestions(): List<OpenQuestion> =
         http.get("$api/open-questions") { header("Accept-Language", language) }

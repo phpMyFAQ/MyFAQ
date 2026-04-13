@@ -44,6 +44,7 @@ final class WorkspacesStore: ObservableObject {
 struct WorkspacesScreen: View {
     @StateObject private var store = WorkspacesStore()
     @State private var showAddSheet = false
+    @State private var instanceToDelete: Instance?
     let onInstanceSelected: () -> Void
 
     var body: some View {
@@ -69,6 +70,24 @@ struct WorkspacesScreen: View {
                 showAddSheet = false
                 onInstanceSelected()
             }
+        }
+        .alert(
+            "Delete Instance",
+            isPresented: Binding(
+                get: { instanceToDelete != nil },
+                set: { if !$0 { instanceToDelete = nil } }
+            ),
+            presenting: instanceToDelete
+        ) { instance in
+            Button("Delete", role: .destructive) {
+                store.vm.deleteInstance(instanceId: instance.id)
+                instanceToDelete = nil
+            }
+            Button("Cancel", role: .cancel) {
+                instanceToDelete = nil
+            }
+        } message: { instance in
+            Text("Are you sure you want to delete \"\(instance.displayName)\"? This cannot be undone.")
         }
     }
 
@@ -106,11 +125,19 @@ struct WorkspacesScreen: View {
                     }
                 }
                 .foregroundStyle(.primary)
-            }
-            .onDelete { offsets in
-                for index in offsets {
-                    let instance = store.instances[index]
-                    store.vm.deleteInstance(instanceId: instance.id)
+                .swipeActions(edge: .trailing, allowsFullSwipe: true) {
+                    Button(role: .destructive) {
+                        instanceToDelete = instance
+                    } label: {
+                        Label("Delete", systemImage: "trash")
+                    }
+                }
+                .contextMenu {
+                    Button(role: .destructive) {
+                        instanceToDelete = instance
+                    } label: {
+                        Label("Delete Instance", systemImage: "trash")
+                    }
                 }
             }
         }

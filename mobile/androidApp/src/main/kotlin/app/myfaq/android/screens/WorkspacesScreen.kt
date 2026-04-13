@@ -16,6 +16,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -25,9 +26,13 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -46,6 +51,29 @@ fun WorkspacesScreen(
 ) {
     val vm = WorkspacesViewModel(db, aim)
     val instances by vm.instances.collectAsState()
+    var instanceToDelete by remember { mutableStateOf<Instance?>(null) }
+
+    // Confirmation dialog
+    instanceToDelete?.let { instance ->
+        AlertDialog(
+            onDismissRequest = { instanceToDelete = null },
+            title = { Text("Delete Instance") },
+            text = { Text("Are you sure you want to delete \"${instance.displayName}\"? This cannot be undone.") },
+            confirmButton = {
+                TextButton(onClick = {
+                    vm.deleteInstance(instance.id)
+                    instanceToDelete = null
+                }) {
+                    Text("Delete", color = MaterialTheme.colorScheme.error)
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { instanceToDelete = null }) {
+                    Text("Cancel")
+                }
+            },
+        )
+    }
 
     Scaffold(
         topBar = {
@@ -75,7 +103,7 @@ fun WorkspacesScreen(
                             vm.selectInstance(instance)
                             onInstanceSelected()
                         },
-                        onDelete = { vm.deleteInstance(instance.id) },
+                        onDelete = { instanceToDelete = instance },
                     )
                 }
             }

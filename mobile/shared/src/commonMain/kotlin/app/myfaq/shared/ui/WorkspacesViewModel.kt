@@ -88,6 +88,7 @@ class WorkspacesViewModel(
     }
 
     fun deleteInstance(instanceId: String) {
+        db.cacheEntriesQueries.deleteByInstance(instanceId)
         db.instancesQueries.deleteById(instanceId)
         if (activeInstanceManager.activeInstance.value?.id == instanceId) {
             activeInstanceManager.clear()

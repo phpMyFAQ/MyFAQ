@@ -4,6 +4,7 @@ import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
@@ -11,12 +12,17 @@ import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import app.myfaq.shared.data.ActiveInstanceManager
+import app.myfaq.shared.data.MyFaqDatabase
 import org.koin.compose.koinInject
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -24,9 +30,37 @@ import org.koin.compose.koinInject
 fun SettingsScreen(
     onSwitchInstance: () -> Unit,
     aim: ActiveInstanceManager = koinInject(),
+    db: MyFaqDatabase = koinInject(),
 ) {
     val context = LocalContext.current
     val activeInstance by aim.activeInstance.collectAsState()
+    var showDeleteConfirmation by remember { mutableStateOf(false) }
+
+    // Delete confirmation dialog
+    if (showDeleteConfirmation) {
+        activeInstance?.let { instance ->
+            AlertDialog(
+                onDismissRequest = { showDeleteConfirmation = false },
+                title = { Text("Delete Instance") },
+                text = { Text("Are you sure you want to delete \"${instance.displayName}\"? This cannot be undone.") },
+                confirmButton = {
+                    TextButton(onClick = {
+                        db.instancesQueries.deleteById(instance.id)
+                        aim.clear()
+                        showDeleteConfirmation = false
+                        onSwitchInstance()
+                    }) {
+                        Text("Delete", color = MaterialTheme.colorScheme.error)
+                    }
+                },
+                dismissButton = {
+                    TextButton(onClick = { showDeleteConfirmation = false }) {
+                        Text("Cancel")
+                    }
+                },
+            )
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -64,6 +98,20 @@ fun SettingsScreen(
                 },
             )
             HorizontalDivider()
+
+            // Delete instance
+            if (activeInstance != null) {
+                ListItem(
+                    headlineContent = {
+                        Text(
+                            text = "Delete instance",
+                            color = MaterialTheme.colorScheme.error,
+                        )
+                    },
+                    modifier = Modifier.clickable { showDeleteConfirmation = true },
+                )
+                HorizontalDivider()
+            }
 
             // App version
             ListItem(

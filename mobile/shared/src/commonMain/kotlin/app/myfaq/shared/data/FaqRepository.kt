@@ -7,6 +7,7 @@ import app.myfaq.shared.api.dto.Comment
 import app.myfaq.shared.api.dto.FaqDetail
 import app.myfaq.shared.api.dto.FaqPopularItem
 import app.myfaq.shared.api.dto.FaqSummary
+import app.myfaq.shared.api.dto.GlossaryItem
 import app.myfaq.shared.api.dto.Meta
 import app.myfaq.shared.api.dto.NewsItem
 import app.myfaq.shared.api.dto.OpenQuestion
@@ -89,6 +90,11 @@ class FaqRepository(
 
     suspend fun comments(recordId: Int): List<Comment> =
         cachedList("comments/$recordId", CacheTtl.COMMENTS) { api.comments(recordId) }
+
+    // --- Glossary ---
+
+    suspend fun glossary(): List<GlossaryItem> =
+        cachedList("glossary", CacheTtl.FAQS) { api.glossary() }
 
     // --- Open questions ---
 

@@ -38,9 +38,10 @@ class MyFaqApiTest {
         val meta = api.meta()
         assertEquals("4.2.0", meta.version)
         assertEquals("MyFAQ.app test instance", meta.title)
-        assertEquals(listOf("en", "de", "fr"), meta.availableLanguages)
-        assertEquals(true, meta.features["search"])
-        assertEquals("https://example.test/oauth/authorize", meta.oauth?.authorizationEndpoint)
+        assertEquals(mapOf("en" to "English", "de" to "German", "fr" to "French"), meta.availableLanguages)
+        assertEquals(listOf("en", "de", "fr"), meta.languageCodes)
+        assertEquals(true, meta.enabledFeatures["search"])
+        assertEquals("https://example.test/oauth/authorize", meta.oauthDiscovery?.authorizationEndpoint)
     }
 
     @Test
@@ -67,10 +68,10 @@ class MyFaqApiTest {
           "version": "4.2.0",
           "title": "MyFAQ.app test instance",
           "language": "en",
-          "available_languages": ["en", "de", "fr"],
-          "features": { "search": true, "ratings": true, "comments": false },
-          "logo_url": "https://example.test/logo.png",
-          "oauth": {
+          "availableLanguages": {"en": "English", "de": "German", "fr": "French"},
+          "enabledFeatures": { "search": true, "ratings": true, "comments": false },
+          "publicLogoUrl": "https://example.test/logo.png",
+          "oauthDiscovery": {
             "authorization_endpoint": "https://example.test/oauth/authorize",
             "token_endpoint": "https://example.test/oauth/token"
           }

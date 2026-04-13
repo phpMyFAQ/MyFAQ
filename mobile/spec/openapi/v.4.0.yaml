@@ -10,8 +10,7 @@ info:
     url: 'https://www.mozilla.org/MPL/2.0/'
   version: '4.0'
 servers:
-  -
-    url: 'https://localhost'
+  - url: 'https://localhost'
     description: 'Local dockerized server'
 paths:
   '/api/v4.0/attachments/{faqId}':
@@ -21,15 +20,13 @@ paths:
       description: 'Returns a paginated list of attachments for a given FAQ record ID with optional sorting.'
       operationId: getAttachments
       parameters:
-        -
-          name: faqId
+        - name: faqId
           in: path
           description: 'The FAQ record ID.'
           required: true
           schema:
             type: integer
-        -
-          name: page
+        - name: page
           in: query
           description: 'Page number for pagination (1-indexed)'
           required: false
@@ -37,8 +34,7 @@ paths:
             type: integer
             default: 1
             minimum: 1
-        -
-          name: per_page
+        - name: per_page
           in: query
           description: 'Number of items per page'
           required: false
@@ -47,8 +43,7 @@ paths:
             default: 25
             maximum: 100
             minimum: 1
-        -
-          name: limit
+        - name: limit
           in: query
           description: 'Alternative to per_page for offset-based pagination'
           required: false
@@ -57,8 +52,7 @@ paths:
             default: 25
             maximum: 100
             minimum: 1
-        -
-          name: offset
+        - name: offset
           in: query
           description: 'Offset for pagination (overrides page parameter)'
           required: false
@@ -66,8 +60,7 @@ paths:
             type: integer
             default: 0
             minimum: 0
-        -
-          name: sort
+        - name: sort
           in: query
           description: 'Field to sort by'
           required: false
@@ -79,8 +72,7 @@ paths:
               - mime_type
               - filesize
               - created
-        -
-          name: order
+        - name: order
           in: query
           description: 'Sort order'
           required: false
@@ -100,14 +92,31 @@ paths:
                 type: string
           content:
             application/json:
-              schema: {  }
+              schema: {}
               example:
                 success: true
                 data:
                   - { filename: attachment-1.pdf, url: 'https://www.example.org/attachment/1' }
                   - { filename: attachment-2.pdf, url: 'https://www.example.org/attachment/2' }
                 meta:
-                  pagination: { total: 2, count: 2, per_page: 25, current_page: 1, total_pages: 1, offset: 0, has_more: false, has_previous: false, links: { first: '/api/v4.0/attachments/1?page=1&per_page=25', last: '/api/v4.0/attachments/1?page=1&per_page=25', prev: null, next: null } }
+                  pagination:
+                    {
+                      total: 2,
+                      count: 2,
+                      per_page: 25,
+                      current_page: 1,
+                      total_pages: 1,
+                      offset: 0,
+                      has_more: false,
+                      has_previous: false,
+                      links:
+                        {
+                          first: '/api/v4.0/attachments/1?page=1&per_page=25',
+                          last: '/api/v4.0/attachments/1?page=1&per_page=25',
+                          prev: null,
+                          next: null,
+                        },
+                    }
                   sorting: { field: filename, order: asc }
         '500':
           description: 'If the attachments cannot be fetched.'
@@ -118,7 +127,7 @@ paths:
                 type: string
           content:
             application/json:
-              schema: {  }
+              schema: {}
               example:
                 success: false
                 error:
@@ -130,8 +139,7 @@ paths:
         - 'Endpoints with Authentication'
       operationId: createBackup
       parameters:
-        -
-          name: type
+        - name: type
           in: path
           description: 'The backup type. Can be "data", "logs" or "content".'
           required: true
@@ -185,40 +193,35 @@ paths:
         - 'Public Endpoints'
       operationId: getCategories
       parameters:
-        -
-          name: page
+        - name: page
           in: query
           description: 'Page number for pagination (page-based)'
           required: false
           schema:
             type: integer
             default: 1
-        -
-          name: per_page
+        - name: per_page
           in: query
           description: 'Items per page (page-based, max 100)'
           required: false
           schema:
             type: integer
             default: 25
-        -
-          name: limit
+        - name: limit
           in: query
           description: 'Number of items to return (offset-based, max 100)'
           required: false
           schema:
             type: integer
             default: 25
-        -
-          name: offset
+        - name: offset
           in: query
           description: 'Starting offset (offset-based)'
           required: false
           schema:
             type: integer
             default: 0
-        -
-          name: sort
+        - name: sort
           in: query
           description: 'Field to sort by'
           required: false
@@ -230,8 +233,7 @@ paths:
               - name
               - parent_id
               - active
-        -
-          name: order
+        - name: order
           in: query
           description: 'Sort direction'
           required: false
@@ -251,13 +253,39 @@ paths:
                 type: string
           content:
             application/json:
-              schema: {  }
+              schema: {}
               example:
                 success: true
                 data:
-                  - { id: 1, lang: en, parent_id: 0, name: Test, description: 'Hello, World! Hello, Tests!', user_id: 1, group_id: 1, active: 1, show_home: 1, image: category-1-en.png, level: 1 }
+                  - {
+                      id: 1,
+                      lang: en,
+                      parent_id: 0,
+                      name: Test,
+                      description: 'Hello, World! Hello, Tests!',
+                      user_id: 1,
+                      group_id: 1,
+                      active: 1,
+                      show_home: 1,
+                      image: category-1-en.png,
+                      level: 1,
+                    }
                 meta:
-                  pagination: { total: 50, count: 25, per_page: 25, current_page: 1, total_pages: 2, links: { first: '/api/v4.0/categories?page=1&per_page=25', last: '/api/v4.0/categories?page=2&per_page=25', prev: null, next: '/api/v4.0/categories?page=2&per_page=25' } }
+                  pagination:
+                    {
+                      total: 50,
+                      count: 25,
+                      per_page: 25,
+                      current_page: 1,
+                      total_pages: 2,
+                      links:
+                        {
+                          first: '/api/v4.0/categories?page=1&per_page=25',
+                          last: '/api/v4.0/categories?page=2&per_page=25',
+                          prev: null,
+                          next: '/api/v4.0/categories?page=2&per_page=25',
+                        },
+                    }
                   sorting: { field: id, order: asc }
   /api/v4.0/category:
     post:
@@ -315,7 +343,7 @@ paths:
                 type: string
           content:
             application/json:
-              schema: {  }
+              schema: {}
               example:
                 stored: true
         '400':
@@ -331,7 +359,7 @@ paths:
                 type: string
           content:
             application/json:
-              schema: {  }
+              schema: {}
               example:
                 stored: false
                 error: 'Cannot add category'
@@ -348,7 +376,7 @@ paths:
                 type: string
           content:
             application/json:
-              schema: {  }
+              schema: {}
               example:
                 stored: false
                 error: 'The given parent category name was not found.'
@@ -370,47 +398,41 @@ paths:
       description: 'Returns a paginated list of comments for a given FAQ record ID.'
       operationId: getComments
       parameters:
-        -
-          name: faqId
+        - name: faqId
           in: path
           description: 'The FAQ record ID.'
           required: true
           schema:
             type: integer
-        -
-          name: page
+        - name: page
           in: query
           description: 'Page number for pagination (page-based)'
           required: false
           schema:
             type: integer
             default: 1
-        -
-          name: per_page
+        - name: per_page
           in: query
           description: 'Items per page (page-based, max 100)'
           required: false
           schema:
             type: integer
             default: 25
-        -
-          name: limit
+        - name: limit
           in: query
           description: 'Number of items to return (offset-based, max 100)'
           required: false
           schema:
             type: integer
             default: 25
-        -
-          name: offset
+        - name: offset
           in: query
           description: 'Starting offset (offset-based)'
           required: false
           schema:
             type: integer
             default: 0
-        -
-          name: sort
+        - name: sort
           in: query
           description: 'Field to sort by'
           required: false
@@ -422,8 +444,7 @@ paths:
               - id
               - usr
               - datum
-        -
-          name: order
+        - name: order
           in: query
           description: 'Sort direction'
           required: false
@@ -443,13 +464,36 @@ paths:
                 type: string
           content:
             application/json:
-              schema: {  }
+              schema: {}
               example:
                 success: true
                 data:
-                  - { id: 2, recordId: 142, categoryId: null, type: faq, username: 'phpMyFAQ User', comment: 'Foo! Bar?', date: '2019-12-24T12:24:57+0100', helped: null }
+                  - {
+                      id: 2,
+                      recordId: 142,
+                      categoryId: null,
+                      type: faq,
+                      username: 'phpMyFAQ User',
+                      comment: 'Foo! Bar?',
+                      date: '2019-12-24T12:24:57+0100',
+                      helped: null,
+                    }
                 meta:
-                  pagination: { total: 50, count: 25, per_page: 25, current_page: 1, total_pages: 2, links: { first: '/api/v4.0/comments/142?page=1&per_page=25', last: '/api/v4.0/comments/142?page=2&per_page=25', prev: null, next: '/api/v4.0/comments/142?page=2&per_page=25' } }
+                  pagination:
+                    {
+                      total: 50,
+                      count: 25,
+                      per_page: 25,
+                      current_page: 1,
+                      total_pages: 2,
+                      links:
+                        {
+                          first: '/api/v4.0/comments/142?page=1&per_page=25',
+                          last: '/api/v4.0/comments/142?page=2&per_page=25',
+                          prev: null,
+                          next: '/api/v4.0/comments/142?page=2&per_page=25',
+                        },
+                    }
                   sorting: { field: id_comment, order: asc }
   '/api/v4.0/faqs/{categoryId}':
     get:
@@ -458,8 +502,7 @@ paths:
       description: 'This endpoint returns all the FAQs with a preview of the answer for the given category ID and the language provided by "Accept-Language".'
       operationId: getByCategoryId
       parameters:
-        -
-          name: categoryId
+        - name: categoryId
           in: path
           description: 'The category ID.'
           required: true
@@ -475,10 +518,9 @@ paths:
                 type: string
           content:
             application/json:
-              schema: {  }
+              schema: {}
               example:
-                -
-                  record_id: 1
+                - record_id: 1
                   record_lang: en
                   category_id: 1
                   record_title: 'Is there life after death?'
@@ -496,7 +538,7 @@ paths:
                 type: string
           content:
             application/json:
-              schema: {  }
+              schema: {}
               example:
                 error: 'Error message'
   '/api/v4.0/faq/{categoryId}/{faqId}':
@@ -506,15 +548,13 @@ paths:
       description: 'This endpoint returns the FAQ for the given FAQ ID and the language provided by "Accept-Language".'
       operationId: getFaqById
       parameters:
-        -
-          name: categoryId
+        - name: categoryId
           in: path
           description: 'The category ID.'
           required: true
           schema:
             type: integer
-        -
-          name: faqId
+        - name: faqId
           in: path
           description: 'The FAQ ID.'
           required: true
@@ -530,7 +570,7 @@ paths:
                 type: string
           content:
             application/json:
-              schema: {  }
+              schema: {}
               example:
                 id: 1
                 lang: en
@@ -559,8 +599,8 @@ paths:
                 type: string
           content:
             application/json:
-              schema: {  }
-              example: {  }
+              schema: {}
+              example: {}
   '/api/v4.0/faqs/tags/{tagId}':
     get:
       tags:
@@ -568,8 +608,7 @@ paths:
       description: "This endpoint returns all the FAQs for the given tag ID and the language provided by \n        \"Accept-Language\""
       operationId: getByTagId
       parameters:
-        -
-          name: tagId
+        - name: tagId
           in: path
           description: 'The tag ID.'
           required: true
@@ -585,10 +624,9 @@ paths:
                 type: string
           content:
             application/json:
-              schema: {  }
+              schema: {}
               example:
-                -
-                  record_id: 1
+                - record_id: 1
                   record_lang: en
                   category_id: 1
                   record_title: 'Is there life after death?'
@@ -606,7 +644,7 @@ paths:
                 type: string
           content:
             application/json:
-              schema: {  }
+              schema: {}
               example:
                 error: 'Error message'
   /api/v4.0/faqs/popular:
@@ -625,10 +663,9 @@ paths:
                 type: string
           content:
             application/json:
-              schema: {  }
+              schema: {}
               example:
-                -
-                  date: '2019-07-13T11:28:00+0200'
+                - date: '2019-07-13T11:28:00+0200'
                   question: 'How can I survive without phpMyFAQ?'
                   answer: 'A good question!'
                   visits: 10
@@ -642,7 +679,7 @@ paths:
                 type: string
           content:
             application/json:
-              schema: {  }
+              schema: {}
               example: []
   /api/v4.0/faqs/latest:
     get:
@@ -660,10 +697,9 @@ paths:
                 type: string
           content:
             application/json:
-              schema: {  }
+              schema: {}
               example:
-                -
-                  date: '2019-07-13T11:28:00+0200'
+                - date: '2019-07-13T11:28:00+0200'
                   question: 'How can I survive without phpMyFAQ?'
                   answer: 'A good question!'
                   visits: 10
@@ -677,7 +713,7 @@ paths:
                 type: string
           content:
             application/json:
-              schema: {  }
+              schema: {}
               example: []
   /api/v4.0/faqs/trending:
     get:
@@ -695,10 +731,9 @@ paths:
                 type: string
           content:
             application/json:
-              schema: {  }
+              schema: {}
               example:
-                -
-                  date: '2019-07-13T11:28:00+0200'
+                - date: '2019-07-13T11:28:00+0200'
                   question: 'How can I survive without phpMyFAQ?'
                   answer: 'A good question!'
                   visits: 10
@@ -712,7 +747,7 @@ paths:
                 type: string
           content:
             application/json:
-              schema: {  }
+              schema: {}
               example: []
   /api/v4.0/faqs/sticky:
     get:
@@ -730,15 +765,13 @@ paths:
                 type: string
           content:
             application/json:
-              schema: {  }
+              schema: {}
               example:
-                -
-                  question: 'How can I survive without phpMyFAQ?'
+                - question: 'How can I survive without phpMyFAQ?'
                   url: 'https://www.example.org/content/1/36/de/how-can-i-survive-without-phpmyfaq.html'
                   id: 8
                   order: 1
-                -
-                  question: 'Is there life after death?'
+                - question: 'Is there life after death?'
                   url: 'https://www.example.org/content/1/1/de/is-there-life-after-death.html'
                   id: 10
                   order: 2
@@ -751,7 +784,7 @@ paths:
                 type: string
           content:
             application/json:
-              schema: {  }
+              schema: {}
               example: []
   /api/v4.0/faqs:
     get:
@@ -760,40 +793,35 @@ paths:
       description: 'This endpoint returns paginated FAQs for the given language provided by "Accept-Language".'
       operationId: getAll
       parameters:
-        -
-          name: page
+        - name: page
           in: query
           description: 'Page number for pagination (page-based)'
           required: false
           schema:
             type: integer
             default: 1
-        -
-          name: per_page
+        - name: per_page
           in: query
           description: 'Items per page (page-based, max 100)'
           required: false
           schema:
             type: integer
             default: 25
-        -
-          name: limit
+        - name: limit
           in: query
           description: 'Number of items to return (offset-based, max 100)'
           required: false
           schema:
             type: integer
             default: 25
-        -
-          name: offset
+        - name: offset
           in: query
           description: 'Starting offset (offset-based)'
           required: false
           schema:
             type: integer
             default: 0
-        -
-          name: sort
+        - name: sort
           in: query
           description: 'Field to sort by'
           required: false
@@ -806,8 +834,7 @@ paths:
               - author
               - updated
               - created
-        -
-          name: order
+        - name: order
           in: query
           description: 'Sort direction'
           required: false
@@ -827,13 +854,45 @@ paths:
                 type: string
           content:
             application/json:
-              schema: {  }
+              schema: {}
               example:
                 success: true
                 data:
-                  - { id: '1', lang: en, solution_id: '1000', revision_id: '0', active: 'yes', sticky: '0', keywords: '', title: 'Is there life after death?', content: Maybe!, author: 'phpMyFAQ User', email: user@example.org, comment: 'y', updated: '2009-10-10 17:54:00', dateStart: '00000000000000', dateEnd: '99991231235959', created: '2008-09-03T21:30:17+02:00', notes: '' }
+                  - {
+                      id: '1',
+                      lang: en,
+                      solution_id: '1000',
+                      revision_id: '0',
+                      active: 'yes',
+                      sticky: '0',
+                      keywords: '',
+                      title: 'Is there life after death?',
+                      content: Maybe!,
+                      author: 'phpMyFAQ User',
+                      email: user@example.org,
+                      comment: 'y',
+                      updated: '2009-10-10 17:54:00',
+                      dateStart: '00000000000000',
+                      dateEnd: '99991231235959',
+                      created: '2008-09-03T21:30:17+02:00',
+                      notes: '',
+                    }
                 meta:
-                  pagination: { total: 50, count: 25, per_page: 25, current_page: 1, total_pages: 2, links: { first: '/api/v4.0/faqs?page=1&per_page=25', last: '/api/v4.0/faqs?page=2&per_page=25', prev: null, next: '/api/v4.0/faqs?page=2&per_page=25' } }
+                  pagination:
+                    {
+                      total: 50,
+                      count: 25,
+                      per_page: 25,
+                      current_page: 1,
+                      total_pages: 2,
+                      links:
+                        {
+                          first: '/api/v4.0/faqs?page=1&per_page=25',
+                          last: '/api/v4.0/faqs?page=2&per_page=25',
+                          prev: null,
+                          next: '/api/v4.0/faqs?page=2&per_page=25',
+                        },
+                    }
                   sorting: { field: id, order: asc }
   /api/v4.0/faq/create:
     post:
@@ -894,7 +953,7 @@ paths:
                 type: string
           content:
             application/json:
-              schema: {  }
+              schema: {}
               example:
                 stored: true
         '400':
@@ -910,7 +969,7 @@ paths:
                 type: string
           content:
             application/json:
-              schema: {  }
+              schema: {}
               example:
                 stored: false
                 error: 'It is not allowed, that the question title contains a hash.'
@@ -927,7 +986,7 @@ paths:
                 type: string
           content:
             application/json:
-              schema: {  }
+              schema: {}
               example:
                 stored: false
                 error: 'The given category name was not found'
@@ -1001,7 +1060,7 @@ paths:
                 type: string
           content:
             application/json:
-              schema: {  }
+              schema: {}
               example:
                 stored: true
         '400':
@@ -1017,7 +1076,7 @@ paths:
                 type: string
           content:
             application/json:
-              schema: {  }
+              schema: {}
               example:
                 stored: false
                 error: 'It is not allowed, that the question title contains a hash.'
@@ -1032,47 +1091,42 @@ paths:
               description: 'phpMyFAQ client API Token, generated in admin backend'
               schema:
                 type: string
-  /api/v3.2/glossary:
+  /api/v4.0/glossary:
     get:
       tags:
         - 'Public Endpoints'
       description: 'Returns paginated glossary items.'
       operationId: getGlossary
       parameters:
-        -
-          name: page
+        - name: page
           in: query
           description: 'Page number for pagination (page-based)'
           required: false
           schema:
             type: integer
             default: 1
-        -
-          name: per_page
+        - name: per_page
           in: query
           description: 'Items per page (page-based, max 100)'
           required: false
           schema:
             type: integer
             default: 25
-        -
-          name: limit
+        - name: limit
           in: query
           description: 'Number of items to return (offset-based, max 100)'
           required: false
           schema:
             type: integer
             default: 25
-        -
-          name: offset
+        - name: offset
           in: query
           description: 'Starting offset (offset-based)'
           required: false
           schema:
             type: integer
             default: 0
-        -
-          name: sort
+        - name: sort
           in: query
           description: 'Field to sort by'
           required: false
@@ -1083,8 +1137,7 @@ paths:
               - id
               - item
               - definition
-        -
-          name: order
+        - name: order
           in: query
           description: 'Sort direction'
           required: false
@@ -1104,14 +1157,28 @@ paths:
                 type: string
           content:
             application/json:
-              schema: {  }
+              schema: {}
               example:
                 success: true
                 data:
                   - { id: 1, language: en, item: API, definition: 'Application Programming Interface' }
                   - { id: 2, language: en, item: FAQ, definition: 'Frequently Asked Questions' }
                 meta:
-                  pagination: { total: 50, count: 25, per_page: 25, current_page: 1, total_pages: 2, links: { first: '/api/v3.2/glossary?page=1&per_page=25', last: '/api/v3.2/glossary?page=2&per_page=25', prev: null, next: '/api/v3.2/glossary?page=2&per_page=25' } }
+                  pagination:
+                    {
+                      total: 50,
+                      count: 25,
+                      per_page: 25,
+                      current_page: 1,
+                      total_pages: 2,
+                      links:
+                        {
+                          first: '/api/v4.0/glossary?page=1&per_page=25',
+                          last: '/api/v4.0/glossary?page=2&per_page=25',
+                          prev: null,
+                          next: '/api/v4.0/glossary?page=2&per_page=25',
+                        },
+                    }
                   sorting: { field: item, order: asc }
   /api/v4.0/groups:
     get:
@@ -1120,40 +1187,35 @@ paths:
       description: 'Returns paginated list of group IDs.'
       operationId: getGroups
       parameters:
-        -
-          name: page
+        - name: page
           in: query
           description: 'Page number for pagination (page-based)'
           required: false
           schema:
             type: integer
             default: 1
-        -
-          name: per_page
+        - name: per_page
           in: query
           description: 'Items per page (page-based, max 100)'
           required: false
           schema:
             type: integer
             default: 25
-        -
-          name: limit
+        - name: limit
           in: query
           description: 'Number of items to return (offset-based, max 100)'
           required: false
           schema:
             type: integer
             default: 25
-        -
-          name: offset
+        - name: offset
           in: query
           description: 'Starting offset (offset-based)'
           required: false
           schema:
             type: integer
             default: 0
-        -
-          name: sort
+        - name: sort
           in: query
           description: 'Field to sort by'
           required: false
@@ -1162,8 +1224,7 @@ paths:
             default: group-id
             enum:
               - group-id
-        -
-          name: order
+        - name: order
           in: query
           description: 'Sort direction'
           required: false
@@ -1183,14 +1244,28 @@ paths:
                 type: string
           content:
             application/json:
-              schema: {  }
+              schema: {}
               example:
                 success: true
                 data:
                   - { group-id: 1 }
                   - { group-id: 2 }
                 meta:
-                  pagination: { total: 50, count: 25, per_page: 25, current_page: 1, total_pages: 2, links: { first: '/api/v4.0/groups?page=1&per_page=25', last: '/api/v4.0/groups?page=2&per_page=25', prev: null, next: '/api/v4.0/groups?page=2&per_page=25' } }
+                  pagination:
+                    {
+                      total: 50,
+                      count: 25,
+                      per_page: 25,
+                      current_page: 1,
+                      total_pages: 2,
+                      links:
+                        {
+                          first: '/api/v4.0/groups?page=1&per_page=25',
+                          last: '/api/v4.0/groups?page=2&per_page=25',
+                          prev: null,
+                          next: '/api/v4.0/groups?page=2&per_page=25',
+                        },
+                    }
                   sorting: { field: group-id, order: asc }
         '401':
           description: 'If the user is not authenticated.'
@@ -1209,7 +1284,7 @@ paths:
           description: 'Returns the default language as language code.'
           content:
             application/json:
-              schema: {  }
+              schema: {}
               example: en
   /api/v4.0/login:
     post:
@@ -1241,7 +1316,7 @@ paths:
                 type: string
           content:
             application/json:
-              schema: {  }
+              schema: {}
               example:
                 loggedin: true
         '400':
@@ -1253,11 +1328,11 @@ paths:
                 type: string
           content:
             application/json:
-              schema: {  }
+              schema: {}
               example:
                 loggedin: false
                 error: 'Wrong username or password.'
-  /api/v3.2/meta:
+  /api/v4.0/meta:
     get:
       tags:
         - 'Public Endpoints'
@@ -1283,40 +1358,35 @@ paths:
         - 'Public Endpoints'
       operationId: getNews
       parameters:
-        -
-          name: page
+        - name: page
           in: query
           description: 'Page number for pagination (page-based)'
           required: false
           schema:
             type: integer
             default: 1
-        -
-          name: per_page
+        - name: per_page
           in: query
           description: 'Items per page (page-based, max 100)'
           required: false
           schema:
             type: integer
             default: 25
-        -
-          name: limit
+        - name: limit
           in: query
           description: 'Number of items to return (offset-based, max 100)'
           required: false
           schema:
             type: integer
             default: 25
-        -
-          name: offset
+        - name: offset
           in: query
           description: 'Starting offset (offset-based)'
           required: false
           schema:
             type: integer
             default: 0
-        -
-          name: sort
+        - name: sort
           in: query
           description: 'Field to sort by'
           required: false
@@ -1328,8 +1398,7 @@ paths:
               - datum
               - header
               - author_name
-        -
-          name: order
+        - name: order
           in: query
           description: 'Sort direction'
           required: false
@@ -1349,13 +1418,41 @@ paths:
                 type: string
           content:
             application/json:
-              schema: {  }
+              schema: {}
               example:
                 success: true
                 data:
-                  - { id: 1, lang: en, date: '2019-08-23T20:43:00+0200', header: 'Hallo, World!', content: 'Hello, phpMyFAQ!', authorName: 'phpMyFAQ User', authorEmail: user@example.org, active: true, allowComments: true, link: '', linkTitle: '', target: '', url: 'https://www.example.org/news/1/de/hallo-phpmyfaq.html' }
+                  - {
+                      id: 1,
+                      lang: en,
+                      date: '2019-08-23T20:43:00+0200',
+                      header: 'Hallo, World!',
+                      content: 'Hello, phpMyFAQ!',
+                      authorName: 'phpMyFAQ User',
+                      authorEmail: user@example.org,
+                      active: true,
+                      allowComments: true,
+                      link: '',
+                      linkTitle: '',
+                      target: '',
+                      url: 'https://www.example.org/news/1/de/hallo-phpmyfaq.html',
+                    }
                 meta:
-                  pagination: { total: 50, count: 25, per_page: 25, current_page: 1, total_pages: 2, links: { first: '/api/v4.0/news?page=1&per_page=25', last: '/api/v4.0/news?page=2&per_page=25', prev: null, next: '/api/v4.0/news?page=2&per_page=25' } }
+                  pagination:
+                    {
+                      total: 50,
+                      count: 25,
+                      per_page: 25,
+                      current_page: 1,
+                      total_pages: 2,
+                      links:
+                        {
+                          first: '/api/v4.0/news?page=1&per_page=25',
+                          last: '/api/v4.0/news?page=2&per_page=25',
+                          prev: null,
+                          next: '/api/v4.0/news?page=2&per_page=25',
+                        },
+                    }
                   sorting: { field: datum, order: desc }
   /api/v4.0/open-questions:
     get:
@@ -1364,40 +1461,35 @@ paths:
       description: 'Returns paginated open questions.'
       operationId: getOpenQuestions
       parameters:
-        -
-          name: page
+        - name: page
           in: query
           description: 'Page number for pagination (page-based)'
           required: false
           schema:
             type: integer
             default: 1
-        -
-          name: per_page
+        - name: per_page
           in: query
           description: 'Items per page (page-based, max 100)'
           required: false
           schema:
             type: integer
             default: 25
-        -
-          name: limit
+        - name: limit
           in: query
           description: 'Number of items to return (offset-based, max 100)'
           required: false
           schema:
             type: integer
             default: 25
-        -
-          name: offset
+        - name: offset
           in: query
           description: 'Starting offset (offset-based)'
           required: false
           schema:
             type: integer
             default: 0
-        -
-          name: sort
+        - name: sort
           in: query
           description: 'Field to sort by'
           required: false
@@ -1409,8 +1501,7 @@ paths:
               - username
               - created
               - categoryId
-        -
-          name: order
+        - name: order
           in: query
           description: 'Sort direction'
           required: false
@@ -1430,13 +1521,37 @@ paths:
                 type: string
           content:
             application/json:
-              schema: {  }
+              schema: {}
               example:
                 success: true
                 data:
-                  - { id: 1, lang: en, username: 'phpMyFAQ User', email: user@example.org, categoryId: 3, question: 'Foo? Bar? Baz?', created: '20190106180429', answerId: 0, isVisible: 'N' }
+                  - {
+                      id: 1,
+                      lang: en,
+                      username: 'phpMyFAQ User',
+                      email: user@example.org,
+                      categoryId: 3,
+                      question: 'Foo? Bar? Baz?',
+                      created: '20190106180429',
+                      answerId: 0,
+                      isVisible: 'N',
+                    }
                 meta:
-                  pagination: { total: 50, count: 25, per_page: 25, current_page: 1, total_pages: 2, links: { first: '/api/v4.0/open-questions?page=1&per_page=25', last: '/api/v4.0/open-questions?page=2&per_page=25', prev: null, next: '/api/v4.0/open-questions?page=2&per_page=25' } }
+                  pagination:
+                    {
+                      total: 50,
+                      count: 25,
+                      per_page: 25,
+                      current_page: 1,
+                      total_pages: 2,
+                      links:
+                        {
+                          first: '/api/v4.0/open-questions?page=1&per_page=25',
+                          last: '/api/v4.0/open-questions?page=2&per_page=25',
+                          prev: null,
+                          next: '/api/v4.0/open-questions?page=2&per_page=25',
+                        },
+                    }
                   sorting: { field: id, order: asc }
   '/api/v4.0/pdf/{categoryId}/{faqId}':
     get:
@@ -1445,15 +1560,13 @@ paths:
       description: 'This endpoint returns the URL to the PDF of FAQ for the given FAQ ID and the language provided by "Accept-Language".'
       operationId: getPdfById
       parameters:
-        -
-          name: categoryId
+        - name: categoryId
           in: path
           description: 'The category ID.'
           required: true
           schema:
             type: integer
-        -
-          name: faqId
+        - name: faqId
           in: path
           description: 'The FAQ ID.'
           required: true
@@ -1469,7 +1582,7 @@ paths:
                 type: string
           content:
             application/json:
-              schema: {  }
+              schema: {}
               example: 'https://www.example.org/pdf.php?cat=3&id=142&artlang=de'
         '404':
           description: "If there's no FAQ and PDF for the given FAQ ID."
@@ -1480,7 +1593,7 @@ paths:
                 type: string
           content:
             application/json:
-              schema: {  }
+              schema: {}
               example: []
   /api/v4.0/question:
     post:
@@ -1522,7 +1635,7 @@ paths:
                 type: string
           content:
             application/json:
-              schema: {  }
+              schema: {}
               example:
                 stored: true
         '401':
@@ -1576,7 +1689,7 @@ paths:
                 type: string
           content:
             application/json:
-              schema: {  }
+              schema: {}
               example:
                 registered: true
                 success: 'User created.'
@@ -1593,7 +1706,7 @@ paths:
                 type: string
           content:
             application/json:
-              schema: {  }
+              schema: {}
               example:
                 registered: false
                 error: 'Error message'
@@ -1610,7 +1723,7 @@ paths:
                 type: string
           content:
             application/json:
-              schema: {  }
+              schema: {}
               example:
                 registered: false
                 error: 'The domain is not allowed.'
@@ -1627,7 +1740,7 @@ paths:
                 type: string
           content:
             application/json:
-              schema: {  }
+              schema: {}
               example:
                 registered: false
   /api/v4.0/search:
@@ -1637,47 +1750,41 @@ paths:
       description: 'Returns paginated search results.'
       operationId: getSearch
       parameters:
-        -
-          name: q
+        - name: q
           in: query
           description: 'The search term'
           required: true
           schema:
             type: string
-        -
-          name: page
+        - name: page
           in: query
           description: 'Page number for pagination (page-based)'
           required: false
           schema:
             type: integer
             default: 1
-        -
-          name: per_page
+        - name: per_page
           in: query
           description: 'Items per page (page-based, max 100)'
           required: false
           schema:
             type: integer
             default: 25
-        -
-          name: limit
+        - name: limit
           in: query
           description: 'Number of items to return (offset-based, max 100)'
           required: false
           schema:
             type: integer
             default: 25
-        -
-          name: offset
+        - name: offset
           in: query
           description: 'Starting offset (offset-based)'
           required: false
           schema:
             type: integer
             default: 0
-        -
-          name: sort
+        - name: sort
           in: query
           description: 'Field to sort by'
           required: false
@@ -1688,8 +1795,7 @@ paths:
               - id
               - question
               - category_id
-        -
-          name: order
+        - name: order
           in: query
           description: 'Sort direction'
           required: false
@@ -1704,13 +1810,34 @@ paths:
           description: 'Returns paginated search results.'
           content:
             application/json:
-              schema: {  }
+              schema: {}
               example:
                 success: true
                 data:
-                  - { id: '1', lang: en, category_id: '15', question: 'Why are you using phpMyFAQ?', answer: 'Because it is cool!', link: 'https://www.example.org/content/15/1/en/why-are-you-using-phpmyfaq.html' }
+                  - {
+                      id: '1',
+                      lang: en,
+                      category_id: '15',
+                      question: 'Why are you using phpMyFAQ?',
+                      answer: 'Because it is cool!',
+                      link: 'https://www.example.org/content/15/1/en/why-are-you-using-phpmyfaq.html',
+                    }
                 meta:
-                  pagination: { total: 50, count: 25, per_page: 25, current_page: 1, total_pages: 2, links: { first: '/api/v4.0/search?q=test&page=1&per_page=25', last: '/api/v4.0/search?q=test&page=2&per_page=25', prev: null, next: '/api/v4.0/search?q=test&page=2&per_page=25' } }
+                  pagination:
+                    {
+                      total: 50,
+                      count: 25,
+                      per_page: 25,
+                      current_page: 1,
+                      total_pages: 2,
+                      links:
+                        {
+                          first: '/api/v4.0/search?q=test&page=1&per_page=25',
+                          last: '/api/v4.0/search?q=test&page=2&per_page=25',
+                          prev: null,
+                          next: '/api/v4.0/search?q=test&page=2&per_page=25',
+                        },
+                    }
                   sorting: { field: id, order: asc }
   /api/v4.0/searches/popular:
     get:
@@ -1727,15 +1854,13 @@ paths:
                 type: string
           content:
             application/json:
-              schema: {  }
+              schema: {}
               example:
-                -
-                  id: 3
+                - id: 3
                   searchterm: mac
                   number: '18'
                   lang: en
-                -
-                  id: 7
+                - id: 7
                   searchterm: test
                   number: 9
                   lang: en
@@ -1748,7 +1873,7 @@ paths:
                 type: string
           content:
             application/json:
-              schema: {  }
+              schema: {}
               example: []
   /api/v4.0/tags:
     get:
@@ -1757,40 +1882,35 @@ paths:
       description: 'Returns paginated tags.'
       operationId: getTags
       parameters:
-        -
-          name: page
+        - name: page
           in: query
           description: 'Page number for pagination (page-based)'
           required: false
           schema:
             type: integer
             default: 1
-        -
-          name: per_page
+        - name: per_page
           in: query
           description: 'Items per page (page-based, max 100)'
           required: false
           schema:
             type: integer
             default: 25
-        -
-          name: limit
+        - name: limit
           in: query
           description: 'Number of items to return (offset-based, max 100)'
           required: false
           schema:
             type: integer
             default: 25
-        -
-          name: offset
+        - name: offset
           in: query
           description: 'Starting offset (offset-based)'
           required: false
           schema:
             type: integer
             default: 0
-        -
-          name: sort
+        - name: sort
           in: query
           description: 'Field to sort by'
           required: false
@@ -1801,8 +1921,7 @@ paths:
               - tagId
               - tagName
               - tagFrequency
-        -
-          name: order
+        - name: order
           in: query
           description: 'Sort direction'
           required: false
@@ -1817,14 +1936,28 @@ paths:
           description: 'Returns paginated tags.'
           content:
             application/json:
-              schema: {  }
+              schema: {}
               example:
                 success: true
                 data:
                   - { tagId: 4, tagName: phpMyFAQ, tagFrequency: 3 }
                   - { tagId: 1, tagName: 'PHP 8', tagFrequency: 2 }
                 meta:
-                  pagination: { total: 50, count: 25, per_page: 25, current_page: 1, total_pages: 2, links: { first: '/api/v4.0/tags?page=1&per_page=25', last: '/api/v4.0/tags?page=2&per_page=25', prev: null, next: '/api/v4.0/tags?page=2&per_page=25' } }
+                  pagination:
+                    {
+                      total: 50,
+                      count: 25,
+                      per_page: 25,
+                      current_page: 1,
+                      total_pages: 2,
+                      links:
+                        {
+                          first: '/api/v4.0/tags?page=1&per_page=25',
+                          last: '/api/v4.0/tags?page=2&per_page=25',
+                          prev: null,
+                          next: '/api/v4.0/tags?page=2&per_page=25',
+                        },
+                    }
                   sorting: { field: tagFrequency, order: desc }
   /api/v4.0/title:
     get:
@@ -1836,7 +1969,7 @@ paths:
           description: 'Returns the title of the phpMyFAQ instance as a string.'
           content:
             application/json:
-              schema: {  }
+              schema: {}
               example: 'phpMyFAQ Codename Porus'
   /api/v4.0/version:
     get:
@@ -1848,7 +1981,7 @@ paths:
           description: 'Returns the phpMyFAQ version number as string.'
           content:
             application/json:
-              schema: {  }
+              schema: {}
               example: 4.0.0
   /.well-known/oauth-authorization-server:
     get:
@@ -1870,9 +2003,7 @@ paths:
                   token_endpoint_auth_methods_supported: { type: array, items: { type: string } }
                 type: object
 tags:
-  -
-    name: 'Public Endpoints'
+  - name: 'Public Endpoints'
     description: 'Public Endpoints'
-  -
-    name: 'Endpoints with Authentication'
+  - name: 'Endpoints with Authentication'
     description: 'Endpoints with Authentication'
