@@ -28,7 +28,7 @@ jobs:
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: '17'
+          java-version: '21'
       - uses: gradle/actions/setup-gradle@v4
       - run: ./gradlew ktlintCheck detekt --stacktrace
 
@@ -41,7 +41,7 @@ jobs:
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: '17'
+          java-version: '21'
       - uses: gradle/actions/setup-gradle@v4
       - run: ./gradlew :shared:testDebugUnitTest --stacktrace
       - uses: actions/upload-artifact@v4
@@ -59,7 +59,7 @@ jobs:
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: '17'
+          java-version: '21'
       - uses: gradle/actions/setup-gradle@v4
       - run: ./gradlew :androidApp:assembleDebug --stacktrace
       - uses: actions/upload-artifact@v4
@@ -76,7 +76,7 @@ jobs:
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: '17'
+          java-version: '21'
       - uses: gradle/actions/setup-gradle@v4
       - name: Install XcodeGen
         run: brew install xcodegen
@@ -106,7 +106,7 @@ jobs:
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: '17'
+          java-version: '21'
       - uses: gradle/actions/setup-gradle@v4
       - run: ./gradlew :shared:iosSimulatorArm64Test --stacktrace
       - uses: actions/upload-artifact@v4
