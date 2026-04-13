@@ -9,6 +9,7 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.http.headersOf
 import io.ktor.serialization.kotlinx.json.json
 import io.ktor.utils.io.ByteReadChannel
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.json.Json
 import kotlin.test.Test
@@ -55,13 +56,15 @@ class MyFaqApiTest {
 
     @Test
     fun `meta loader renders success string`() =
-        runTest {
+        runBlocking {
             val api = MyFaqApiImpl(client(FULL_FIXTURE), baseUrl = "https://example.test")
             val loader = MetaLoader(api, scope = this)
-            var result: String? = null
-            loader.load(onSuccess = { result = it }, onError = { result = "err: $it" })
-            testScheduler.advanceUntilIdle()
-            assertEquals("MyFAQ.app test instance — phpMyFAQ 4.2.0", result)
+            val deferred = kotlinx.coroutines.CompletableDeferred<String>()
+            loader.load(
+                onSuccess = { deferred.complete(it) },
+                onError = { deferred.complete("err: $it") },
+            )
+            assertEquals("MyFAQ.app test instance — phpMyFAQ 4.2.0", deferred.await())
         }
 
     private companion object {
