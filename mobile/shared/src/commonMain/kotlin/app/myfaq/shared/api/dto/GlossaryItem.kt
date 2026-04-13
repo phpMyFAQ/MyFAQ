@@ -12,4 +12,3 @@ data class GlossaryItem(
     val item: String = "",
     val definition: String = "",
 )
-

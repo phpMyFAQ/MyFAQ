@@ -23,6 +23,7 @@ import platform.Foundation.dataUsingEncoding
 import platform.Security.SecItemAdd
 import platform.Security.SecItemCopyMatching
 import platform.Security.SecItemDelete
+import platform.Security.errSecSuccess
 import platform.Security.kSecAttrAccessible
 import platform.Security.kSecAttrAccessibleAfterFirstUnlock
 import platform.Security.kSecAttrAccount
@@ -33,7 +34,6 @@ import platform.Security.kSecMatchLimit
 import platform.Security.kSecMatchLimitOne
 import platform.Security.kSecReturnData
 import platform.Security.kSecValueData
-import platform.Security.errSecSuccess
 
 /**
  * iOS [SecureStore] backed by Keychain Services with
@@ -42,29 +42,33 @@ import platform.Security.errSecSuccess
  */
 @OptIn(ExperimentalForeignApi::class)
 actual class SecureStore {
-
-    actual fun put(key: String, value: String) {
+    actual fun put(
+        key: String,
+        value: String,
+    ) {
         remove(key)
         val data = (value as NSString).dataUsingEncoding(NSUTF8StringEncoding) ?: return
 
-        val query = cfMutableDict(6).apply {
-            cfSet(kSecClass, kSecClassGenericPassword)
-            cfSet(kSecAttrService, CFBridgingRetain(SERVICE))
-            cfSet(kSecAttrAccount, CFBridgingRetain(key))
-            cfSet(kSecValueData, CFBridgingRetain(data))
-            cfSet(kSecAttrAccessible, kSecAttrAccessibleAfterFirstUnlock)
-        }
+        val query =
+            cfMutableDict(6).apply {
+                cfSet(kSecClass, kSecClassGenericPassword)
+                cfSet(kSecAttrService, CFBridgingRetain(SERVICE))
+                cfSet(kSecAttrAccount, CFBridgingRetain(key))
+                cfSet(kSecValueData, CFBridgingRetain(data))
+                cfSet(kSecAttrAccessible, kSecAttrAccessibleAfterFirstUnlock)
+            }
         SecItemAdd(query as CFDictionaryRef, null)
     }
 
     actual fun get(key: String): String? {
-        val query = cfMutableDict(5).apply {
-            cfSet(kSecClass, kSecClassGenericPassword)
-            cfSet(kSecAttrService, CFBridgingRetain(SERVICE))
-            cfSet(kSecAttrAccount, CFBridgingRetain(key))
-            cfSet(kSecMatchLimit, kSecMatchLimitOne)
-            cfSet(kSecReturnData, CFBridgingRetain(true))
-        }
+        val query =
+            cfMutableDict(5).apply {
+                cfSet(kSecClass, kSecClassGenericPassword)
+                cfSet(kSecAttrService, CFBridgingRetain(SERVICE))
+                cfSet(kSecAttrAccount, CFBridgingRetain(key))
+                cfSet(kSecMatchLimit, kSecMatchLimitOne)
+                cfSet(kSecReturnData, CFBridgingRetain(true))
+            }
 
         memScoped {
             val result = alloc<CFTypeRefVar>()
@@ -76,19 +80,21 @@ actual class SecureStore {
     }
 
     actual fun remove(key: String) {
-        val query = cfMutableDict(3).apply {
-            cfSet(kSecClass, kSecClassGenericPassword)
-            cfSet(kSecAttrService, CFBridgingRetain(SERVICE))
-            cfSet(kSecAttrAccount, CFBridgingRetain(key))
-        }
+        val query =
+            cfMutableDict(3).apply {
+                cfSet(kSecClass, kSecClassGenericPassword)
+                cfSet(kSecAttrService, CFBridgingRetain(SERVICE))
+                cfSet(kSecAttrAccount, CFBridgingRetain(key))
+            }
         SecItemDelete(query as CFDictionaryRef)
     }
 
     actual fun clear() {
-        val query = cfMutableDict(2).apply {
-            cfSet(kSecClass, kSecClassGenericPassword)
-            cfSet(kSecAttrService, CFBridgingRetain(SERVICE))
-        }
+        val query =
+            cfMutableDict(2).apply {
+                cfSet(kSecClass, kSecClassGenericPassword)
+                cfSet(kSecAttrService, CFBridgingRetain(SERVICE))
+            }
         SecItemDelete(query as CFDictionaryRef)
     }
 
@@ -100,7 +106,10 @@ actual class SecureStore {
             kCFTypeDictionaryValueCallBacks.ptr,
         )!!
 
-    private fun CFMutableDictionaryRef.cfSet(key: Any?, value: Any?) {
+    private fun CFMutableDictionaryRef.cfSet(
+        key: Any?,
+        value: Any?,
+    ) {
         CFDictionarySetValue(this, CFBridgingRetain(key), CFBridgingRetain(value))
     }
 

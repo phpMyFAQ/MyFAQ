@@ -82,10 +82,11 @@ fun FaqDetailScreen(
                         val context = LocalContext.current
                         val faq = (faqState as UiState.Success<FaqDetail>).data
                         IconButton(onClick = {
-                            val sendIntent = Intent(Intent.ACTION_SEND).apply {
-                                type = "text/plain"
-                                putExtra(Intent.EXTRA_TEXT, faq.question)
-                            }
+                            val sendIntent =
+                                Intent(Intent.ACTION_SEND).apply {
+                                    type = "text/plain"
+                                    putExtra(Intent.EXTRA_TEXT, faq.question)
+                                }
                             context.startActivity(Intent.createChooser(sendIntent, "Share"))
                         }) {
                             Icon(Icons.Default.Share, contentDescription = "Share")
@@ -97,11 +98,12 @@ fun FaqDetailScreen(
     ) { padding ->
         when (val s = faqState) {
             is UiState.Loading -> LoadingIndicator(modifier = Modifier.padding(padding))
-            is UiState.Error -> ErrorRetry(
-                message = s.message,
-                onRetry = { vm.load(categoryId, faqId) },
-                modifier = Modifier.padding(padding),
-            )
+            is UiState.Error ->
+                ErrorRetry(
+                    message = s.message,
+                    onRetry = { vm.load(categoryId, faqId) },
+                    modifier = Modifier.padding(padding),
+                )
             is UiState.Success -> {
                 FaqDetailContent(
                     faq = s.data,
@@ -127,10 +129,11 @@ private fun FaqDetailContent(
     val textColor = MaterialTheme.colorScheme.onSurface.toArgb()
 
     Column(
-        modifier = modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState())
-            .padding(16.dp),
+        modifier =
+            modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+                .padding(16.dp),
     ) {
         // Question heading
         Text(
@@ -168,9 +171,10 @@ private fun FaqDetailContent(
                     val content = buildHtml(faq.answer, bgHex, fgHex)
                     webView.loadDataWithBaseURL(null, content, "text/html", "UTF-8", null)
                 },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(300.dp),
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .height(300.dp),
             )
         }
 
@@ -240,8 +244,11 @@ private fun CommentsSection(state: UiState<List<Comment>>) {
             } else {
                 TextButton(onClick = { expanded = !expanded }) {
                     Text(
-                        if (expanded) "Hide comments (${state.data.size})"
-                        else "Show comments (${state.data.size})",
+                        if (expanded) {
+                            "Hide comments (${state.data.size})"
+                        } else {
+                            "Show comments (${state.data.size})"
+                        },
                     )
                 }
                 AnimatedVisibility(visible = expanded) {
@@ -282,7 +289,11 @@ private fun CommentCard(comment: Comment) {
     }
 }
 
-private fun buildHtml(body: String, bgColor: String, fgColor: String): String =
+private fun buildHtml(
+    body: String,
+    bgColor: String,
+    fgColor: String,
+): String =
     """
     <!DOCTYPE html>
     <html>

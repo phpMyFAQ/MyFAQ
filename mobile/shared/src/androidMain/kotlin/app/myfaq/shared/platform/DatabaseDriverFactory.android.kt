@@ -12,8 +12,9 @@ import net.zetetic.database.sqlcipher.SupportOpenHelperFactory
  * `net.zetetic:sqlcipher-android`. The passphrase is whatever the
  * caller supplies — never derived in place.
  */
-actual class DatabaseDriverFactory(private val context: Context) {
-
+actual class DatabaseDriverFactory(
+    private val context: Context,
+) {
     actual fun create(passphrase: ByteArray): SqlDriver {
         ensureSqlCipherLoaded()
         val helperFactory = SupportOpenHelperFactory(passphrase)

@@ -19,8 +19,11 @@ import kotlin.test.assertTrue
  * Updated for v4.0: paginated wrappers and new field names.
  */
 class EndpointDeserializationTest {
-
-    private val json = Json { ignoreUnknownKeys = true; explicitNulls = false }
+    private val json =
+        Json {
+            ignoreUnknownKeys = true
+            explicitNulls = false
+        }
 
     private fun client(body: String): HttpClient =
         HttpClient(
@@ -40,157 +43,171 @@ class EndpointDeserializationTest {
     // ── Categories (paginated) ─────────────────────────────────────
 
     @Test
-    fun `categories deserializes paginated response`() = runTest {
-        val result = api(CATEGORIES_JSON).categories()
-        assertEquals(2, result.size)
-        assertEquals("Getting Started", result[0].name)
-        assertEquals(1, result[0].id)
-        assertEquals(0, result[0].parentId)
-        assertEquals("Sub-Category", result[1].name)
-        assertEquals(1, result[1].parentId)
-        assertEquals(1, result[0].level)
-    }
+    fun `categories deserializes paginated response`() =
+        runTest {
+            val result = api(CATEGORIES_JSON).categories()
+            assertEquals(2, result.size)
+            assertEquals("Getting Started", result[0].name)
+            assertEquals(1, result[0].id)
+            assertEquals(0, result[0].parentId)
+            assertEquals("Sub-Category", result[1].name)
+            assertEquals(1, result[1].parentId)
+            assertEquals(1, result[0].level)
+        }
 
     // ── FAQs ────────────────────────────────────────────────────────
 
     @Test
-    fun `faqs by category deserializes paginated response with record_ fields`() = runTest {
-        val result = api(FAQ_LIST_JSON).faqsByCategory(1)
-        assertEquals(2, result.size)
-        assertEquals("How do I install?", result[0].question)
-        assertEquals(1, result[0].categoryId)
-        assertEquals("20240115120000", result[0].updated)
-        assertEquals(10, result[0].id)
-    }
+    fun `faqs by category deserializes paginated response with record_ fields`() =
+        runTest {
+            val result = api(FAQ_LIST_JSON).faqsByCategory(1)
+            assertEquals(2, result.size)
+            assertEquals("How do I install?", result[0].question)
+            assertEquals(1, result[0].categoryId)
+            assertEquals("20240115120000", result[0].updated)
+            assertEquals(10, result[0].id)
+        }
 
     @Test
-    fun `faq detail deserializes full record`() = runTest {
-        val result = api(FAQ_DETAIL_JSON).faqDetail(1, 42)
-        assertEquals(42, result.id)
-        assertEquals("How do I reset?", result.question)
-        assertEquals("<p>Follow these steps...</p>", result.answer)
-        assertEquals(listOf("reset", "password"), result.tags)
-        assertEquals(1, result.attachments.size)
-        assertEquals("guide.pdf", result.attachments[0].filename)
-        assertEquals(1, result.sticky)
-        assertTrue(result.isSticky)
-    }
+    fun `faq detail deserializes full record`() =
+        runTest {
+            val result = api(FAQ_DETAIL_JSON).faqDetail(1, 42)
+            assertEquals(42, result.id)
+            assertEquals("How do I reset?", result.question)
+            assertEquals("<p>Follow these steps...</p>", result.answer)
+            assertEquals(listOf("reset", "password"), result.tags)
+            assertEquals(1, result.attachments.size)
+            assertEquals("guide.pdf", result.attachments[0].filename)
+            assertEquals(1, result.sticky)
+            assertTrue(result.isSticky)
+        }
 
     @Test
-    fun `popular faqs deserializes plain array`() = runTest {
-        val result = api(POPULAR_FAQS_JSON).faqsPopular()
-        assertEquals(1, result.size)
-        assertEquals("How can I survive without phpMyFAQ?", result[0].question)
-        assertEquals(10, result[0].visits)
-        assertEquals("2019-07-13T11:28:00+0200", result[0].date)
-    }
+    fun `popular faqs deserializes plain array`() =
+        runTest {
+            val result = api(POPULAR_FAQS_JSON).faqsPopular()
+            assertEquals(1, result.size)
+            assertEquals("How can I survive without phpMyFAQ?", result[0].question)
+            assertEquals(10, result[0].visits)
+            assertEquals("2019-07-13T11:28:00+0200", result[0].date)
+        }
 
     @Test
-    fun `sticky faqs deserializes plain array`() = runTest {
-        val result = api(STICKY_FAQS_JSON).faqsSticky()
-        assertEquals(2, result.size)
-        assertEquals("How can I survive without phpMyFAQ?", result[0].question)
-        assertEquals(8, result[0].id)
-        assertEquals(1, result[0].order)
-    }
+    fun `sticky faqs deserializes plain array`() =
+        runTest {
+            val result = api(STICKY_FAQS_JSON).faqsSticky()
+            assertEquals(2, result.size)
+            assertEquals("How can I survive without phpMyFAQ?", result[0].question)
+            assertEquals(8, result[0].id)
+            assertEquals(1, result[0].order)
+        }
 
     // ── Search (paginated) ─────────────────────────────────────────
 
     @Test
-    fun `search results deserialize from paginated wrapper`() = runTest {
-        val result = api(SEARCH_RESULTS_JSON).search("test")
-        assertEquals(1, result.size)
-        assertEquals("Why are you using phpMyFAQ?", result[0].question)
-        assertEquals(15, result[0].categoryId)
-        assertEquals("Because it is cool!", result[0].answer)
-        assertEquals("en", result[0].lang)
-    }
+    fun `search results deserialize from paginated wrapper`() =
+        runTest {
+            val result = api(SEARCH_RESULTS_JSON).search("test")
+            assertEquals(1, result.size)
+            assertEquals("Why are you using phpMyFAQ?", result[0].question)
+            assertEquals(15, result[0].categoryId)
+            assertEquals("Because it is cool!", result[0].answer)
+            assertEquals("en", result[0].lang)
+        }
 
     @Test
-    fun `popular searches deserialize plain array`() = runTest {
-        val result = api(POPULAR_SEARCHES_JSON).popularSearches()
-        assertEquals(2, result.size)
-        assertEquals("mac", result[0].searchTerm)
-        assertEquals(18, result[0].count)
-        assertEquals("en", result[0].lang)
-    }
+    fun `popular searches deserialize plain array`() =
+        runTest {
+            val result = api(POPULAR_SEARCHES_JSON).popularSearches()
+            assertEquals(2, result.size)
+            assertEquals("mac", result[0].searchTerm)
+            assertEquals(18, result[0].count)
+            assertEquals("en", result[0].lang)
+        }
 
     // ── News (paginated) ───────────────────────────────────────────
 
     @Test
-    fun `news items deserialize from paginated wrapper`() = runTest {
-        val result = api(NEWS_JSON).news()
-        assertEquals(1, result.size)
-        assertEquals("Hallo, World!", result[0].header)
-        assertEquals("phpMyFAQ User", result[0].authorName)
-        assertEquals(true, result[0].active)
-        assertEquals(true, result[0].allowComments)
-    }
+    fun `news items deserialize from paginated wrapper`() =
+        runTest {
+            val result = api(NEWS_JSON).news()
+            assertEquals(1, result.size)
+            assertEquals("Hallo, World!", result[0].header)
+            assertEquals("phpMyFAQ User", result[0].authorName)
+            assertEquals(true, result[0].active)
+            assertEquals(true, result[0].allowComments)
+        }
 
     // ── Comments (paginated) ───────────────────────────────────────
 
     @Test
-    fun `comments deserialize from paginated wrapper`() = runTest {
-        val result = api(COMMENTS_JSON).comments(142)
-        assertEquals(1, result.size)
-        assertEquals("phpMyFAQ User", result[0].username)
-        assertEquals("Foo! Bar?", result[0].comment)
-        assertEquals(142, result[0].recordId)
-        assertEquals("faq", result[0].type)
-    }
+    fun `comments deserialize from paginated wrapper`() =
+        runTest {
+            val result = api(COMMENTS_JSON).comments(142)
+            assertEquals(1, result.size)
+            assertEquals("phpMyFAQ User", result[0].username)
+            assertEquals("Foo! Bar?", result[0].comment)
+            assertEquals(142, result[0].recordId)
+            assertEquals("faq", result[0].type)
+        }
 
     // ── Open questions (paginated) ─────────────────────────────────
 
     @Test
-    fun `open questions deserialize from paginated wrapper`() = runTest {
-        val result = api(OPEN_QUESTIONS_JSON).openQuestions()
-        assertEquals(1, result.size)
-        assertEquals("Foo? Bar? Baz?", result[0].question)
-        assertEquals("phpMyFAQ User", result[0].username)
-        assertEquals(3, result[0].categoryId)
-        assertEquals("N", result[0].isVisible)
-    }
+    fun `open questions deserialize from paginated wrapper`() =
+        runTest {
+            val result = api(OPEN_QUESTIONS_JSON).openQuestions()
+            assertEquals(1, result.size)
+            assertEquals("Foo? Bar? Baz?", result[0].question)
+            assertEquals("phpMyFAQ User", result[0].username)
+            assertEquals(3, result[0].categoryId)
+            assertEquals("N", result[0].isVisible)
+        }
 
     // ── Tags (paginated) ───────────────────────────────────────────
 
     @Test
-    fun `tags deserialize from paginated wrapper`() = runTest {
-        val result = api(TAGS_JSON).tags()
-        assertEquals(2, result.size)
-        assertEquals("phpMyFAQ", result[0].name)
-        assertEquals(4, result[0].id)
-        assertEquals(3, result[0].frequency)
-    }
+    fun `tags deserialize from paginated wrapper`() =
+        runTest {
+            val result = api(TAGS_JSON).tags()
+            assertEquals(2, result.size)
+            assertEquals("phpMyFAQ", result[0].name)
+            assertEquals(4, result[0].id)
+            assertEquals(3, result[0].frequency)
+        }
 
     // ── Edge cases ──────────────────────────────────────────────────
 
     @Test
-    fun `glossary items deserialize from paginated wrapper`() = runTest {
-        val result = api(GLOSSARY_JSON).glossary()
-        assertEquals(2, result.size)
-        assertEquals("API", result[0].item)
-        assertEquals("Application Programming Interface", result[0].definition)
-        assertEquals(1, result[0].id)
-        assertEquals("en", result[0].language)
-        assertEquals("FAQ", result[1].item)
-    }
+    fun `glossary items deserialize from paginated wrapper`() =
+        runTest {
+            val result = api(GLOSSARY_JSON).glossary()
+            assertEquals(2, result.size)
+            assertEquals("API", result[0].item)
+            assertEquals("Application Programming Interface", result[0].definition)
+            assertEquals(1, result[0].id)
+            assertEquals("en", result[0].language)
+            assertEquals("FAQ", result[1].item)
+        }
 
     @Test
-    fun `empty paginated response`() = runTest {
-        val result = api(EMPTY_PAGINATED_JSON).categories()
-        assertTrue(result.isEmpty())
-    }
+    fun `empty paginated response`() =
+        runTest {
+            val result = api(EMPTY_PAGINATED_JSON).categories()
+            assertTrue(result.isEmpty())
+        }
 
     @Test
-    fun `faq detail with missing optional fields`() = runTest {
-        val result = api(FAQ_DETAIL_MINIMAL_JSON).faqDetail(1, 1)
-        assertEquals(1, result.id)
-        assertEquals("Q", result.question)
-        assertEquals("", result.answer)
-        assertEquals(null, result.author)
-        assertTrue(result.tags.isEmpty())
-        assertTrue(result.attachments.isEmpty())
-    }
+    fun `faq detail with missing optional fields`() =
+        runTest {
+            val result = api(FAQ_DETAIL_MINIMAL_JSON).faqDetail(1, 1)
+            assertEquals(1, result.id)
+            assertEquals("Q", result.question)
+            assertEquals("", result.answer)
+            assertEquals(null, result.author)
+            assertTrue(result.tags.isEmpty())
+            assertTrue(result.attachments.isEmpty())
+        }
 
     // ── Fixtures (v4.0 format) ─────────────────────────────────────
 

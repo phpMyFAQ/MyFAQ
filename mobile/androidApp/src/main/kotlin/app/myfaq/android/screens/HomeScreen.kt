@@ -1,7 +1,5 @@
 package app.myfaq.android.screens
 
-import android.content.Intent
-import android.net.Uri
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -29,7 +27,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import app.myfaq.android.screens.components.ErrorRetry
 import app.myfaq.android.screens.components.FaqCard
@@ -41,7 +38,9 @@ import app.myfaq.shared.ui.HomeViewModel
 import app.myfaq.shared.ui.UiState
 import org.koin.compose.koinInject
 
-private enum class HomeTab(val label: String) {
+private enum class HomeTab(
+    val label: String,
+) {
     Sticky("Sticky"),
     Popular("Popular"),
     Latest("Latest"),
@@ -56,7 +55,6 @@ fun HomeScreen(
 ) {
     val vm = remember { HomeViewModel(aim) }
     var selectedTab by remember { mutableIntStateOf(0) }
-    val context = LocalContext.current
 
     LaunchedEffect(Unit) { vm.loadAll() }
 
@@ -80,41 +78,51 @@ fun HomeScreen(
             }
 
             when (HomeTab.entries[selectedTab]) {
-                HomeTab.Sticky -> FaqTabContent(
-                    state = vm.sticky.collectAsState().value,
-                    onRetry = { vm.loadSticky() },
-                    onRefresh = { vm.loadSticky() },
-                    onItemClick = { item ->
-                        item.url?.let { url ->
-                            context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
-                        }
-                    },
-                )
-                HomeTab.Popular -> FaqTabContent(
-                    state = vm.popular.collectAsState().value,
-                    onRetry = { vm.loadPopular() },
-                    onRefresh = { vm.loadPopular() },
-                    onItemClick = { item ->
-                        item.url?.let { url ->
-                            context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
-                        }
-                    },
-                )
-                HomeTab.Latest -> FaqTabContent(
-                    state = vm.latest.collectAsState().value,
-                    onRetry = { vm.loadLatest() },
-                    onRefresh = { vm.loadLatest() },
-                    onItemClick = { item ->
-                        item.url?.let { url ->
-                            context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
-                        }
-                    },
-                )
-                HomeTab.News -> NewsTabContent(
-                    state = vm.news.collectAsState().value,
-                    onRetry = { vm.loadNews() },
-                    onRefresh = { vm.loadNews() },
-                )
+                HomeTab.Sticky ->
+                    FaqTabContent(
+                        state = vm.sticky.collectAsState().value,
+                        onRetry = { vm.loadSticky() },
+                        onRefresh = { vm.loadSticky() },
+                        onItemClick = { item ->
+                            val catId = item.parsedCategoryId
+                            val faqId = item.parsedFaqId
+                            if (catId != null && faqId != null) {
+                                onFaqClick(catId, faqId)
+                            }
+                        },
+                    )
+                HomeTab.Popular ->
+                    FaqTabContent(
+                        state = vm.popular.collectAsState().value,
+                        onRetry = { vm.loadPopular() },
+                        onRefresh = { vm.loadPopular() },
+                        onItemClick = { item ->
+                            val catId = item.parsedCategoryId
+                            val faqId = item.parsedFaqId
+                            if (catId != null && faqId != null) {
+                                onFaqClick(catId, faqId)
+                            }
+                        },
+                    )
+                HomeTab.Latest ->
+                    FaqTabContent(
+                        state = vm.latest.collectAsState().value,
+                        onRetry = { vm.loadLatest() },
+                        onRefresh = { vm.loadLatest() },
+                        onItemClick = { item ->
+                            val catId = item.parsedCategoryId
+                            val faqId = item.parsedFaqId
+                            if (catId != null && faqId != null) {
+                                onFaqClick(catId, faqId)
+                            }
+                        },
+                    )
+                HomeTab.News ->
+                    NewsTabContent(
+                        state = vm.news.collectAsState().value,
+                        onRetry = { vm.loadNews() },
+                        onRefresh = { vm.loadNews() },
+                    )
             }
         }
     }

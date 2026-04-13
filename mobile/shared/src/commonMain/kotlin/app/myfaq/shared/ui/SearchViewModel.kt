@@ -48,14 +48,15 @@ class SearchViewModel(
             _results.value = UiState.Success(emptyList())
             return
         }
-        searchJob = scope.launch {
-            delay(300)
-            _results.value = UiState.Loading
-            try {
-                _results.value = UiState.Success(aim.repository.search(newQuery))
-            } catch (e: Exception) {
-                _results.value = UiState.Error(e.message ?: "Search failed")
+        searchJob =
+            scope.launch {
+                delay(300)
+                _results.value = UiState.Loading
+                try {
+                    _results.value = UiState.Success(aim.repository.search(newQuery))
+                } catch (e: Exception) {
+                    _results.value = UiState.Error(e.message ?: "Search failed")
+                }
             }
-        }
     }
 }

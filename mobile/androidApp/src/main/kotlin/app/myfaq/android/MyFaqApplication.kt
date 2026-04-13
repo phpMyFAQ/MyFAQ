@@ -11,10 +11,11 @@ class MyFaqApplication : Application() {
     override fun onCreate() {
         super.onCreate()
 
-        val androidPlatformModule = module {
-            single { SecureStore(androidContext()) }
-            single { DatabaseDriverFactory(androidContext()) }
-        }
+        val androidPlatformModule =
+            module {
+                single { SecureStore(androidContext()) }
+                single { DatabaseDriverFactory(androidContext()) }
+            }
 
         initKoin {
             androidContext(this@MyFaqApplication)

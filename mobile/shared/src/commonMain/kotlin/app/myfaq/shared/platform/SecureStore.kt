@@ -12,8 +12,14 @@ package app.myfaq.shared.platform
  * the caller supplies. Nothing written here ever touches SQLite.
  */
 expect class SecureStore {
-    fun put(key: String, value: String)
+    fun put(
+        key: String,
+        value: String,
+    )
+
     fun get(key: String): String?
+
     fun remove(key: String)
+
     fun clear()
 }

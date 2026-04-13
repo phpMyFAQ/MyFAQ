@@ -9,7 +9,6 @@ import kotlin.test.assertTrue
  * androidTest / iOS XCTest where DI is available.
  */
 class UiStateTest {
-
     @Test
     fun `loading is not success`() {
         val state: UiState<String> = UiState.Loading

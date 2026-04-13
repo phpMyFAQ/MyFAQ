@@ -23,8 +23,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import java.net.URLDecoder
-import java.net.URLEncoder
 import app.myfaq.android.screens.AddInstanceSheet
 import app.myfaq.android.screens.CategoriesScreen
 import app.myfaq.android.screens.FaqDetailScreen
@@ -36,6 +34,8 @@ import app.myfaq.android.screens.SettingsScreen
 import app.myfaq.android.screens.WorkspacesScreen
 import app.myfaq.shared.data.ActiveInstanceManager
 import org.koin.compose.koinInject
+import java.net.URLDecoder
+import java.net.URLEncoder
 
 // ── Route constants ────────────────────────────────────────────────
 
@@ -50,16 +50,24 @@ object Routes {
     const val SETTINGS = "settings"
     const val PAYWALL = "paywall"
 
-    fun faqList(categoryId: Int, categoryName: String): String =
-        "categories/$categoryId/${URLEncoder.encode(categoryName, "UTF-8")}"
+    fun faqList(
+        categoryId: Int,
+        categoryName: String,
+    ): String = "categories/$categoryId/${URLEncoder.encode(categoryName, "UTF-8")}"
 
-    fun faqDetail(categoryId: Int, faqId: Int): String =
-        "faq/$categoryId/$faqId"
+    fun faqDetail(
+        categoryId: Int,
+        faqId: Int,
+    ): String = "faq/$categoryId/$faqId"
 }
 
 // ── Bottom-bar tabs ────────────────────────────────────────────────
 
-enum class BottomTab(val route: String, val label: String, val icon: ImageVector) {
+enum class BottomTab(
+    val route: String,
+    val label: String,
+    val icon: ImageVector,
+) {
     Home(Routes.HOME, "Home", Icons.Default.Home),
     Categories(Routes.CATEGORIES, "Categories", Icons.Default.List),
     Search(Routes.SEARCH, "Search", Icons.Default.Search),
@@ -150,14 +158,17 @@ fun MyFaqNavHost(aim: ActiveInstanceManager = koinInject()) {
 
             composable(
                 route = Routes.FAQ_LIST,
-                arguments = listOf(
-                    navArgument("categoryId") { type = NavType.IntType },
-                    navArgument("categoryName") { type = NavType.StringType },
-                ),
+                arguments =
+                    listOf(
+                        navArgument("categoryId") { type = NavType.IntType },
+                        navArgument("categoryName") { type = NavType.StringType },
+                    ),
             ) { backStackEntry ->
                 val categoryId = backStackEntry.arguments?.getInt("categoryId") ?: 0
-                val categoryName = backStackEntry.arguments?.getString("categoryName")
-                    ?.let { URLDecoder.decode(it, "UTF-8") } ?: ""
+                val categoryName =
+                    backStackEntry.arguments
+                        ?.getString("categoryName")
+                        ?.let { URLDecoder.decode(it, "UTF-8") } ?: ""
                 FaqListScreen(
                     categoryId = categoryId,
                     categoryName = categoryName,
@@ -170,10 +181,11 @@ fun MyFaqNavHost(aim: ActiveInstanceManager = koinInject()) {
 
             composable(
                 route = Routes.FAQ_DETAIL,
-                arguments = listOf(
-                    navArgument("categoryId") { type = NavType.IntType },
-                    navArgument("faqId") { type = NavType.IntType },
-                ),
+                arguments =
+                    listOf(
+                        navArgument("categoryId") { type = NavType.IntType },
+                        navArgument("faqId") { type = NavType.IntType },
+                    ),
             ) { backStackEntry ->
                 val categoryId = backStackEntry.arguments?.getInt("categoryId") ?: 0
                 val faqId = backStackEntry.arguments?.getInt("faqId") ?: 0

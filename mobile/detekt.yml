@@ -1,0 +1,55 @@
+# Detekt configuration for MyFAQ mobile (KMP + Compose).
+# Phase 0 baseline: suppress known false-positives for Compose conventions.
+
+complexity:
+  TooManyFunctions:
+    # API wrapper, repository and implementation classes legitimately
+    # have many small single-purpose functions — one per endpoint.
+    thresholdInClasses: 25
+    thresholdInInterfaces: 25
+  LongMethod:
+    # Compose @Composable functions tend to be long declarative blocks.
+    # We rely on compose-lint-rules for compose-specific checks instead.
+    threshold: 150
+  CyclomaticComplexMethod:
+    threshold: 30
+
+naming:
+  FunctionNaming:
+    # Compose convention: @Composable functions are PascalCase.
+    ignoreAnnotated:
+      - 'Composable'
+  MatchingDeclarationName:
+    # KMP expect/actual files use platform suffixes (.android.kt, .ios.kt)
+    # and DTO files may contain a single class with a different suffix.
+    active: false
+
+exceptions:
+  TooGenericExceptionCaught:
+    # ViewModels and repository layers intentionally catch Exception
+    # to surface arbitrary network/parsing errors as UiState.Error.
+    active: false
+
+style:
+  MagicNumber:
+    # Byte arrays, color hex values, cache TTLs — too noisy.
+    active: false
+  ForbiddenComment:
+    # TODOs are acceptable during active development.
+    active: false
+  UnusedPrivateProperty:
+    # Koin-injected dependencies may be used only in future phases.
+    active: false
+  ReturnCount:
+    # Cache look-ups legitimately have early returns.
+    max: 5
+
+potential-bugs:
+  ImplicitDefaultLocale:
+    # String.format for hex colors is locale-independent.
+    active: false
+
+empty-blocks:
+  EmptyFunctionBlock:
+    # SSL trust manager stubs in platform HTTP clients are intentionally empty.
+    active: false

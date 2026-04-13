@@ -33,19 +33,20 @@ class WorkspacesViewModel(
 
     fun refreshList() {
         val rows = db.instancesQueries.selectAll().executeAsList()
-        _instances.value = rows.map { row ->
-            Instance(
-                id = row.id,
-                displayName = row.display_name,
-                baseUrl = row.base_url,
-                apiVersion = row.api_version,
-                language = row.language,
-                authMode = AuthMode.valueOf(row.auth_mode),
-                lastSuccessfulPing = row.last_successful_ping,
-                createdAt = row.created_at,
-                updatedAt = row.updated_at,
-            )
-        }
+        _instances.value =
+            rows.map { row ->
+                Instance(
+                    id = row.id,
+                    displayName = row.display_name,
+                    baseUrl = row.base_url,
+                    apiVersion = row.api_version,
+                    language = row.language,
+                    authMode = AuthMode.valueOf(row.auth_mode),
+                    lastSuccessfulPing = row.last_successful_ping,
+                    createdAt = row.created_at,
+                    updatedAt = row.updated_at,
+                )
+            }
     }
 
     fun probeInstance(url: String) {
@@ -63,7 +64,11 @@ class WorkspacesViewModel(
         }
     }
 
-    fun confirmAdd(url: String, meta: Meta, apiToken: String? = null) {
+    fun confirmAdd(
+        url: String,
+        meta: Meta,
+        apiToken: String? = null,
+    ) {
         val now = Clock.System.now().epochSeconds
         val id = generateUuid()
         db.instancesQueries.insert(
@@ -111,9 +116,17 @@ class WorkspacesViewModel(
 
 sealed interface AddInstanceState {
     data object Idle : AddInstanceState
+
     data object Probing : AddInstanceState
-    data class Confirmed(val url: String, val meta: Meta) : AddInstanceState
-    data class Failed(val reason: String) : AddInstanceState
+
+    data class Confirmed(
+        val url: String,
+        val meta: Meta,
+    ) : AddInstanceState
+
+    data class Failed(
+        val reason: String,
+    ) : AddInstanceState
 }
 
 // Simple UUID generation for KMP

@@ -15,7 +15,10 @@ import kotlinx.coroutines.launch
  *   let job = FlowCollectorKt.collectFlow(vm.results) { value in ... }
  *   job.cancel(cause: nil)
  */
-fun <T> collectFlow(flow: StateFlow<T>, onEach: (T) -> Unit): Job {
+fun <T> collectFlow(
+    flow: StateFlow<T>,
+    onEach: (T) -> Unit,
+): Job {
     val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
     return scope.launch {
         flow.collect { value ->

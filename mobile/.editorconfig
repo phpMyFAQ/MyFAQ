@@ -1,0 +1,15 @@
+root = true
+
+[*.{kt,kts}]
+indent_size = 4
+indent_style = space
+max_line_length = 120
+
+# Compose convention: @Composable functions are PascalCase
+ktlint_function_naming_ignore_when_annotated_with = Composable
+ktlint_standard_function-naming = disabled
+
+# Generated code (SQLDelight) may have unconventional names
+[**/build/generated/**/*.kt]
+ktlint = disabled
+

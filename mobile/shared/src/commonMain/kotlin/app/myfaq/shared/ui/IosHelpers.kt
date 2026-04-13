@@ -12,8 +12,7 @@ import kotlinx.coroutines.SupervisorJob
  * Kotlin default parameter values don't bridge to ObjC/Swift,
  * so iOS callers need this factory.
  */
-fun createDefaultScope(): CoroutineScope =
-    CoroutineScope(SupervisorJob() + Dispatchers.Default)
+fun createDefaultScope(): CoroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
 
 /**
  * Koin's inline reified `get<T>()` can't be called from ObjC/Swift.

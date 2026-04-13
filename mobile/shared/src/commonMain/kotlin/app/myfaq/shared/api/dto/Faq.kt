@@ -45,7 +45,25 @@ data class FaqPopularItem(
     val url: String? = null,
     val id: Int? = null,
     val order: Int? = null,
-)
+) {
+    /**
+     * Parse categoryId and faqId from the phpMyFAQ URL.
+     * URL format: `.../content/{categoryId}/{faqId}/{lang}/slug.html`
+     */
+    val parsedCategoryId: Int?
+        get() = parseUrlSegment(0)
+
+    val parsedFaqId: Int?
+        get() = parseUrlSegment(1)
+
+    private fun parseUrlSegment(index: Int): Int? {
+        val u = url ?: return null
+        val contentIdx = u.indexOf("/content/")
+        if (contentIdx == -1) return null
+        val segments = u.substring(contentIdx + "/content/".length).split("/")
+        return segments.getOrNull(index)?.toIntOrNull()
+    }
+}
 
 /**
  * FAQ detail from `/faq/{categoryId}/{faqId}`.

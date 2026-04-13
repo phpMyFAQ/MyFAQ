@@ -56,11 +56,12 @@ fun FaqListScreen(
     ) { padding ->
         when (val s = state) {
             is UiState.Loading -> LoadingIndicator(modifier = Modifier.padding(padding))
-            is UiState.Error -> ErrorRetry(
-                message = s.message,
-                onRetry = { vm.loadFaqsForCategory(categoryId) },
-                modifier = Modifier.padding(padding),
-            )
+            is UiState.Error ->
+                ErrorRetry(
+                    message = s.message,
+                    onRetry = { vm.loadFaqsForCategory(categoryId) },
+                    modifier = Modifier.padding(padding),
+                )
             is UiState.Success -> {
                 LazyColumn(
                     modifier = Modifier.padding(padding),

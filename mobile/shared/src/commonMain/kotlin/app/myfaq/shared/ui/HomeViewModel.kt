@@ -35,8 +35,11 @@ class HomeViewModel(
     }
 
     fun loadSticky() = loadInto(_sticky) { aim.repository.faqsSticky() }
+
     fun loadPopular() = loadInto(_popular) { aim.repository.faqsPopular() }
+
     fun loadLatest() = loadInto(_latest) { aim.repository.faqsLatest() }
+
     fun loadNews() = loadInto(_news) { aim.repository.news() }
 
     private fun <T> loadInto(

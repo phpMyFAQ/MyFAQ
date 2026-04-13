@@ -20,7 +20,9 @@ kotlin {
         }
     }
 
-    val xcf = org.jetbrains.kotlin.gradle.plugin.mpp.apple.XCFrameworkConfig(project, "Shared")
+    val xcf =
+        org.jetbrains.kotlin.gradle.plugin.mpp.apple
+            .XCFrameworkConfig(project, "Shared")
 
     listOf(
         iosX64(),
@@ -66,9 +68,15 @@ kotlin {
 
 android {
     namespace = "app.myfaq.shared"
-    compileSdk = libs.versions.android.compileSdk.get().toInt()
+    compileSdk =
+        libs.versions.android.compileSdk
+            .get()
+            .toInt()
     defaultConfig {
-        minSdk = libs.versions.android.minSdk.get().toInt()
+        minSdk =
+            libs.versions.android.minSdk
+                .get()
+                .toInt()
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_21

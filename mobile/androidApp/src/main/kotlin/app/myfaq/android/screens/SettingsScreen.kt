@@ -88,14 +88,15 @@ fun SettingsScreen(
             // Clear cache
             ListItem(
                 headlineContent = { Text("Clear cache") },
-                modifier = Modifier.clickable {
-                    try {
-                        aim.repository.clearCache()
-                        Toast.makeText(context, "Cache cleared", Toast.LENGTH_SHORT).show()
-                    } catch (_: IllegalStateException) {
-                        // No active instance
-                    }
-                },
+                modifier =
+                    Modifier.clickable {
+                        try {
+                            aim.repository.clearCache()
+                            Toast.makeText(context, "Cache cleared", Toast.LENGTH_SHORT).show()
+                        } catch (_: IllegalStateException) {
+                            // No active instance
+                        }
+                    },
             )
             HorizontalDivider()
 

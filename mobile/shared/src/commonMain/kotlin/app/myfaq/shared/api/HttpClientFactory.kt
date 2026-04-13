@@ -11,19 +11,21 @@ import kotlinx.serialization.json.Json
  * ensure forward compatibility with future phpMyFAQ versions.
  */
 object HttpClientFactory {
-    val json: Json = Json {
-        ignoreUnknownKeys = true
-        explicitNulls = false
-        encodeDefaults = true
-        isLenient = true
-    }
+    val json: Json =
+        Json {
+            ignoreUnknownKeys = true
+            explicitNulls = false
+            encodeDefaults = true
+            isLenient = true
+        }
 
     /**
      * Install shared plugins on a platform-provided [HttpClient].
      */
-    fun configure(client: HttpClient): HttpClient = client.config {
-        install(ContentNegotiation) { json(json) }
-    }
+    fun configure(client: HttpClient): HttpClient =
+        client.config {
+            install(ContentNegotiation) { json(json) }
+        }
 }
 
 /**

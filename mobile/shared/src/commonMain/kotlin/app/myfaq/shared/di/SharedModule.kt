@@ -12,12 +12,13 @@ import org.koin.dsl.module
  * Shared Koin module. Phase 1 wires the real HTTP engines,
  * repository pattern, cache store, and active-instance manager.
  */
-val sharedModule = module {
-    single { DatabaseFactory(get(), get()) }
-    single<MyFaqDatabase> { get<DatabaseFactory>().create() }
-    single { CacheStore(get()) }
-    single { ActiveInstanceManager(get(), get()) }
-}
+val sharedModule =
+    module {
+        single { DatabaseFactory(get(), get()) }
+        single<MyFaqDatabase> { get<DatabaseFactory>().create() }
+        single { CacheStore(get()) }
+        single { ActiveInstanceManager(get(), get()) }
+    }
 
 /**
  * Exposed so iOS Swift code can resolve dependencies without
@@ -30,8 +31,9 @@ lateinit var koinApp: org.koin.core.KoinApplication
  * Hosts call this on startup with their platform module.
  */
 fun initKoin(appDeclaration: KoinAppDeclaration = {}) {
-    koinApp = startKoin {
-        appDeclaration()
-        modules(sharedModule)
-    }
+    koinApp =
+        startKoin {
+            appDeclaration()
+            modules(sharedModule)
+        }
 }

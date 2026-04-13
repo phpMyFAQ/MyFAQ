@@ -11,11 +11,15 @@ import androidx.security.crypto.MasterKey
  * Android Keystore. The file name is fixed per install; instance
  * UUIDs namespace their entries via the caller-supplied key prefix.
  */
-actual class SecureStore(context: Context) {
+actual class SecureStore(
+    context: Context,
+) {
     private val prefs: SharedPreferences by lazy {
-        val masterKey = MasterKey.Builder(context.applicationContext)
-            .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
-            .build()
+        val masterKey =
+            MasterKey
+                .Builder(context.applicationContext)
+                .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
+                .build()
 
         EncryptedSharedPreferences.create(
             context.applicationContext,
@@ -26,7 +30,10 @@ actual class SecureStore(context: Context) {
         )
     }
 
-    actual fun put(key: String, value: String) {
+    actual fun put(
+        key: String,
+        value: String,
+    ) {
         prefs.edit().putString(key, value).apply()
     }
 

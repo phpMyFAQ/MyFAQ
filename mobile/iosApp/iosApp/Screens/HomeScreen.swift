@@ -18,6 +18,24 @@ struct HomeFaqItem {
         self.date = object.value(forKey: "date") as? String
         self.url = object.value(forKey: "url") as? String
     }
+
+    /// Parse categoryId from phpMyFAQ URL: `.../content/{categoryId}/{faqId}/{lang}/slug.html`
+    var parsedCategoryId: Int32? {
+        guard let url = url,
+              let range = url.range(of: "/content/") else { return nil }
+        let segments = url[range.upperBound...].split(separator: "/")
+        guard segments.count >= 1, let val_ = Int32(segments[0]) else { return nil }
+        return val_
+    }
+
+    /// Parse faqId from phpMyFAQ URL
+    var parsedFaqId: Int32? {
+        guard let url = url,
+              let range = url.range(of: "/content/") else { return nil }
+        let segments = url[range.upperBound...].split(separator: "/")
+        guard segments.count >= 2, let val_ = Int32(segments[1]) else { return nil }
+        return val_
+    }
 }
 
 struct HomeNewsItem {
@@ -155,8 +173,8 @@ struct HomeScreen: View {
             } else {
                 List(faqs, id: \.question) { faq in
                     Button {
-                        if let urlString = faq.url, let url = URL(string: urlString) {
-                            UIApplication.shared.open(url)
+                        if let catId = faq.parsedCategoryId, let faqId = faq.parsedFaqId {
+                            onFaqClick(catId, faqId)
                         }
                     } label: {
                         FaqRow(question: faq.question, updated: faq.date)

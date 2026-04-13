@@ -1,7 +1,6 @@
 package app.myfaq.android.screens
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -67,9 +66,10 @@ fun SearchScreen(
                     }
                 },
                 singleLine = true,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 8.dp),
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 8.dp),
             )
 
             if (query.isBlank()) {
@@ -88,9 +88,10 @@ fun SearchScreen(
                                 items(s.data, key = { it.searchTerm }) { popular ->
                                     ListItem(
                                         headlineContent = { Text(popular.searchTerm) },
-                                        modifier = Modifier.clickable {
-                                            vm.onQueryChanged(popular.searchTerm)
-                                        },
+                                        modifier =
+                                            Modifier.clickable {
+                                                vm.onQueryChanged(popular.searchTerm)
+                                            },
                                     )
                                     HorizontalDivider()
                                 }
@@ -102,10 +103,11 @@ fun SearchScreen(
                 // Show search results
                 when (val s = resultsState) {
                     is UiState.Loading -> LoadingIndicator()
-                    is UiState.Error -> ErrorRetry(
-                        message = s.message,
-                        onRetry = { vm.onQueryChanged(query) },
-                    )
+                    is UiState.Error ->
+                        ErrorRetry(
+                            message = s.message,
+                            onRetry = { vm.onQueryChanged(query) },
+                        )
                     is UiState.Success -> {
                         LazyColumn(
                             contentPadding = PaddingValues(vertical = 8.dp),
@@ -118,9 +120,10 @@ fun SearchScreen(
                                             maxLines = 2,
                                         )
                                     },
-                                    modifier = Modifier.clickable {
-                                        onFaqClick(result.categoryId, result.id)
-                                    },
+                                    modifier =
+                                        Modifier.clickable {
+                                            onFaqClick(result.categoryId, result.id)
+                                        },
                                 )
                                 HorizontalDivider()
                             }

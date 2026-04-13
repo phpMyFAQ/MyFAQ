@@ -1,7 +1,6 @@
 package app.myfaq.android.screens
 
 import android.widget.Toast
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -49,10 +48,11 @@ fun PaywallScreen(onBack: () -> Unit) {
         },
     ) { padding ->
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding)
-                .padding(24.dp),
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .padding(padding)
+                    .padding(24.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Spacer(modifier = Modifier.height(24.dp))
@@ -65,13 +65,14 @@ fun PaywallScreen(onBack: () -> Unit) {
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            val features = listOf(
-                "Rate and vote on FAQs",
-                "Submit questions",
-                "Post comments",
-                "Register an account",
-                "Priority support",
-            )
+            val features =
+                listOf(
+                    "Rate and vote on FAQs",
+                    "Submit questions",
+                    "Post comments",
+                    "Register an account",
+                    "Priority support",
+                )
             features.forEach { feature ->
                 ProFeatureRow(feature)
                 Spacer(modifier = Modifier.height(8.dp))

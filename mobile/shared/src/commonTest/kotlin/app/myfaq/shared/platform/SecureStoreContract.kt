@@ -9,7 +9,6 @@ import kotlin.test.assertNull
  * real platform store and drive it through this contract.
  */
 object SecureStoreContract {
-
     fun assertRoundTrip(store: SecureStore) {
         val key = "contract.roundtrip"
         store.remove(key)

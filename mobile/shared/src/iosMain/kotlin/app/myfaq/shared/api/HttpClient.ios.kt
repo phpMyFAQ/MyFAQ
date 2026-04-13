@@ -13,30 +13,31 @@ import platform.Foundation.NSURLSessionAuthChallengeUseCredential
 import platform.Foundation.credentialForTrust
 import platform.Foundation.serverTrust
 
-actual fun createPlatformHttpClient(): HttpClient = HttpClient(Darwin) {
-    install(ContentNegotiation) { json(HttpClientFactory.json) }
+actual fun createPlatformHttpClient(): HttpClient =
+    HttpClient(Darwin) {
+        install(ContentNegotiation) { json(HttpClientFactory.json) }
 
-    engine {
-        // DEV ONLY: trust all certificates (self-signed, localhost, etc.)
-        // TODO: Gate behind a debug flag before release.
-        handleChallenge { _, _, challenge, completionHandler ->
-            if (challenge.protectionSpace.authenticationMethod ==
-                NSURLAuthenticationMethodServerTrust
-            ) {
-                val trust = challenge.protectionSpace.serverTrust
-                if (trust != null) {
-                    val credential = NSURLCredential.credentialForTrust(trust)
-                    completionHandler(
-                        NSURLSessionAuthChallengeUseCredential,
-                        credential
-                    )
-                    return@handleChallenge
+        engine {
+            // DEV ONLY: trust all certificates (self-signed, localhost, etc.)
+            // TODO: Gate behind a debug flag before release.
+            handleChallenge { _, _, challenge, completionHandler ->
+                if (challenge.protectionSpace.authenticationMethod ==
+                    NSURLAuthenticationMethodServerTrust
+                ) {
+                    val trust = challenge.protectionSpace.serverTrust
+                    if (trust != null) {
+                        val credential = NSURLCredential.credentialForTrust(trust)
+                        completionHandler(
+                            NSURLSessionAuthChallengeUseCredential,
+                            credential,
+                        )
+                        return@handleChallenge
+                    }
                 }
+                completionHandler(
+                    NSURLSessionAuthChallengePerformDefaultHandling,
+                    null,
+                )
             }
-            completionHandler(
-                NSURLSessionAuthChallengePerformDefaultHandling,
-                null
-            )
         }
     }
-}

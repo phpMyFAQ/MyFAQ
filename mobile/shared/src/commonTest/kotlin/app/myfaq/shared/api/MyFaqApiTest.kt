@@ -16,7 +16,6 @@ import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 class MyFaqApiTest {
-
     private val json = Json { ignoreUnknownKeys = true }
 
     private fun client(body: String): HttpClient =
@@ -33,34 +32,37 @@ class MyFaqApiTest {
         }
 
     @Test
-    fun `meta deserializes full fixture`() = runTest {
-        val api = MyFaqApiImpl(client(FULL_FIXTURE), baseUrl = "https://example.test")
-        val meta = api.meta()
-        assertEquals("4.2.0", meta.version)
-        assertEquals("MyFAQ.app test instance", meta.title)
-        assertEquals(mapOf("en" to "English", "de" to "German", "fr" to "French"), meta.availableLanguages)
-        assertEquals(listOf("en", "de", "fr"), meta.languageCodes)
-        assertEquals(true, meta.enabledFeatures["search"])
-        assertEquals("https://example.test/oauth/authorize", meta.oauthDiscovery?.authorizationEndpoint)
-    }
+    fun `meta deserializes full fixture`() =
+        runTest {
+            val api = MyFaqApiImpl(client(FULL_FIXTURE), baseUrl = "https://example.test")
+            val meta = api.meta()
+            assertEquals("4.2.0", meta.version)
+            assertEquals("MyFAQ.app test instance", meta.title)
+            assertEquals(mapOf("en" to "English", "de" to "German", "fr" to "French"), meta.availableLanguages)
+            assertEquals(listOf("en", "de", "fr"), meta.languageCodes)
+            assertEquals(true, meta.enabledFeatures["search"])
+            assertEquals("https://example.test/oauth/authorize", meta.oauthDiscovery?.authorizationEndpoint)
+        }
 
     @Test
-    fun `meta tolerates unknown keys`() = runTest {
-        val api = MyFaqApiImpl(client(FUTURE_FIXTURE), baseUrl = "https://example.test")
-        val meta: Meta = api.meta()
-        assertEquals("4.3.0", meta.version)
-        assertTrue(meta.availableLanguages.isEmpty())
-    }
+    fun `meta tolerates unknown keys`() =
+        runTest {
+            val api = MyFaqApiImpl(client(FUTURE_FIXTURE), baseUrl = "https://example.test")
+            val meta: Meta = api.meta()
+            assertEquals("4.3.0", meta.version)
+            assertTrue(meta.availableLanguages.isEmpty())
+        }
 
     @Test
-    fun `meta loader renders success string`() = runTest {
-        val api = MyFaqApiImpl(client(FULL_FIXTURE), baseUrl = "https://example.test")
-        val loader = MetaLoader(api, scope = this)
-        var result: String? = null
-        loader.load(onSuccess = { result = it }, onError = { result = "err: $it" })
-        testScheduler.advanceUntilIdle()
-        assertEquals("MyFAQ.app test instance — phpMyFAQ 4.2.0", result)
-    }
+    fun `meta loader renders success string`() =
+        runTest {
+            val api = MyFaqApiImpl(client(FULL_FIXTURE), baseUrl = "https://example.test")
+            val loader = MetaLoader(api, scope = this)
+            var result: String? = null
+            loader.load(onSuccess = { result = it }, onError = { result = "err: $it" })
+            testScheduler.advanceUntilIdle()
+            assertEquals("MyFAQ.app test instance — phpMyFAQ 4.2.0", result)
+        }
 
     private companion object {
         const val FULL_FIXTURE = """

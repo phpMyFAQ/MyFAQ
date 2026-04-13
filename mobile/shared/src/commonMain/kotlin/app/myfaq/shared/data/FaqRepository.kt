@@ -34,15 +34,17 @@ class FaqRepository(
 
     // --- Bootstrap ---
 
-    suspend fun meta(): Meta = cached("meta", CacheTtl.FAQS) {
-        json.encodeToString(api.meta())
-    }.let { json.decodeFromString(it) }
+    suspend fun meta(): Meta =
+        cached("meta", CacheTtl.FAQS) {
+            json.encodeToString(api.meta())
+        }.let { json.decodeFromString(it) }
 
     // --- Categories ---
 
-    suspend fun categories(): List<Category> = cachedList("categories", CacheTtl.CATEGORIES) {
-        api.categories()
-    }
+    suspend fun categories(): List<Category> =
+        cachedList("categories", CacheTtl.CATEGORIES) {
+            api.categories()
+        }
 
     // --- FAQs ---
 
@@ -51,22 +53,21 @@ class FaqRepository(
             api.faqsByCategory(categoryId)
         }
 
-    suspend fun faqDetail(categoryId: Int, faqId: Int): FaqDetail =
+    suspend fun faqDetail(
+        categoryId: Int,
+        faqId: Int,
+    ): FaqDetail =
         cached("faq/$categoryId/$faqId", CacheTtl.FAQS) {
             json.encodeToString(api.faqDetail(categoryId, faqId))
         }.let { json.decodeFromString(it) }
 
-    suspend fun faqsPopular(): List<FaqPopularItem> =
-        cachedList("faqs/popular", CacheTtl.FAQS) { api.faqsPopular() }
+    suspend fun faqsPopular(): List<FaqPopularItem> = cachedList("faqs/popular", CacheTtl.FAQS) { api.faqsPopular() }
 
-    suspend fun faqsLatest(): List<FaqPopularItem> =
-        cachedList("faqs/latest", CacheTtl.FAQS) { api.faqsLatest() }
+    suspend fun faqsLatest(): List<FaqPopularItem> = cachedList("faqs/latest", CacheTtl.FAQS) { api.faqsLatest() }
 
-    suspend fun faqsTrending(): List<FaqPopularItem> =
-        cachedList("faqs/trending", CacheTtl.FAQS) { api.faqsTrending() }
+    suspend fun faqsTrending(): List<FaqPopularItem> = cachedList("faqs/trending", CacheTtl.FAQS) { api.faqsTrending() }
 
-    suspend fun faqsSticky(): List<FaqPopularItem> =
-        cachedList("faqs/sticky", CacheTtl.FAQS) { api.faqsSticky() }
+    suspend fun faqsSticky(): List<FaqPopularItem> = cachedList("faqs/sticky", CacheTtl.FAQS) { api.faqsSticky() }
 
     // --- Search ---
 
@@ -78,13 +79,11 @@ class FaqRepository(
 
     // --- Tags ---
 
-    suspend fun tags(): List<Tag> =
-        cachedList("tags", CacheTtl.TAGS) { api.tags() }
+    suspend fun tags(): List<Tag> = cachedList("tags", CacheTtl.TAGS) { api.tags() }
 
     // --- News ---
 
-    suspend fun news(): List<NewsItem> =
-        cachedList("news", CacheTtl.NEWS) { api.news() }
+    suspend fun news(): List<NewsItem> = cachedList("news", CacheTtl.NEWS) { api.news() }
 
     // --- Comments ---
 
@@ -93,8 +92,7 @@ class FaqRepository(
 
     // --- Glossary ---
 
-    suspend fun glossary(): List<GlossaryItem> =
-        cachedList("glossary", CacheTtl.FAQS) { api.glossary() }
+    suspend fun glossary(): List<GlossaryItem> = cachedList("glossary", CacheTtl.FAQS) { api.glossary() }
 
     // --- Open questions ---
 
@@ -127,9 +125,10 @@ class FaqRepository(
         ttl: Long,
         crossinline fetch: suspend () -> List<T>,
     ): List<T> {
-        val raw = cached(key, ttl) {
-            json.encodeToString(ListSerializer(kotlinx.serialization.serializer<T>()), fetch())
-        }
+        val raw =
+            cached(key, ttl) {
+                json.encodeToString(ListSerializer(kotlinx.serialization.serializer<T>()), fetch())
+            }
         return json.decodeFromString(ListSerializer(kotlinx.serialization.serializer<T>()), raw)
     }
 }

@@ -22,7 +22,7 @@ Native iOS + Android client for phpMyFAQ. Planning stage — no code yet, only `
 - **No `admin/api/*`.** Session + CSRF not a fit for native client. App is not a second admin panel.
 - **No push in v1.** Server contract missing.
 - **Excluded entirely**: `faq/create|update`, `category` POST, `backup/{type}`.
-- API surface pinned to phpMyFAQ public `v3.2` (`docs/openapi.yaml` upstream).
+- API surface pinned to phpMyFAQ public `v4.0` (`mobile/spec/openapi/v.4.0.yaml`). Most list endpoints return paginated `{ success, data, meta }` wrappers.
 
 ## Shared libs (locked)
 
@@ -52,7 +52,7 @@ Secure storage: iOS Keychain + Android `androidx.security.crypto`. DB encrypted:
 
 Filed as phpMyFAQ issues: tombstones (`faqs/deleted?since=`), ETag on list endpoints, OAuth discovery, push registration contract.
 
-**Already shipped upstream**: `GET /api/v3.2/meta` (single bootstrap call — version, title, language, available languages, features, logo URL, OAuth discovery). App uses it for instance selector + sync bootstrap; legacy `version`+`title`+`language` fan-out kept only as fallback for older installs.
+**Already shipped upstream**: `GET /api/v4.0/meta` (single bootstrap call — version, title, language, available languages, features, logo URL, OAuth discovery). App uses it for instance selector + sync bootstrap.
 
 ## Working on this repo
 

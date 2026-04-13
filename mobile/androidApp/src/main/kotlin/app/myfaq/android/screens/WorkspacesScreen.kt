@@ -118,9 +118,10 @@ private fun InstanceCard(
     onDelete: () -> Unit,
 ) {
     Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable(onClick = onClick),
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .clickable(onClick = onClick),
     ) {
         Row(
             modifier = Modifier.padding(16.dp),
@@ -149,7 +150,10 @@ private fun InstanceCard(
 }
 
 @Composable
-private fun EmptyWorkspacesState(modifier: Modifier = Modifier, onAdd: () -> Unit) {
+private fun EmptyWorkspacesState(
+    modifier: Modifier = Modifier,
+    onAdd: () -> Unit,
+) {
     Box(
         modifier = modifier.fillMaxSize(),
         contentAlignment = Alignment.Center,

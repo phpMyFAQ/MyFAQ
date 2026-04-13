@@ -8,10 +8,11 @@ import org.koin.dsl.module
  * iOS platform module providing [SecureStore] and [DatabaseDriverFactory].
  * Registered automatically via [initKoinIos].
  */
-val iosPlatformModule = module {
-    single { SecureStore() }
-    single { DatabaseDriverFactory() }
-}
+val iosPlatformModule =
+    module {
+        single { SecureStore() }
+        single { DatabaseDriverFactory() }
+    }
 
 /**
  * iOS-specific Koin initialization that includes the platform module.

@@ -21,7 +21,10 @@ class FaqDetailViewModel(
     private val _comments = MutableStateFlow<UiState<List<Comment>>>(UiState.Loading)
     val comments: StateFlow<UiState<List<Comment>>> = _comments.asStateFlow()
 
-    fun load(categoryId: Int, faqId: Int) {
+    fun load(
+        categoryId: Int,
+        faqId: Int,
+    ) {
         _faq.value = UiState.Loading
         _comments.value = UiState.Loading
         scope.launch {

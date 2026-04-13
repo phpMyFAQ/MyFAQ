@@ -4,7 +4,6 @@ import kotlin.test.Test
 import kotlin.test.assertFalse
 
 class EntitlementsTest {
-
     @Test
     fun `Phase 0 stub never reports Pro`() {
         assertFalse(Entitlements.isPro())

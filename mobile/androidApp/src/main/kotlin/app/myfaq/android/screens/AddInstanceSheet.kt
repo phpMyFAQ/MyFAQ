@@ -63,10 +63,11 @@ fun AddInstanceSheet(
         },
     ) { padding ->
         Column(
-            modifier = Modifier
-                .padding(padding)
-                .padding(16.dp)
-                .fillMaxWidth(),
+            modifier =
+                Modifier
+                    .padding(padding)
+                    .padding(16.dp)
+                    .fillMaxWidth(),
         ) {
             OutlinedTextField(
                 value = url,
@@ -133,9 +134,10 @@ private fun ConfirmationCard(
     onConfirm: () -> Unit,
 ) {
     Card(
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.secondaryContainer,
-        ),
+        colors =
+            CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.secondaryContainer,
+            ),
         modifier = Modifier.fillMaxWidth(),
     ) {
         Column(modifier = Modifier.padding(16.dp)) {

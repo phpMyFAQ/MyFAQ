@@ -51,11 +51,12 @@ fun CategoriesScreen(
     ) { padding ->
         when (val s = state) {
             is UiState.Loading -> LoadingIndicator(modifier = Modifier.padding(padding))
-            is UiState.Error -> ErrorRetry(
-                message = s.message,
-                onRetry = { vm.loadCategories() },
-                modifier = Modifier.padding(padding),
-            )
+            is UiState.Error ->
+                ErrorRetry(
+                    message = s.message,
+                    onRetry = { vm.loadCategories() },
+                    modifier = Modifier.padding(padding),
+                )
             is UiState.Success -> {
                 val sorted = remember(s.data) { buildFlatTree(s.data) }
                 LazyColumn(
@@ -83,10 +84,11 @@ private fun CategoryRow(
     onClick: () -> Unit,
 ) {
     Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable(onClick = onClick)
-            .padding(start = (16 + depth * 24).dp, end = 16.dp, top = 12.dp, bottom = 12.dp),
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .clickable(onClick = onClick)
+                .padding(start = (16 + depth * 24).dp, end = 16.dp, top = 12.dp, bottom = 12.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween,
     ) {
@@ -111,7 +113,10 @@ private fun buildFlatTree(categories: List<Category>): List<Pair<Category, Int>>
     val byParent = categories.groupBy { it.parentId }
     val result = mutableListOf<Pair<Category, Int>>()
 
-    fun walk(parentId: Int?, depth: Int) {
+    fun walk(
+        parentId: Int?,
+        depth: Int,
+    ) {
         byParent[parentId]?.sortedBy { it.name }?.forEach { cat ->
             result.add(cat to depth)
             walk(cat.id, depth + 1)

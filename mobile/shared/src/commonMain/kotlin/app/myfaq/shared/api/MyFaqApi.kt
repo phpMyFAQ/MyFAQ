@@ -38,16 +38,25 @@ interface MyFaqApi {
     suspend fun categories(): List<Category>
 
     // FAQs
-    suspend fun faqsByCategory(categoryId: Int): List<FaqSummary>  // paginated
-    suspend fun faqDetail(categoryId: Int, faqId: Int): FaqDetail
-    suspend fun faqsPopular(): List<FaqPopularItem>    // plain array
-    suspend fun faqsLatest(): List<FaqPopularItem>     // plain array
-    suspend fun faqsTrending(): List<FaqPopularItem>   // plain array
-    suspend fun faqsSticky(): List<FaqPopularItem>     // plain array
+    suspend fun faqsByCategory(categoryId: Int): List<FaqSummary> // paginated
+
+    suspend fun faqDetail(
+        categoryId: Int,
+        faqId: Int,
+    ): FaqDetail
+
+    suspend fun faqsPopular(): List<FaqPopularItem> // plain array
+
+    suspend fun faqsLatest(): List<FaqPopularItem> // plain array
+
+    suspend fun faqsTrending(): List<FaqPopularItem> // plain array
+
+    suspend fun faqsSticky(): List<FaqPopularItem> // plain array
 
     // Search
-    suspend fun search(query: String): List<SearchResult>  // paginated
-    suspend fun popularSearches(): List<PopularSearch>     // plain array
+    suspend fun search(query: String): List<SearchResult> // paginated
+
+    suspend fun popularSearches(): List<PopularSearch> // plain array
 
     // Tags (paginated)
     suspend fun tags(): List<Tag>
@@ -70,24 +79,28 @@ class MyFaqApiImpl(
     private val baseUrl: String,
     private val language: String = "en",
 ) : MyFaqApi {
-
     private val api get() = "$baseUrl/api/v4.0"
 
-    override suspend fun meta(): Meta =
-        http.get("$api/meta").body()
+    override suspend fun meta(): Meta = http.get("$api/meta").body()
 
     // --- Paginated endpoints: unwrap { success, data, meta } ---
 
     override suspend fun categories(): List<Category> =
-        http.get("$api/categories") { header("Accept-Language", language) }
-            .body<PaginatedResponse<List<Category>>>().data
+        http
+            .get("$api/categories") { header("Accept-Language", language) }
+            .body<PaginatedResponse<List<Category>>>()
+            .data
 
     override suspend fun faqsByCategory(categoryId: Int): List<FaqSummary> =
-        http.get("$api/faqs/$categoryId") { header("Accept-Language", language) }
-            .body<PaginatedResponse<List<FaqSummary>>>().data
+        http
+            .get("$api/faqs/$categoryId") { header("Accept-Language", language) }
+            .body<PaginatedResponse<List<FaqSummary>>>()
+            .data
 
-    override suspend fun faqDetail(categoryId: Int, faqId: Int): FaqDetail =
-        http.get("$api/faq/$categoryId/$faqId") { header("Accept-Language", language) }.body()
+    override suspend fun faqDetail(
+        categoryId: Int,
+        faqId: Int,
+    ): FaqDetail = http.get("$api/faq/$categoryId/$faqId") { header("Accept-Language", language) }.body()
 
     // --- Plain array endpoints (no pagination wrapper) ---
 
@@ -109,28 +122,40 @@ class MyFaqApiImpl(
     // --- Paginated endpoints ---
 
     override suspend fun search(query: String): List<SearchResult> =
-        http.get("$api/search") {
-            header("Accept-Language", language)
-            parameter("q", query)
-        }.body<PaginatedResponse<List<SearchResult>>>().data
+        http
+            .get("$api/search") {
+                header("Accept-Language", language)
+                parameter("q", query)
+            }.body<PaginatedResponse<List<SearchResult>>>()
+            .data
 
     override suspend fun tags(): List<Tag> =
-        http.get("$api/tags") { header("Accept-Language", language) }
-            .body<PaginatedResponse<List<Tag>>>().data
+        http
+            .get("$api/tags") { header("Accept-Language", language) }
+            .body<PaginatedResponse<List<Tag>>>()
+            .data
 
     override suspend fun news(): List<NewsItem> =
-        http.get("$api/news") { header("Accept-Language", language) }
-            .body<PaginatedResponse<List<NewsItem>>>().data
+        http
+            .get("$api/news") { header("Accept-Language", language) }
+            .body<PaginatedResponse<List<NewsItem>>>()
+            .data
 
     override suspend fun comments(recordId: Int): List<Comment> =
-        http.get("$api/comments/$recordId") { header("Accept-Language", language) }
-            .body<PaginatedResponse<List<Comment>>>().data
+        http
+            .get("$api/comments/$recordId") { header("Accept-Language", language) }
+            .body<PaginatedResponse<List<Comment>>>()
+            .data
 
     override suspend fun glossary(): List<GlossaryItem> =
-        http.get("$api/glossary") { header("Accept-Language", language) }
-            .body<PaginatedResponse<List<GlossaryItem>>>().data
+        http
+            .get("$api/glossary") { header("Accept-Language", language) }
+            .body<PaginatedResponse<List<GlossaryItem>>>()
+            .data
 
     override suspend fun openQuestions(): List<OpenQuestion> =
-        http.get("$api/open-questions") { header("Accept-Language", language) }
-            .body<PaginatedResponse<List<OpenQuestion>>>().data
+        http
+            .get("$api/open-questions") { header("Accept-Language", language) }
+            .body<PaginatedResponse<List<OpenQuestion>>>()
+            .data
 }
