@@ -105,14 +105,28 @@ class EndpointDeserializationTest {
     // ── Search (paginated) ─────────────────────────────────────────
 
     @Test
-    fun `search results deserialize from paginated wrapper`() =
+    fun `search results deserialize from paginated wrapper with string IDs`() =
         runTest {
             val result = api(SEARCH_RESULTS_JSON).search("test")
             assertEquals(1, result.size)
             assertEquals("Why are you using phpMyFAQ?", result[0].question)
             assertEquals(15, result[0].categoryId)
+            assertEquals(1, result[0].id)
             assertEquals("Because it is cool!", result[0].answer)
             assertEquals("en", result[0].lang)
+            assertEquals(
+                "https://www.example.org/content/15/1/en/why-are-you-using-phpmyfaq.html",
+                result[0].link,
+            )
+        }
+
+    @Test
+    fun `search results with integer IDs also work`() =
+        runTest {
+            val result = api(SEARCH_RESULTS_INT_IDS_JSON).search("test")
+            assertEquals(1, result.size)
+            assertEquals(42, result[0].id)
+            assertEquals(7, result[0].categoryId)
         }
 
     @Test
@@ -174,6 +188,40 @@ class EndpointDeserializationTest {
             assertEquals("phpMyFAQ", result[0].name)
             assertEquals(4, result[0].id)
             assertEquals(3, result[0].frequency)
+        }
+
+    // ── URL parsing (FaqPopularItem) ─────────────────────────────────
+
+    @Test
+    fun `popular faq URL parses categoryId and faqId`() =
+        runTest {
+            val result = api(POPULAR_FAQS_JSON).faqsPopular()
+            val item = result[0]
+            assertEquals(1, item.parsedCategoryId)
+            assertEquals(36, item.parsedFaqId)
+        }
+
+    @Test
+    fun `sticky faq URL parses categoryId and faqId`() =
+        runTest {
+            val result = api(STICKY_FAQS_JSON).faqsSticky()
+            assertEquals(1, result[0].parsedCategoryId)
+            assertEquals(36, result[0].parsedFaqId)
+            assertEquals(1, result[1].parsedCategoryId)
+            assertEquals(1, result[1].parsedFaqId)
+        }
+
+    // ── HTML answer content ───────────────────────────────────────
+
+    @Test
+    fun `faq detail preserves HTML in answer`() =
+        runTest {
+            val result = api(FAQ_DETAIL_HTML_JSON).faqDetail(1, 99)
+            assertEquals(99, result.id)
+            assertTrue(result.answer.contains("<h2>"))
+            assertTrue(result.answer.contains("<ul>"))
+            assertTrue(result.answer.contains("<li>"))
+            assertTrue(result.answer.contains("<a href="))
         }
 
     // ── Edge cases ──────────────────────────────────────────────────
@@ -263,6 +311,18 @@ class EndpointDeserializationTest {
         {"id": 1, "question": "Q"}
         """
 
+        // FAQ detail with rich HTML answer
+        const val FAQ_DETAIL_HTML_JSON = """
+        {
+          "id": 99,
+          "category_id": 1,
+          "question": "How do I configure advanced settings?",
+          "answer": "<h2>Configuration Guide</h2><p>Follow these steps:</p><ul><li>Step 1: Open settings</li><li>Step 2: Click <a href=\"https://example.org\">here</a></li></ul><pre><code>config.set('key', 'value');</code></pre>",
+          "tags": ["config", "advanced"],
+          "attachments": []
+        }
+        """
+
         // Plain array: popular/latest/trending FAQs
         const val POPULAR_FAQS_JSON = """
         [
@@ -278,12 +338,25 @@ class EndpointDeserializationTest {
         ]
         """
 
-        // Paginated: search results
+        // Paginated: search results (id and category_id are strings in v4.0!)
         const val SEARCH_RESULTS_JSON = """
         {
           "success": true,
           "data": [
-            {"id": 1, "lang": "en", "category_id": 15, "question": "Why are you using phpMyFAQ?", "answer": "Because it is cool!", "link": "https://www.example.org/content/15/1/en/why-are-you-using-phpmyfaq.html"}
+            {"id": "1", "lang": "en", "category_id": "15", "question": "Why are you using phpMyFAQ?", "answer": "Because it is cool!", "link": "https://www.example.org/content/15/1/en/why-are-you-using-phpmyfaq.html"}
+          ],
+          "meta": {
+            "pagination": {"total": 1, "count": 1, "per_page": 25, "current_page": 1, "total_pages": 1}
+          }
+        }
+        """
+
+        // Paginated: search results with integer IDs (some servers may return ints)
+        const val SEARCH_RESULTS_INT_IDS_JSON = """
+        {
+          "success": true,
+          "data": [
+            {"id": 42, "lang": "en", "category_id": 7, "question": "Test?", "answer": "Yes."}
           ],
           "meta": {
             "pagination": {"total": 1, "count": 1, "per_page": 25, "current_page": 1, "total_pages": 1}

@@ -30,6 +30,7 @@ import androidx.compose.ui.unit.dp
 import app.myfaq.android.screens.components.ErrorRetry
 import app.myfaq.android.screens.components.LoadingIndicator
 import app.myfaq.shared.data.ActiveInstanceManager
+import app.myfaq.shared.domain.HtmlUtils
 import app.myfaq.shared.ui.SearchViewModel
 import app.myfaq.shared.ui.UiState
 import org.koin.compose.koinInject
@@ -116,9 +117,20 @@ fun SearchScreen(
                                 ListItem(
                                     headlineContent = {
                                         Text(
-                                            text = result.question,
+                                            text = HtmlUtils.decodeEntities(result.question),
                                             maxLines = 2,
                                         )
+                                    },
+                                    supportingContent = {
+                                        val preview = result.answer?.let { HtmlUtils.preview(it) }
+                                        if (!preview.isNullOrBlank()) {
+                                            Text(
+                                                text = preview,
+                                                maxLines = 2,
+                                                style = MaterialTheme.typography.bodySmall,
+                                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                            )
+                                        }
                                     },
                                     modifier =
                                         Modifier.clickable {

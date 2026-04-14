@@ -62,12 +62,10 @@ private struct MainTabView: View {
     }
 
     private var searchTab: some View {
-        NavigationStack {
-            SearchNavigationView()
-        }
-        .tabItem {
-            Label("Search", systemImage: "magnifyingglass")
-        }
+        SearchNavigationView()
+            .tabItem {
+                Label("Search", systemImage: "magnifyingglass")
+            }
     }
 
     private var settingsTab: some View {
@@ -140,18 +138,20 @@ private struct SearchNavigationView: View {
     @State private var path = NavigationPath()
 
     var body: some View {
-        SearchScreen(onFaqClick: { categoryId, faqId in
-            path.append(FaqRoute(categoryId: categoryId, faqId: faqId))
-        })
-        .navigationDestination(for: FaqRoute.self) { route in
-            FaqDetailScreen(
-                categoryId: route.categoryId,
-                faqId: route.faqId,
-                onPaywall: { path.append(PaywallRoute()) }
-            )
-        }
-        .navigationDestination(for: PaywallRoute.self) { _ in
-            PaywallScreen()
+        NavigationStack(path: $path) {
+            SearchScreen(onFaqClick: { categoryId, faqId in
+                path.append(FaqRoute(categoryId: categoryId, faqId: faqId))
+            })
+            .navigationDestination(for: FaqRoute.self) { route in
+                FaqDetailScreen(
+                    categoryId: route.categoryId,
+                    faqId: route.faqId,
+                    onPaywall: { path.append(PaywallRoute()) }
+                )
+            }
+            .navigationDestination(for: PaywallRoute.self) { _ in
+                PaywallScreen()
+            }
         }
     }
 }

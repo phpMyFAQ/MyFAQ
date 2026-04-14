@@ -30,7 +30,7 @@ jobs:
           distribution: temurin
           java-version: '21'
       - uses: gradle/actions/setup-gradle@v4
-      - run: ./gradlew ktlintCheck detekt --stacktrace
+      - run: ./gradlew ktlintCheck detekt -Dorg.gradle.java.home=$JAVA_HOME --stacktrace --continue
 
   shared-unit:
     name: Shared unit tests
@@ -43,7 +43,7 @@ jobs:
           distribution: temurin
           java-version: '21'
       - uses: gradle/actions/setup-gradle@v4
-      - run: ./gradlew :shared:testDebugUnitTest --stacktrace
+      - run: ./gradlew :shared:testDebugUnitTest -Dorg.gradle.java.home=$JAVA_HOME --no-daemon --stacktrace
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -61,7 +61,7 @@ jobs:
           distribution: temurin
           java-version: '21'
       - uses: gradle/actions/setup-gradle@v4
-      - run: ./gradlew :androidApp:assembleDebug --stacktrace
+      - run: ./gradlew :androidApp:assembleDebug -Dorg.gradle.java.home=$JAVA_HOME --stacktrace
       - uses: actions/upload-artifact@v4
         with:
           name: androidApp-debug-apk
@@ -84,7 +84,7 @@ jobs:
         working-directory: mobile/iosApp
         run: xcodegen generate
       - name: Assemble shared XCFramework
-        run: ./gradlew :shared:assembleSharedDebugXCFramework --stacktrace
+        run: ./gradlew :shared:assembleSharedDebugXCFramework -Dorg.gradle.java.home=$JAVA_HOME --stacktrace
       - name: Build iOS app
         working-directory: mobile/iosApp
         run: |
@@ -108,7 +108,7 @@ jobs:
           distribution: temurin
           java-version: '21'
       - uses: gradle/actions/setup-gradle@v4
-      - run: ./gradlew :shared:iosSimulatorArm64Test --stacktrace
+      - run: ./gradlew :shared:iosSimulatorArm64Test -Dorg.gradle.java.home=$JAVA_HOME --stacktrace
       - uses: actions/upload-artifact@v4
         if: always()
         with:

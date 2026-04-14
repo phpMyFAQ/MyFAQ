@@ -1,5 +1,6 @@
 package app.myfaq.android.screens
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.webkit.WebView
 import androidx.compose.animation.AnimatedVisibility
@@ -49,6 +50,7 @@ import app.myfaq.android.screens.components.LoadingIndicator
 import app.myfaq.shared.api.dto.Comment
 import app.myfaq.shared.api.dto.FaqDetail
 import app.myfaq.shared.data.ActiveInstanceManager
+import app.myfaq.shared.domain.HtmlUtils
 import app.myfaq.shared.ui.FaqDetailViewModel
 import app.myfaq.shared.ui.UiState
 import org.koin.compose.koinInject
@@ -137,7 +139,7 @@ private fun FaqDetailContent(
     ) {
         // Question heading
         Text(
-            text = faq.question,
+            text = HtmlUtils.decodeEntities(faq.question),
             style = MaterialTheme.typography.headlineSmall,
         )
 
@@ -152,17 +154,36 @@ private fun FaqDetailContent(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // HTML answer in WebView
+        // HTML answer in WebView (auto-sizing)
         if (faq.answer.isNotBlank()) {
             val bgHex = String.format("#%06X", bgColor and 0xFFFFFF)
             val fgHex = String.format("#%06X", textColor and 0xFFFFFF)
             val htmlContent = buildHtml(faq.answer, bgHex, fgHex)
+            val density = LocalContext.current.resources.displayMetrics.density
+            var webViewHeight by remember { mutableStateOf(200.dp) }
 
             AndroidView(
                 factory = { ctx ->
                     WebView(ctx).apply {
-                        settings.javaScriptEnabled = false
+                        @SuppressLint("SetJavaScriptEnabled")
+                        settings.javaScriptEnabled = true
                         setBackgroundColor(bgColor)
+                        webViewClient =
+                            object : android.webkit.WebViewClient() {
+                                override fun onPageFinished(
+                                    view: WebView?,
+                                    url: String?,
+                                ) {
+                                    view?.evaluateJavascript(
+                                        "document.body.scrollHeight",
+                                    ) { heightStr ->
+                                        val heightPx =
+                                            heightStr.toFloatOrNull()
+                                                ?: return@evaluateJavascript
+                                        webViewHeight = (heightPx / density).dp + 16.dp
+                                    }
+                                }
+                            }
                         loadDataWithBaseURL(null, htmlContent, "text/html", "UTF-8", null)
                     }
                 },
@@ -174,7 +195,7 @@ private fun FaqDetailContent(
                 modifier =
                     Modifier
                         .fillMaxWidth()
-                        .height(300.dp),
+                        .height(webViewHeight),
             )
         }
 

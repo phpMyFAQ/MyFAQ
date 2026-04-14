@@ -8,7 +8,7 @@ struct FaqRow: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
-            Text(question)
+            Text(question.strippingHTMLEntities())
                 .font(.body)
                 .lineLimit(3)
             if let updated = updated, !updated.isEmpty {

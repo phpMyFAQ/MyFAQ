@@ -72,11 +72,13 @@ struct FaqDetailScreen: View {
         }
     }
 
+    @State private var htmlContentHeight: CGFloat = 200
+
     private func detailContent(_ faq: FaqDetail) -> some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
                 // Question
-                Text(faq.question)
+                Text(faq.question.strippingHTMLEntities())
                     .font(.title2)
                     .fontWeight(.semibold)
 
@@ -88,10 +90,10 @@ struct FaqDetailScreen: View {
                         .foregroundStyle(.secondary)
                 }
 
-                // HTML answer
+                // HTML answer (auto-sizing)
                 if !faq.answer.isEmpty {
-                    HTMLView(html: faq.answer)
-                        .frame(minHeight: 200)
+                    HTMLView(html: faq.answer, contentHeight: $htmlContentHeight)
+                        .frame(height: htmlContentHeight)
                 }
 
                 // Tags
@@ -191,10 +193,15 @@ private struct CommentCard: View {
     }
 }
 
-// MARK: - HTML WebView
+// MARK: - HTML WebView (auto-sizing)
 
 private struct HTMLView: UIViewRepresentable {
     let html: String
+    @Binding var contentHeight: CGFloat
+
+    func makeCoordinator() -> Coordinator {
+        Coordinator(self)
+    }
 
     func makeUIView(context: Context) -> WKWebView {
         let config = WKWebViewConfiguration()
@@ -202,6 +209,7 @@ private struct HTMLView: UIViewRepresentable {
         webView.isOpaque = false
         webView.backgroundColor = .clear
         webView.scrollView.isScrollEnabled = false
+        webView.navigationDelegate = context.coordinator
         return webView
     }
 
@@ -235,6 +243,24 @@ private struct HTMLView: UIViewRepresentable {
         </html>
         """
         webView.loadHTMLString(wrapped, baseURL: nil)
+    }
+
+    class Coordinator: NSObject, WKNavigationDelegate {
+        let parent: HTMLView
+
+        init(_ parent: HTMLView) {
+            self.parent = parent
+        }
+
+        func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
+            webView.evaluateJavaScript("document.body.scrollHeight") { result, _ in
+                if let height = result as? CGFloat, height > 0 {
+                    DispatchQueue.main.async {
+                        self.parent.contentHeight = height + 16
+                    }
+                }
+            }
+        }
     }
 }
 

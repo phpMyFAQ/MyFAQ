@@ -4,6 +4,12 @@ plugins {
     alias(libs.plugins.kotlin.compose)
 }
 
+kotlin {
+    compilerOptions {
+        jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_21)
+    }
+}
+
 android {
     namespace = "app.myfaq.android"
     compileSdk =

@@ -10,6 +10,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import app.myfaq.shared.domain.HtmlUtils
 
 @Composable
 fun FaqCard(
@@ -26,7 +27,7 @@ fun FaqCard(
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(
-                text = question,
+                text = HtmlUtils.decodeEntities(question),
                 style = MaterialTheme.typography.titleSmall,
                 maxLines = 3,
             )

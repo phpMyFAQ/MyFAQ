@@ -131,8 +131,16 @@ struct SearchScreen: View {
                     Button {
                         onFaqClick(result.categoryId, result.id)
                     } label: {
-                        Text(result.question)
-                            .lineLimit(2)
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text(result.question.strippingHTMLEntities())
+                                .lineLimit(2)
+                            if let answer = result.answer, !answer.isEmpty {
+                                Text(answer.strippingHTML().prefix(150))
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                                    .lineLimit(2)
+                            }
+                        }
                     }
                     .foregroundStyle(.primary)
                 }
