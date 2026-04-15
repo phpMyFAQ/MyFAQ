@@ -3,6 +3,7 @@ import Shared
 
 struct SettingsScreen: View {
     let onSwitchInstance: () -> Void
+    @AppStorage("app_theme") private var themeMode: String = ThemeMode.system.rawValue
     @State private var showCacheCleared = false
     @State private var showDeleteConfirmation = false
 
@@ -21,6 +22,16 @@ struct SettingsScreen: View {
                             .foregroundStyle(.secondary)
                     }
                 }
+            }
+
+            // Appearance
+            Section("Appearance") {
+                Picker("Theme", selection: $themeMode) {
+                    ForEach(ThemeMode.allCases, id: \.rawValue) { mode in
+                        Text(mode.label).tag(mode.rawValue)
+                    }
+                }
+                .pickerStyle(.segmented)
             }
 
             Section {

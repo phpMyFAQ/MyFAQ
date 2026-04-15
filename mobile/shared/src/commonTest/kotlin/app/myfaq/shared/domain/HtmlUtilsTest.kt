@@ -2,6 +2,7 @@ package app.myfaq.shared.domain
 
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 class HtmlUtilsTest {
     // ── stripHtml ──────────────────────────────────────────────
@@ -37,8 +38,8 @@ class HtmlUtilsTest {
     fun `handles list items`() {
         val html = "<ul><li>Item 1</li><li>Item 2</li></ul>"
         val result = HtmlUtils.stripHtml(html)
-        assert(result.contains("Item 1"))
-        assert(result.contains("Item 2"))
+        assertTrue(result.contains("Item 1"))
+        assertTrue(result.contains("Item 2"))
     }
 
     @Test
@@ -77,11 +78,11 @@ class HtmlUtilsTest {
             <p>And a <a href="https://example.com">link</a>.</p>
             """.trimIndent()
         val result = HtmlUtils.stripHtml(html)
-        assert(result.contains("FAQ answer"))
-        assert(result.contains("Bullet 1"))
-        assert(result.contains("Bullet 2"))
-        assert(result.contains("link"))
-        assert(!result.contains("<"))
+        assertTrue(result.contains("FAQ answer"))
+        assertTrue(result.contains("Bullet 1"))
+        assertTrue(result.contains("Bullet 2"))
+        assertTrue(result.contains("link"))
+        assertTrue(!result.contains("<"))
     }
 
     // ── decodeEntities ─────────────────────────────────────────
@@ -174,7 +175,7 @@ class HtmlUtilsTest {
         val html = "<p>${"A".repeat(200)}</p>"
         val result = HtmlUtils.preview(html, maxLength = 50)
         assertEquals(51, result.length) // 50 chars + ellipsis
-        assert(result.endsWith("…"))
+        assertTrue(result.endsWith("…"))
     }
 
     @Test
@@ -186,9 +187,9 @@ class HtmlUtilsTest {
     @Test
     fun `preview replaces newlines with spaces`() {
         val result = HtmlUtils.preview("<p>Line 1</p><p>Line 2</p>")
-        assert(!result.contains("\n"))
-        assert(result.contains("Line 1"))
-        assert(result.contains("Line 2"))
+        assertTrue(!result.contains("\n"))
+        assertTrue(result.contains("Line 1"))
+        assertTrue(result.contains("Line 2"))
     }
 
     @Test

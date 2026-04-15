@@ -1,5 +1,6 @@
 package app.myfaq.shared.platform
 
+import kotlinx.cinterop.BetaInteropApi
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.alloc
 import kotlinx.cinterop.memScoped
@@ -40,7 +41,7 @@ import platform.Security.kSecValueData
  * `kSecAttrAccessibleAfterFirstUnlock` so values survive reboots
  * but are unavailable until the user unlocks the device once.
  */
-@OptIn(ExperimentalForeignApi::class)
+@OptIn(ExperimentalForeignApi::class, BetaInteropApi::class)
 actual class SecureStore {
     actual fun put(
         key: String,
