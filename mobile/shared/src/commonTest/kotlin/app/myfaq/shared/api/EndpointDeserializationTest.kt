@@ -58,7 +58,7 @@ class EndpointDeserializationTest {
     // ── FAQs ────────────────────────────────────────────────────────
 
     @Test
-    fun `faqs by category deserializes paginated response with record_ fields`() =
+    fun `faqs by category deserializes plain array with record_ fields`() =
         runTest {
             val result = api(FAQ_LIST_JSON).faqsByCategory(1)
             assertEquals(2, result.size)
@@ -274,18 +274,12 @@ class EndpointDeserializationTest {
         }
         """
 
-        // Paginated: faqs by category (record_* field names)
+        // Plain array: faqs by category (record_* field names per v4.0 spec)
         const val FAQ_LIST_JSON = """
-        {
-          "success": true,
-          "data": [
-            {"record_id": 10, "category_id": 1, "record_title": "How do I install?", "record_preview": "Steps to install", "record_updated": "20240115120000", "record_lang": "en", "visits": 5},
-            {"record_id": 11, "category_id": 1, "record_title": "How do I configure?", "record_preview": "Configuration guide", "record_updated": "20240120120000", "record_lang": "en", "visits": 3}
-          ],
-          "meta": {
-            "pagination": {"total": 2, "count": 2, "per_page": 25, "current_page": 1, "total_pages": 1}
-          }
-        }
+        [
+          {"record_id": 10, "category_id": 1, "record_title": "How do I install?", "record_preview": "Steps to install", "record_updated": "20240115120000", "record_lang": "en", "visits": 5},
+          {"record_id": 11, "category_id": 1, "record_title": "How do I configure?", "record_preview": "Configuration guide", "record_updated": "20240120120000", "record_lang": "en", "visits": 3}
+        ]
         """
 
         // Non-paginated: faq detail

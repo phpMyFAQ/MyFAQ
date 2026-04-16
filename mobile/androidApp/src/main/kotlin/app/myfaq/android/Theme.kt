@@ -40,6 +40,7 @@ class ThemeState(
     var mode: ThemeMode by mutableStateOf(load())
         private set
 
+    @JvmName("updateMode")
     fun setMode(newMode: ThemeMode) {
         mode = newMode
         prefs.edit().putString(KEY, newMode.name).apply()

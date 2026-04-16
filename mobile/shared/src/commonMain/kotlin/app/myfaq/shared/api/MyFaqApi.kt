@@ -38,7 +38,7 @@ interface MyFaqApi {
     suspend fun categories(): List<Category>
 
     // FAQs
-    suspend fun faqsByCategory(categoryId: Int): List<FaqSummary> // paginated
+    suspend fun faqsByCategory(categoryId: Int): List<FaqSummary>
 
     suspend fun faqDetail(
         categoryId: Int,
@@ -92,10 +92,7 @@ class MyFaqApiImpl(
             .data
 
     override suspend fun faqsByCategory(categoryId: Int): List<FaqSummary> =
-        http
-            .get("$api/faqs/$categoryId") { header("Accept-Language", language) }
-            .body<PaginatedResponse<List<FaqSummary>>>()
-            .data
+        http.get("$api/faqs/$categoryId") { header("Accept-Language", language) }.body()
 
     override suspend fun faqDetail(
         categoryId: Int,
