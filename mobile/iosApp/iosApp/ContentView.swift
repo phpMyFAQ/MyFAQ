@@ -84,15 +84,23 @@ private struct HomeNavigationView: View {
 
     var body: some View {
         NavigationStack(path: $path) {
-            HomeScreen(onFaqClick: { categoryId, faqId in
-                path.append(FaqRoute(categoryId: categoryId, faqId: faqId))
-            })
+            HomeScreen(
+                onFaqClick: { categoryId, faqId in
+                    path.append(FaqRoute(categoryId: categoryId, faqId: faqId))
+                },
+                onNewsClick: { item in
+                    path.append(NewsDetailRoute(item: item))
+                }
+            )
             .navigationDestination(for: FaqRoute.self) { route in
                 FaqDetailScreen(
                     categoryId: route.categoryId,
                     faqId: route.faqId,
                     onPaywall: { path.append(PaywallRoute()) }
                 )
+            }
+            .navigationDestination(for: NewsDetailRoute.self) { route in
+                NewsDetailScreen(item: route.item, fullContent: route.item.content)
             }
             .navigationDestination(for: PaywallRoute.self) { _ in
                 PaywallScreen()
@@ -166,6 +174,12 @@ private struct FaqRoute: Hashable {
 private struct CategoryFaqListRoute: Hashable {
     let categoryId: Int32
     let categoryName: String
+}
+
+private struct NewsDetailRoute: Hashable {
+    let item: HomeNewsItem
+    static func == (lhs: NewsDetailRoute, rhs: NewsDetailRoute) -> Bool { lhs.item.id == rhs.item.id }
+    func hash(into hasher: inout Hasher) { hasher.combine(item.id) }
 }
 
 private struct PaywallRoute: Hashable {}

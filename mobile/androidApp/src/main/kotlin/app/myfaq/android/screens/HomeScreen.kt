@@ -1,5 +1,6 @@
 package app.myfaq.android.screens
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -44,6 +45,7 @@ private enum class HomeTab(
     Sticky("Sticky"),
     Popular("Popular"),
     Latest("Latest"),
+    Trending("Trending"),
     News("News"),
 }
 
@@ -51,6 +53,7 @@ private enum class HomeTab(
 @Composable
 fun HomeScreen(
     onFaqClick: (categoryId: Int, faqId: Int) -> Unit,
+    onNewsClick: (newsId: Int) -> Unit = {},
     aim: ActiveInstanceManager = koinInject(),
 ) {
     val vm = remember { HomeViewModel(aim) }
@@ -117,11 +120,25 @@ fun HomeScreen(
                             }
                         },
                     )
+                HomeTab.Trending ->
+                    FaqTabContent(
+                        state = vm.trending.collectAsState().value,
+                        onRetry = { vm.loadTrending() },
+                        onRefresh = { vm.loadTrending() },
+                        onItemClick = { item ->
+                            val catId = item.parsedCategoryId
+                            val faqId = item.parsedFaqId
+                            if (catId != null && faqId != null) {
+                                onFaqClick(catId, faqId)
+                            }
+                        },
+                    )
                 HomeTab.News ->
                     NewsTabContent(
                         state = vm.news.collectAsState().value,
                         onRetry = { vm.loadNews() },
                         onRefresh = { vm.loadNews() },
+                        onNewsClick = onNewsClick,
                     )
             }
         }
@@ -182,6 +199,7 @@ private fun NewsTabContent(
     state: UiState<List<NewsItem>>,
     onRetry: () -> Unit,
     onRefresh: () -> Unit,
+    onNewsClick: (newsId: Int) -> Unit = {},
 ) {
     when (state) {
         is UiState.Loading -> LoadingIndicator()
@@ -210,7 +228,7 @@ private fun NewsTabContent(
                         verticalArrangement = Arrangement.spacedBy(12.dp),
                     ) {
                         items(state.data, key = { it.id }) { news ->
-                            NewsCard(news)
+                            NewsCard(news, onClick = { onNewsClick(news.id) })
                         }
                     }
                 }
@@ -220,8 +238,8 @@ private fun NewsTabContent(
 }
 
 @Composable
-private fun NewsCard(news: NewsItem) {
-    Card(modifier = Modifier.fillMaxWidth()) {
+private fun NewsCard(news: NewsItem, onClick: () -> Unit = {}) {
+    Card(modifier = Modifier.fillMaxWidth().clickable(onClick = onClick)) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(
                 text = news.header,

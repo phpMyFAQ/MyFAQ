@@ -16,6 +16,8 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -53,8 +55,10 @@ fun WorkspacesScreen(
     val vm = WorkspacesViewModel(db, aim)
     val instances by vm.instances.collectAsState()
     var instanceToDelete by remember { mutableStateOf<Instance?>(null) }
+    var instanceToRename by remember { mutableStateOf<Instance?>(null) }
+    var renameText by remember { mutableStateOf("") }
 
-    // Confirmation dialog
+    // Delete confirmation dialog
     instanceToDelete?.let { instance ->
         AlertDialog(
             onDismissRequest = { instanceToDelete = null },
@@ -70,6 +74,36 @@ fun WorkspacesScreen(
             },
             dismissButton = {
                 TextButton(onClick = { instanceToDelete = null }) {
+                    Text("Cancel")
+                }
+            },
+        )
+    }
+
+    // Rename dialog
+    instanceToRename?.let { instance ->
+        AlertDialog(
+            onDismissRequest = { instanceToRename = null },
+            title = { Text("Rename Instance") },
+            text = {
+                OutlinedTextField(
+                    value = renameText,
+                    onValueChange = { renameText = it },
+                    label = { Text("Name") },
+                    singleLine = true,
+                )
+            },
+            confirmButton = {
+                TextButton(onClick = {
+                    val trimmed = renameText.trim()
+                    if (trimmed.isNotEmpty()) vm.renameInstance(instance.id, trimmed)
+                    instanceToRename = null
+                }) {
+                    Text("Save")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { instanceToRename = null }) {
                     Text("Cancel")
                 }
             },
@@ -104,6 +138,10 @@ fun WorkspacesScreen(
                             vm.selectInstance(instance)
                             onInstanceSelected()
                         },
+                        onRename = {
+                            renameText = instance.displayName
+                            instanceToRename = instance
+                        },
                         onDelete = { instanceToDelete = instance },
                     )
                 }
@@ -116,6 +154,7 @@ fun WorkspacesScreen(
 private fun InstanceCard(
     instance: Instance,
     onClick: () -> Unit,
+    onRename: () -> Unit,
     onDelete: () -> Unit,
 ) {
     Card(
@@ -137,6 +176,13 @@ private fun InstanceCard(
                     text = instance.baseUrl,
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+            IconButton(onClick = onRename) {
+                Icon(
+                    Icons.Default.Edit,
+                    contentDescription = "Rename",
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
             IconButton(onClick = onDelete) {

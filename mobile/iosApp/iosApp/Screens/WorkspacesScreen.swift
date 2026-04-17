@@ -45,6 +45,8 @@ struct WorkspacesScreen: View {
     @StateObject private var store = WorkspacesStore()
     @State private var showAddSheet = false
     @State private var instanceToDelete: Instance?
+    @State private var instanceToRename: Instance?
+    @State private var renameText = ""
     let onInstanceSelected: () -> Void
 
     var body: some View {
@@ -88,6 +90,28 @@ struct WorkspacesScreen: View {
             }
         } message: { instance in
             Text("Are you sure you want to delete \"\(instance.displayName)\"? This cannot be undone.")
+        }
+        .alert(
+            "Rename Instance",
+            isPresented: Binding(
+                get: { instanceToRename != nil },
+                set: { if !$0 { instanceToRename = nil } }
+            ),
+            presenting: instanceToRename
+        ) { instance in
+            TextField("Name", text: $renameText)
+            Button("Save") {
+                let trimmed = renameText.trimmingCharacters(in: .whitespaces)
+                if !trimmed.isEmpty {
+                    store.vm.renameInstance(instanceId: instance.id, newName: trimmed)
+                }
+                instanceToRename = nil
+            }
+            Button("Cancel", role: .cancel) {
+                instanceToRename = nil
+            }
+        } message: { _ in
+            Text("Enter a new display name.")
         }
     }
 
@@ -133,10 +157,16 @@ struct WorkspacesScreen: View {
                     }
                 }
                 .contextMenu {
+                    Button {
+                        renameText = instance.displayName
+                        instanceToRename = instance
+                    } label: {
+                        Label("Rename", systemImage: "pencil")
+                    }
                     Button(role: .destructive) {
                         instanceToDelete = instance
                     } label: {
-                        Label("Delete Instance", systemImage: "trash")
+                        Label("Delete", systemImage: "trash")
                     }
                 }
             }

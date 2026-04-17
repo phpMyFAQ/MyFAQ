@@ -8,6 +8,7 @@ final class FaqDetailStore: ObservableObject {
 
     @Published var faq: UiStateWrapper<FaqDetail> = .loading
     @Published var comments: UiStateWrapper<[Comment]> = .loading
+    @Published var attachments: [Attachment] = []
 
     private var jobs: [Kotlinx_coroutines_coreJob] = []
 
@@ -21,6 +22,13 @@ final class FaqDetailStore: ObservableObject {
         jobs.append(FlowCollectorKt.collectFlow(flow: vm.comments) { [weak self] value in
             DispatchQueue.main.async {
                 self?.comments = unwrapUiState(value) { castList($0) as [Comment]? }
+            }
+        })
+        jobs.append(FlowCollectorKt.collectFlow(flow: vm.attachments) { [weak self] value in
+            DispatchQueue.main.async {
+                if case .success(let list) = unwrapUiState(value) { castList($0) as [Attachment]? } {
+                    self?.attachments = list
+                }
             }
         })
         vm.load(categoryId: categoryId, faqId: faqId)
@@ -101,6 +109,11 @@ struct FaqDetailScreen: View {
                     tagsView(faq.tags)
                 }
 
+                // Attachments
+                if !store.attachments.isEmpty {
+                    attachmentsSection(store.attachments)
+                }
+
                 // Rate button
                 Button {
                     onPaywall()
@@ -116,6 +129,26 @@ struct FaqDetailScreen: View {
                 commentsSection
             }
             .padding()
+        }
+    }
+
+    private func attachmentsSection(_ attachments: [Attachment]) -> some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text("Attachments")
+                .font(.subheadline)
+                .fontWeight(.semibold)
+            ForEach(attachments, id: \.filename) { attachment in
+                if let urlString = attachment.url, let url = URL(string: urlString) {
+                    Link(destination: url) {
+                        Label(attachment.filename, systemImage: "paperclip")
+                            .font(.subheadline)
+                    }
+                } else {
+                    Label(attachment.filename, systemImage: "paperclip")
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                }
+            }
         }
     }
 

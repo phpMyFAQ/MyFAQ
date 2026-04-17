@@ -92,6 +92,12 @@ class WorkspacesViewModel(
         activeInstanceManager.setActive(instance)
     }
 
+    fun renameInstance(instanceId: String, newName: String) {
+        val now = Clock.System.now().epochSeconds
+        db.instancesQueries.updateDisplayName(newName, now, instanceId)
+        refreshList()
+    }
+
     fun deleteInstance(instanceId: String) {
         db.cacheEntriesQueries.deleteByInstance(instanceId)
         db.instancesQueries.deleteById(instanceId)

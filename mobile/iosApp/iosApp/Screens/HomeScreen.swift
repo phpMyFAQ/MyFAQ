@@ -42,6 +42,7 @@ struct HomeNewsItem {
     let id: String
     let header: String
     let date: String?
+    let content: String?
 
     init?(rawValue: Any) {
         guard
@@ -53,6 +54,7 @@ struct HomeNewsItem {
 
         self.header = header
         self.date = object.value(forKey: "date") as? String
+        self.content = object.value(forKey: "content") as? String
         if let rawId = object.value(forKey: "id") {
             self.id = String(describing: rawId)
         } else {
@@ -76,6 +78,7 @@ final class HomeStore: ObservableObject {
     @Published var sticky: UiStateWrapper<[HomeFaqItem]> = .loading
     @Published var popular: UiStateWrapper<[HomeFaqItem]> = .loading
     @Published var latest: UiStateWrapper<[HomeFaqItem]> = .loading
+    @Published var trending: UiStateWrapper<[HomeFaqItem]> = .loading
     @Published var news: UiStateWrapper<[HomeNewsItem]> = .loading
 
     private var jobs: [Kotlinx_coroutines_coreJob] = []
@@ -102,6 +105,11 @@ final class HomeStore: ObservableObject {
                 self?.latest = unwrapUiState(value, cast: mapFaqItems)
             }
         })
+        jobs.append(FlowCollectorKt.collectFlow(flow: vm.trending) { [weak self] value in
+            DispatchQueue.main.async {
+                self?.trending = unwrapUiState(value, cast: mapFaqItems)
+            }
+        })
         jobs.append(FlowCollectorKt.collectFlow(flow: vm.news) { [weak self] value in
             DispatchQueue.main.async {
                 self?.news = unwrapUiState(value, cast: mapNewsItems)
@@ -118,6 +126,7 @@ private enum HomeTab: String, CaseIterable {
     case sticky = "Sticky"
     case popular = "Popular"
     case latest = "Latest"
+    case trending = "Trending"
     case news = "News"
 }
 
@@ -125,6 +134,7 @@ struct HomeScreen: View {
     @StateObject private var store = HomeStore()
     @State private var selectedTab: HomeTab = .sticky
     let onFaqClick: (Int32, Int32) -> Void
+    let onNewsClick: (HomeNewsItem) -> Void
 
     var body: some View {
         VStack(spacing: 0) {
@@ -155,6 +165,8 @@ struct HomeScreen: View {
             faqList(state: store.popular, onRetry: { store.vm.loadPopular() })
         case .latest:
             faqList(state: store.latest, onRetry: { store.vm.loadLatest() })
+        case .trending:
+            faqList(state: store.trending, onRetry: { store.vm.loadTrending() })
         case .news:
             newsList(state: store.news, onRetry: { store.vm.loadNews() })
         }
@@ -200,16 +212,21 @@ struct HomeScreen: View {
             } else {
                 List {
                     ForEach(items, id: \.id) { item in
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text(item.header)
-                                .font(.headline)
-                            if let date = item.date, !date.isEmpty {
-                                Text(date)
-                                    .font(.caption)
-                                    .foregroundStyle(.secondary)
+                        Button {
+                            onNewsClick(item)
+                        } label: {
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text(item.header)
+                                    .font(.headline)
+                                if let date = item.date, !date.isEmpty {
+                                    Text(date)
+                                        .font(.caption)
+                                        .foregroundStyle(.secondary)
+                                }
                             }
+                            .padding(.vertical, 4)
                         }
-                        .padding(.vertical, 4)
+                        .foregroundStyle(.primary)
                     }
                 }
                 .listStyle(.plain)

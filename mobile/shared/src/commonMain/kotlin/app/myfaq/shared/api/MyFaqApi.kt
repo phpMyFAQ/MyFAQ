@@ -1,6 +1,7 @@
 package app.myfaq.shared.api
 
 import app.myfaq.shared.api.dto.Category
+import app.myfaq.shared.api.dto.Attachment
 import app.myfaq.shared.api.dto.Comment
 import app.myfaq.shared.api.dto.FaqDetail
 import app.myfaq.shared.api.dto.FaqPopularItem
@@ -63,6 +64,9 @@ interface MyFaqApi {
 
     // News (paginated)
     suspend fun news(): List<NewsItem>
+
+    // Attachments (paginated)
+    suspend fun attachments(faqId: Int): List<Attachment>
 
     // Comments (paginated)
     suspend fun comments(recordId: Int): List<Comment>
@@ -136,6 +140,12 @@ class MyFaqApiImpl(
         http
             .get("$api/news") { header("Accept-Language", language) }
             .body<PaginatedResponse<List<NewsItem>>>()
+            .data
+
+    override suspend fun attachments(faqId: Int): List<Attachment> =
+        http
+            .get("$api/attachments/$faqId") { header("Accept-Language", language) }
+            .body<PaginatedResponse<List<Attachment>>>()
             .data
 
     override suspend fun comments(recordId: Int): List<Comment> =

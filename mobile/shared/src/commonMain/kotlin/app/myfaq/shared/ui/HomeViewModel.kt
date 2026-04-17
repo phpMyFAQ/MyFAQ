@@ -24,6 +24,9 @@ class HomeViewModel(
     private val _latest = MutableStateFlow<UiState<List<FaqPopularItem>>>(UiState.Loading)
     val latest: StateFlow<UiState<List<FaqPopularItem>>> = _latest.asStateFlow()
 
+    private val _trending = MutableStateFlow<UiState<List<FaqPopularItem>>>(UiState.Loading)
+    val trending: StateFlow<UiState<List<FaqPopularItem>>> = _trending.asStateFlow()
+
     private val _news = MutableStateFlow<UiState<List<NewsItem>>>(UiState.Loading)
     val news: StateFlow<UiState<List<NewsItem>>> = _news.asStateFlow()
 
@@ -31,6 +34,7 @@ class HomeViewModel(
         loadSticky()
         loadPopular()
         loadLatest()
+        loadTrending()
         loadNews()
     }
 
@@ -39,6 +43,8 @@ class HomeViewModel(
     fun loadPopular() = loadInto(_popular) { aim.repository.faqsPopular() }
 
     fun loadLatest() = loadInto(_latest) { aim.repository.faqsLatest() }
+
+    fun loadTrending() = loadInto(_trending) { aim.repository.faqsTrending() }
 
     fun loadNews() = loadInto(_news) { aim.repository.news() }
 

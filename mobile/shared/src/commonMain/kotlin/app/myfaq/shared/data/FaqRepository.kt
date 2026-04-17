@@ -2,6 +2,7 @@ package app.myfaq.shared.data
 
 import app.myfaq.shared.api.HttpClientFactory
 import app.myfaq.shared.api.MyFaqApi
+import app.myfaq.shared.api.dto.Attachment
 import app.myfaq.shared.api.dto.Category
 import app.myfaq.shared.api.dto.Comment
 import app.myfaq.shared.api.dto.FaqDetail
@@ -84,6 +85,11 @@ class FaqRepository(
     // --- News ---
 
     suspend fun news(): List<NewsItem> = cachedList("news", CacheTtl.NEWS) { api.news() }
+
+    // --- Attachments ---
+
+    suspend fun attachments(faqId: Int): List<Attachment> =
+        cachedList("attachments/$faqId", CacheTtl.FAQS) { api.attachments(faqId) }
 
     // --- Comments ---
 

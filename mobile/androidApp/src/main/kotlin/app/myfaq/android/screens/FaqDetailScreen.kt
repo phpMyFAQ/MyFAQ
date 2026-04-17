@@ -2,6 +2,7 @@ package app.myfaq.android.screens
 
 import android.annotation.SuppressLint
 import android.content.Intent
+import android.net.Uri
 import android.webkit.WebView
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -67,6 +68,7 @@ fun FaqDetailScreen(
     val vm = remember { FaqDetailViewModel(aim) }
     val faqState by vm.faq.collectAsState()
     val commentsState by vm.comments.collectAsState()
+    val attachmentsState by vm.attachments.collectAsState()
 
     LaunchedEffect(categoryId, faqId) { vm.load(categoryId, faqId) }
 
@@ -110,6 +112,7 @@ fun FaqDetailScreen(
                 FaqDetailContent(
                     faq = s.data,
                     commentsState = commentsState,
+                    attachmentsState = attachmentsState,
                     onPaywall = onPaywall,
                     modifier = Modifier.padding(padding),
                 )
@@ -123,6 +126,7 @@ fun FaqDetailScreen(
 private fun FaqDetailContent(
     faq: FaqDetail,
     commentsState: UiState<List<Comment>>,
+    attachmentsState: UiState<List<app.myfaq.shared.api.dto.Attachment>>,
     onPaywall: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -215,6 +219,12 @@ private fun FaqDetailContent(
             }
         }
 
+        // Attachments
+        if (attachmentsState is UiState.Success && (attachmentsState as UiState.Success).data.isNotEmpty()) {
+            Spacer(modifier = Modifier.height(12.dp))
+            AttachmentsSection((attachmentsState as UiState.Success).data)
+        }
+
         Spacer(modifier = Modifier.height(16.dp))
 
         // Rate button (paywall)
@@ -231,6 +241,25 @@ private fun FaqDetailContent(
 
         // Comments section
         CommentsSection(commentsState)
+    }
+}
+
+@Composable
+private fun AttachmentsSection(attachments: List<app.myfaq.shared.api.dto.Attachment>) {
+    val context = LocalContext.current
+    Text("Attachments", style = MaterialTheme.typography.titleSmall)
+    Spacer(modifier = Modifier.height(4.dp))
+    attachments.forEach { attachment ->
+        TextButton(
+            onClick = {
+                val url = attachment.url
+                if (!url.isNullOrBlank()) {
+                    context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
+                }
+            },
+        ) {
+            Text("📎 ${attachment.filename}")
+        }
     }
 }
 

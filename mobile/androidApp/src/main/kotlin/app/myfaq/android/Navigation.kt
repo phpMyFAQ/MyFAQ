@@ -28,6 +28,7 @@ import app.myfaq.android.screens.CategoriesScreen
 import app.myfaq.android.screens.FaqDetailScreen
 import app.myfaq.android.screens.FaqListScreen
 import app.myfaq.android.screens.HomeScreen
+import app.myfaq.android.screens.NewsDetailScreen
 import app.myfaq.android.screens.PaywallScreen
 import app.myfaq.android.screens.SearchScreen
 import app.myfaq.android.screens.SettingsScreen
@@ -46,6 +47,7 @@ object Routes {
     const val CATEGORIES = "categories"
     const val FAQ_LIST = "categories/{categoryId}/{categoryName}"
     const val FAQ_DETAIL = "faq/{categoryId}/{faqId}"
+    const val NEWS_DETAIL = "news/{newsId}"
     const val SEARCH = "search"
     const val SETTINGS = "settings"
     const val PAYWALL = "paywall"
@@ -59,6 +61,8 @@ object Routes {
         categoryId: Int,
         faqId: Int,
     ): String = "faq/$categoryId/$faqId"
+
+    fun newsDetail(newsId: Int): String = "news/$newsId"
 }
 
 // ── Bottom-bar tabs ────────────────────────────────────────────────
@@ -145,6 +149,9 @@ fun MyFaqNavHost(aim: ActiveInstanceManager = koinInject()) {
                     onFaqClick = { categoryId, faqId ->
                         navController.navigate(Routes.faqDetail(categoryId, faqId))
                     },
+                    onNewsClick = { newsId ->
+                        navController.navigate(Routes.newsDetail(newsId))
+                    },
                 )
             }
 
@@ -194,6 +201,17 @@ fun MyFaqNavHost(aim: ActiveInstanceManager = koinInject()) {
                     faqId = faqId,
                     onBack = { navController.popBackStack() },
                     onPaywall = { navController.navigate(Routes.PAYWALL) },
+                )
+            }
+
+            composable(
+                route = Routes.NEWS_DETAIL,
+                arguments = listOf(navArgument("newsId") { type = NavType.IntType }),
+            ) { backStackEntry ->
+                val newsId = backStackEntry.arguments?.getInt("newsId") ?: 0
+                NewsDetailScreen(
+                    newsId = newsId,
+                    onBack = { navController.popBackStack() },
                 )
             }
 

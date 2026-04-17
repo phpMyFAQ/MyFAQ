@@ -31,6 +31,11 @@ UPDATE instances
 SET last_successful_ping = ?, updated_at = ?
 WHERE id = ?;
 
+updateDisplayName:
+UPDATE instances
+SET display_name = ?, updated_at = ?
+WHERE id = ?;
+
 deleteById:
 DELETE FROM instances WHERE id = ?;
 
