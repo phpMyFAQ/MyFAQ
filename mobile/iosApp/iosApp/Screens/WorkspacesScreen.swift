@@ -118,6 +118,13 @@ struct WorkspacesScreen: View {
     private var emptyState: some View {
         VStack(spacing: 12) {
             Spacer()
+            if let uiImage = UIImage(named: "Logo") {
+                Image(uiImage: uiImage)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(height: 120)
+                    .padding(.bottom, 8)
+            }
             Text("No instances yet")
                 .font(.title2)
             Text("Add your phpMyFAQ instance to get started.")

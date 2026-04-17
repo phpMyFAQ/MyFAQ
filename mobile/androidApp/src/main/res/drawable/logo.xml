@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Placeholder vector drawable. Replace with the phpMyFAQ logo PNG by
+  dropping `logo.png` into the matching `drawable-*dpi/` folders (or
+  this same folder with `logo.png` to override). See mobile/LOGO.md.
+-->
+<vector xmlns:android="http://schemas.android.com/res/android"
+    android:width="120dp"
+    android:height="120dp"
+    android:viewportWidth="120"
+    android:viewportHeight="120">
+    <path
+        android:fillColor="#1A73E8"
+        android:pathData="M60,10A50,50 0 1,0 60,110A50,50 0 1,0 60,10Z" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M60,30 C50,30 42,38 42,48 L52,48 C52,44 56,40 60,40 C64,40 68,44 68,48 C68,52 64,55 60,58 C56,61 54,65 54,72 L66,72 C66,68 68,66 72,63 C76,60 80,55 80,48 C80,38 70,30 60,30 Z M54,80 L66,80 L66,92 L54,92 Z" />
+</vector>

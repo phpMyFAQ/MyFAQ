@@ -80,6 +80,7 @@ final class HomeStore: ObservableObject {
     @Published var latest: UiStateWrapper<[HomeFaqItem]> = .loading
     @Published var trending: UiStateWrapper<[HomeFaqItem]> = .loading
     @Published var news: UiStateWrapper<[HomeNewsItem]> = .loading
+    @Published var title: String = "MyFAQ"
 
     private var jobs: [Kotlinx_coroutines_coreJob] = []
 
@@ -115,6 +116,13 @@ final class HomeStore: ObservableObject {
                 self?.news = unwrapUiState(value, cast: mapNewsItems)
             }
         })
+        jobs.append(FlowCollectorKt.collectFlow(flow: vm.title) { [weak self] value in
+            DispatchQueue.main.async {
+                if let title = value as? String, !title.isEmpty {
+                    self?.title = title
+                }
+            }
+        })
     }
 
     deinit {
@@ -141,7 +149,7 @@ struct HomeScreen: View {
             picker
             tabContent
         }
-        .navigationTitle("MyFAQ")
+        .navigationTitle(store.title)
         .navigationBarTitleDisplayMode(.inline)
     }
 

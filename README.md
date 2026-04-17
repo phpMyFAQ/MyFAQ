@@ -3,15 +3,8 @@
 Native iOS and Android client for [phpMyFAQ](https://www.phpmyfaq.de),
 built with Kotlin Multiplatform, SwiftUI, and Jetpack Compose.
 
-**Status: Phase 0 (foundations)**. The apps display a placeholder
-screen that proves the shared module, API client, encrypted database,
-and secure storage are wired end-to-end. No user-visible features yet
--- those land in Phase 1.
-
 - Website: [myfaq.app](https://myfaq.app)
 - phpMyFAQ minimum version: **4.2.0**
-- Business model: freemium (read + offline free forever; writes behind
-  Pro unlock in Phase 3)
 
 ---
 

@@ -30,12 +30,26 @@ class HomeViewModel(
     private val _news = MutableStateFlow<UiState<List<NewsItem>>>(UiState.Loading)
     val news: StateFlow<UiState<List<NewsItem>>> = _news.asStateFlow()
 
+    private val _title = MutableStateFlow<String?>(null)
+    val title: StateFlow<String?> = _title.asStateFlow()
+
     fun loadAll() {
+        loadTitle()
         loadSticky()
         loadPopular()
         loadLatest()
         loadTrending()
         loadNews()
+    }
+
+    fun loadTitle() {
+        scope.launch {
+            try {
+                _title.value = aim.repository.meta().title
+            } catch (_: Exception) {
+                // Keep previous/null title — header falls back to default.
+            }
+        }
     }
 
     fun loadSticky() = loadInto(_sticky) { aim.repository.faqsSticky() }

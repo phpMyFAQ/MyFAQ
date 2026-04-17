@@ -58,12 +58,15 @@ fun HomeScreen(
 ) {
     val vm = remember { HomeViewModel(aim) }
     var selectedTab by remember { mutableIntStateOf(0) }
+    val title by vm.title.collectAsState()
 
     LaunchedEffect(Unit) { vm.loadAll() }
 
     Scaffold(
         topBar = {
-            CenterAlignedTopAppBar(title = { Text("MyFAQ") })
+            CenterAlignedTopAppBar(
+                title = { Text(title?.takeIf { it.isNotBlank() } ?: "MyFAQ") },
+            )
         },
     ) { padding ->
         Column(modifier = Modifier.padding(padding)) {

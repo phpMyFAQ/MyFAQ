@@ -18,9 +18,9 @@ import kotlinx.serialization.Serializable
  */
 @Serializable
 data class Meta(
-    val version: String,
-    val title: String,
-    val language: String,
+    val version: String = "",
+    val title: String = "",
+    val language: String = "en",
     /** v4.0: object map e.g. {"de":"German","en":"English"} */
     val availableLanguages: Map<String, String> = emptyMap(),
     val enabledFeatures: Map<String, Boolean> = emptyMap(),
@@ -34,7 +34,7 @@ data class Meta(
 @Serializable
 data class OAuthDiscovery(
     @SerialName("authorization_endpoint")
-    val authorizationEndpoint: String,
+    val authorizationEndpoint: String? = null,
     @SerialName("token_endpoint")
-    val tokenEndpoint: String,
+    val tokenEndpoint: String? = null,
 )

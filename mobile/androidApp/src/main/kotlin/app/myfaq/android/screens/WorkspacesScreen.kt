@@ -1,5 +1,6 @@
 package app.myfaq.android.screens
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -38,7 +39,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import app.myfaq.android.R
 import app.myfaq.shared.data.ActiveInstanceManager
 import app.myfaq.shared.domain.Instance
 import app.myfaq.shared.ui.WorkspacesViewModel
@@ -206,6 +209,12 @@ private fun EmptyWorkspacesState(
         contentAlignment = Alignment.Center,
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Image(
+                painter = painterResource(id = R.drawable.logo),
+                contentDescription = "phpMyFAQ logo",
+                modifier = Modifier.height(120.dp),
+            )
+            Spacer(modifier = Modifier.height(24.dp))
             Text(
                 text = "No instances yet",
                 style = MaterialTheme.typography.headlineSmall,

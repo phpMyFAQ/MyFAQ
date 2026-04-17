@@ -55,6 +55,9 @@ struct SettingsScreen: View {
                 Text("MyFAQ.app - Native client for phpMyFAQ")
                     .font(.caption)
                     .foregroundStyle(.secondary)
+                NavigationLink("Open source licenses") {
+                    LicensesScreen()
+                }
             }
         }
         .navigationTitle("Settings")

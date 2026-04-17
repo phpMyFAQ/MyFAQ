@@ -26,7 +26,7 @@ final class FaqDetailStore: ObservableObject {
         })
         jobs.append(FlowCollectorKt.collectFlow(flow: vm.attachments) { [weak self] value in
             DispatchQueue.main.async {
-                if case .success(let list) = unwrapUiState(value) { castList($0) as [Attachment]? } {
+                if case .success(let list) = unwrapUiState(value, cast: { castList($0) as [Attachment]? }) {
                     self?.attachments = list
                 }
             }

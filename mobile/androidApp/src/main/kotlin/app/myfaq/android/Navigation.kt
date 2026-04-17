@@ -28,6 +28,7 @@ import app.myfaq.android.screens.CategoriesScreen
 import app.myfaq.android.screens.FaqDetailScreen
 import app.myfaq.android.screens.FaqListScreen
 import app.myfaq.android.screens.HomeScreen
+import app.myfaq.android.screens.LicensesScreen
 import app.myfaq.android.screens.NewsDetailScreen
 import app.myfaq.android.screens.PaywallScreen
 import app.myfaq.android.screens.SearchScreen
@@ -50,6 +51,7 @@ object Routes {
     const val NEWS_DETAIL = "news/{newsId}"
     const val SEARCH = "search"
     const val SETTINGS = "settings"
+    const val LICENSES = "licenses"
     const val PAYWALL = "paywall"
 
     fun faqList(
@@ -80,6 +82,7 @@ enum class BottomTab(
 
 // ── Root scaffold with NavHost ─────────────────────────────────────
 
+@Suppress("LongMethod")
 @Composable
 fun MyFaqNavHost(aim: ActiveInstanceManager = koinInject()) {
     val navController = rememberNavController()
@@ -232,7 +235,12 @@ fun MyFaqNavHost(aim: ActiveInstanceManager = koinInject()) {
                             }
                         }
                     },
+                    onLicenses = { navController.navigate(Routes.LICENSES) },
                 )
+            }
+
+            composable(Routes.LICENSES) {
+                LicensesScreen(onBack = { navController.popBackStack() })
             }
 
             composable(Routes.PAYWALL) {

@@ -36,6 +36,7 @@ import org.koin.compose.koinInject
 @Composable
 fun SettingsScreen(
     onSwitchInstance: () -> Unit,
+    onLicenses: () -> Unit = {},
     aim: ActiveInstanceManager = koinInject(),
     db: MyFaqDatabase = koinInject(),
 ) {
@@ -175,6 +176,13 @@ fun SettingsScreen(
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                 },
+            )
+            HorizontalDivider()
+
+            // Open source licenses
+            ListItem(
+                headlineContent = { Text("Open source licenses") },
+                modifier = Modifier.clickable(onClick = onLicenses),
             )
         }
     }
