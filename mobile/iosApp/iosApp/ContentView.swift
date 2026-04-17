@@ -53,12 +53,10 @@ private struct MainTabView: View {
     }
 
     private var categoriesTab: some View {
-        NavigationStack {
-            CategoriesNavigationView()
-        }
-        .tabItem {
-            Label("Categories", systemImage: "list.bullet")
-        }
+        CategoriesNavigationView()
+            .tabItem {
+                Label("Categories", systemImage: "list.bullet")
+            }
     }
 
     private var searchTab: some View {
@@ -108,27 +106,29 @@ private struct CategoriesNavigationView: View {
     @State private var path = NavigationPath()
 
     var body: some View {
-        CategoriesScreen(onCategoryClick: { categoryId, categoryName in
-            path.append(CategoryFaqListRoute(categoryId: categoryId, categoryName: categoryName))
-        })
-        .navigationDestination(for: CategoryFaqListRoute.self) { route in
-            FaqListScreen(
-                categoryId: route.categoryId,
-                categoryName: route.categoryName,
-                onFaqClick: { faqId in
-                    path.append(FaqRoute(categoryId: route.categoryId, faqId: faqId))
-                }
-            )
-        }
-        .navigationDestination(for: FaqRoute.self) { route in
-            FaqDetailScreen(
-                categoryId: route.categoryId,
-                faqId: route.faqId,
-                onPaywall: { path.append(PaywallRoute()) }
-            )
-        }
-        .navigationDestination(for: PaywallRoute.self) { _ in
-            PaywallScreen()
+        NavigationStack(path: $path) {
+            CategoriesScreen(onCategoryClick: { categoryId, categoryName in
+                path.append(CategoryFaqListRoute(categoryId: categoryId, categoryName: categoryName))
+            })
+            .navigationDestination(for: CategoryFaqListRoute.self) { route in
+                FaqListScreen(
+                    categoryId: route.categoryId,
+                    categoryName: route.categoryName,
+                    onFaqClick: { faqId in
+                        path.append(FaqRoute(categoryId: route.categoryId, faqId: faqId))
+                    }
+                )
+            }
+            .navigationDestination(for: FaqRoute.self) { route in
+                FaqDetailScreen(
+                    categoryId: route.categoryId,
+                    faqId: route.faqId,
+                    onPaywall: { path.append(PaywallRoute()) }
+                )
+            }
+            .navigationDestination(for: PaywallRoute.self) { _ in
+                PaywallScreen()
+            }
         }
     }
 }
