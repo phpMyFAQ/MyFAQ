@@ -49,7 +49,7 @@ class FaqDetailViewModel(
         scope.launch {
             try {
                 _attachments.value = UiState.Success(aim.repository.attachments(faqId))
-            } catch (e: Exception) {
+            } catch (_: Exception) {
                 // Attachments are optional — treat failure as empty rather than error
                 _attachments.value = UiState.Success(emptyList())
             }

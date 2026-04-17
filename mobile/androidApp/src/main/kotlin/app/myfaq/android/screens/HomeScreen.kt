@@ -238,7 +238,10 @@ private fun NewsTabContent(
 }
 
 @Composable
-private fun NewsCard(news: NewsItem, onClick: () -> Unit = {}) {
+private fun NewsCard(
+    news: NewsItem,
+    onClick: () -> Unit = {},
+) {
     Card(modifier = Modifier.fillMaxWidth().clickable(onClick = onClick)) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(

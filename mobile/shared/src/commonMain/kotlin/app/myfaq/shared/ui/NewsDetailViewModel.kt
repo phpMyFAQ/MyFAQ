@@ -23,11 +23,12 @@ class NewsDetailViewModel(
         scope.launch {
             try {
                 val item = aim.repository.news().find { it.id == newsId }
-                _news.value = if (item != null) {
-                    UiState.Success(item)
-                } else {
-                    UiState.Error("News item not found")
-                }
+                _news.value =
+                    if (item != null) {
+                        UiState.Success(item)
+                    } else {
+                        UiState.Error("News item not found")
+                    }
             } catch (e: Exception) {
                 _news.value = UiState.Error(e.message ?: "Failed to load news")
             }

@@ -1,7 +1,7 @@
 package app.myfaq.shared.api
 
-import app.myfaq.shared.api.dto.Category
 import app.myfaq.shared.api.dto.Attachment
+import app.myfaq.shared.api.dto.Category
 import app.myfaq.shared.api.dto.Comment
 import app.myfaq.shared.api.dto.FaqDetail
 import app.myfaq.shared.api.dto.FaqPopularItem

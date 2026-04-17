@@ -66,15 +66,17 @@ fun NewsDetailScreen(
     ) { padding ->
         when (val s = state) {
             is UiState.Loading -> LoadingIndicator(modifier = Modifier.padding(padding))
-            is UiState.Error -> ErrorRetry(
-                message = s.message,
-                onRetry = { vm.load() },
-                modifier = Modifier.padding(padding),
-            )
-            is UiState.Success -> NewsDetailContent(
-                news = s.data,
-                modifier = Modifier.padding(padding),
-            )
+            is UiState.Error ->
+                ErrorRetry(
+                    message = s.message,
+                    onRetry = { vm.load() },
+                    modifier = Modifier.padding(padding),
+                )
+            is UiState.Success ->
+                NewsDetailContent(
+                    news = s.data,
+                    modifier = Modifier.padding(padding),
+                )
         }
     }
 }
@@ -89,10 +91,11 @@ private fun NewsDetailContent(
     val textColor = MaterialTheme.colorScheme.onSurface.toArgb()
 
     Column(
-        modifier = modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState())
-            .padding(16.dp),
+        modifier =
+            modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+                .padding(16.dp),
     ) {
         Text(
             text = news.header,
@@ -131,20 +134,30 @@ private fun NewsDetailContent(
                         @SuppressLint("SetJavaScriptEnabled")
                         settings.javaScriptEnabled = true
                         setBackgroundColor(bgColor)
-                        webViewClient = object : android.webkit.WebViewClient() {
-                            override fun onPageFinished(view: WebView?, url: String?) {
-                                view?.evaluateJavascript("document.body.scrollHeight") { heightStr ->
-                                    val heightPx = heightStr.toFloatOrNull() ?: return@evaluateJavascript
-                                    webViewHeight = (heightPx / density).dp + 16.dp
+                        webViewClient =
+                            object : android.webkit.WebViewClient() {
+                                override fun onPageFinished(
+                                    view: WebView?,
+                                    url: String?,
+                                ) {
+                                    view?.evaluateJavascript("document.body.scrollHeight") { heightStr ->
+                                        val heightPx = heightStr.toFloatOrNull() ?: return@evaluateJavascript
+                                        webViewHeight = (heightPx / density).dp + 16.dp
+                                    }
                                 }
                             }
-                        }
                         loadDataWithBaseURL(null, htmlContent, "text/html", "UTF-8", null)
                     }
                 },
                 update = { webView ->
                     webView.setBackgroundColor(bgColor)
-                    webView.loadDataWithBaseURL(null, buildNewsHtml(news.content, bgHex, fgHex), "text/html", "UTF-8", null)
+                    webView.loadDataWithBaseURL(
+                        null,
+                        buildNewsHtml(news.content, bgHex, fgHex),
+                        "text/html",
+                        "UTF-8",
+                        null,
+                    )
                 },
                 modifier = Modifier.fillMaxWidth().height(webViewHeight),
             )
@@ -152,7 +165,11 @@ private fun NewsDetailContent(
     }
 }
 
-private fun buildNewsHtml(body: String, bgColor: String, fgColor: String): String =
+private fun buildNewsHtml(
+    body: String,
+    bgColor: String,
+    fgColor: String,
+): String =
     """
     <!DOCTYPE html><html><head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">

@@ -92,7 +92,10 @@ class WorkspacesViewModel(
         activeInstanceManager.setActive(instance)
     }
 
-    fun renameInstance(instanceId: String, newName: String) {
+    fun renameInstance(
+        instanceId: String,
+        newName: String,
+    ) {
         val now = Clock.System.now().epochSeconds
         db.instancesQueries.updateDisplayName(newName, now, instanceId)
         refreshList()
