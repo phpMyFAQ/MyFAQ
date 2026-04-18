@@ -1,3 +1,5 @@
+import java.util.Base64
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -28,11 +30,48 @@ android {
                 .get()
                 .toInt()
         versionCode = 1
-        versionName = "0.0.0-foundations"
+        versionName = "0.1.0"
     }
 
     buildFeatures {
         compose = true
+    }
+
+    // Release signing config — populated from env vars/secrets in CI.
+    // Local debug builds don't need any of this; the Android debug keystore
+    // continues to handle `:assembleDebug`.
+    //
+    // In CI we expect:
+    //   ANDROID_KEYSTORE_BASE64  – base64 of the upload keystore
+    //   ANDROID_KEYSTORE_PASSWORD
+    //   ANDROID_KEY_ALIAS
+    //   ANDROID_KEY_PASSWORD
+    val keystoreBase64 = System.getenv("ANDROID_KEYSTORE_BASE64")
+    val keystorePassword = System.getenv("ANDROID_KEYSTORE_PASSWORD")
+    val keyAlias = System.getenv("ANDROID_KEY_ALIAS")
+    val keyPassword = System.getenv("ANDROID_KEY_PASSWORD")
+    val hasReleaseSigning =
+        !keystoreBase64.isNullOrBlank() &&
+            !keystorePassword.isNullOrBlank() &&
+            !keyAlias.isNullOrBlank() &&
+            !keyPassword.isNullOrBlank()
+
+    if (hasReleaseSigning) {
+        signingConfigs {
+            create("release") {
+                val keystoreFile =
+                    layout.buildDirectory
+                        .file("keystore/upload.jks")
+                        .get()
+                        .asFile
+                keystoreFile.parentFile.mkdirs()
+                keystoreFile.writeBytes(Base64.getDecoder().decode(keystoreBase64))
+                storeFile = keystoreFile
+                storePassword = keystorePassword
+                this.keyAlias = keyAlias
+                this.keyPassword = keyPassword
+            }
+        }
     }
 
     compileOptions {
@@ -51,6 +90,9 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro",
             )
+            if (hasReleaseSigning) {
+                signingConfig = signingConfigs.getByName("release")
+            }
         }
     }
 

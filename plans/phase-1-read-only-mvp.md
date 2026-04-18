@@ -291,6 +291,34 @@ The active instance's API client is held in an
 - **iOS**: TestFlight internal group (phpMyFAQ team only).
 - Both require signing secrets in GitHub Actions (added in Phase 1).
 
+### Release runbook (`mobile-vX.Y.Z` tag)
+
+`.github/workflows/mobile-release.yml` runs on tag push and produces
+signed Android artifacts plus a TestFlight upload. Before the first
+real release, populate these GitHub secrets:
+
+**Android**
+- `ANDROID_KEYSTORE_BASE64` — `base64 -i upload.jks`
+- `ANDROID_KEYSTORE_PASSWORD`
+- `ANDROID_KEY_ALIAS`
+- `ANDROID_KEY_PASSWORD`
+
+**iOS / TestFlight**
+- `IOS_DIST_CERT_P12_BASE64` + `IOS_DIST_CERT_PASSWORD`
+- `IOS_PROVISIONING_PROFILE_BASE64`
+- `APP_STORE_CONNECT_API_KEY_ID` + `APP_STORE_CONNECT_API_ISSUER_ID`
+- `APP_STORE_CONNECT_API_KEY_BASE64` (the `.p8` file, base64-encoded)
+
+If any secret group is missing, the corresponding job skips signing
+and produces an unsigned artifact instead of failing — useful for
+exercising the workflow before the team has access to the keys.
+
+Cut a release with:
+```
+git tag -a mobile-v0.1.0 -m "Phase 1 read-only MVP"
+git push origin mobile-v0.1.0
+```
+
 ## Exit criteria
 
 Phase 1 is done when **all** of the following are true:

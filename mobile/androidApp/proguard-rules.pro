@@ -20,3 +20,8 @@
 
 # SQLCipher
 -keep class net.zetetic.** { *; }
+
+# Tink (transitively pulled in by androidx.security.crypto) references
+# errorprone annotations only present at compile time on the Tink build.
+-dontwarn com.google.errorprone.annotations.**
+-dontwarn javax.annotation.**

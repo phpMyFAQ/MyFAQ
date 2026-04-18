@@ -4,7 +4,7 @@
   dropping `logo.png` into the matching `drawable-*dpi/` folders (or
   this same folder with `logo.png` to override). See mobile/LOGO.md.
 -->
-<vector xmlns:android="http://schemas.android.com/res/android"
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="120dp"
     android:height="120dp"
     android:viewportWidth="120"
