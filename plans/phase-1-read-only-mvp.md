@@ -295,7 +295,10 @@ The active instance's API client is held in an
 
 `.github/workflows/mobile-release.yml` runs on tag push and produces
 signed Android artifacts plus a TestFlight upload. Before the first
-real release, populate these GitHub secrets:
+real release, populate these GitHub secrets — see
+[`mobile/RELEASE_SIGNING.md`](../mobile/RELEASE_SIGNING.md) for the
+step-by-step (keystore generation, cert export, App Store Connect
+API key, Apple team ID, encoding commands).
 
 **Android**
 - `ANDROID_KEYSTORE_BASE64` — `base64 -i upload.jks`
