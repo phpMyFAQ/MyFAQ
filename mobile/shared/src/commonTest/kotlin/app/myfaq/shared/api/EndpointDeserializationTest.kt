@@ -102,6 +102,36 @@ class EndpointDeserializationTest {
             assertEquals(1, result[0].order)
         }
 
+    @Test
+    fun `latest faqs deserializes plain array`() =
+        runTest {
+            val result = api(LATEST_FAQS_JSON).faqsLatest()
+            assertEquals(2, result.size)
+            assertEquals("Newest entry", result[0].question)
+            assertEquals(99, result[0].visits)
+        }
+
+    @Test
+    fun `trending faqs deserializes plain array`() =
+        runTest {
+            val result = api(TRENDING_FAQS_JSON).faqsTrending()
+            assertEquals(1, result.size)
+            assertEquals("Trending today", result[0].question)
+        }
+
+    // ── Attachments (paginated) ────────────────────────────────────
+
+    @Test
+    fun `attachments deserialize from paginated wrapper`() =
+        runTest {
+            val result = api(ATTACHMENTS_JSON).attachments(42)
+            assertEquals(2, result.size)
+            assertEquals("guide.pdf", result[0].filename)
+            assertEquals(12345, result[0].filesize)
+            assertEquals("application/pdf", result[0].mimeType)
+            assertEquals(2, result[1].id)
+        }
+
     // ── Search (paginated) ─────────────────────────────────────────
 
     @Test
@@ -314,6 +344,35 @@ class EndpointDeserializationTest {
           "answer": "<h2>Configuration Guide</h2><p>Follow these steps:</p><ul><li>Step 1: Open settings</li><li>Step 2: Click <a href=\"https://example.org\">here</a></li></ul><pre><code>config.set('key', 'value');</code></pre>",
           "tags": ["config", "advanced"],
           "attachments": []
+        }
+        """
+
+        // Plain array: latest FAQs (same shape as popular)
+        const val LATEST_FAQS_JSON = """
+        [
+          {"date": "2024-06-01T08:00:00+0200", "question": "Newest entry", "answer": "Just landed.", "visits": 99, "url": "https://www.example.org/content/2/100/en/newest-entry.html"},
+          {"date": "2024-05-30T08:00:00+0200", "question": "Yesterdays entry", "answer": "A day older.", "visits": 50, "url": "https://www.example.org/content/2/99/en/yesterdays-entry.html"}
+        ]
+        """
+
+        // Plain array: trending FAQs (same shape as popular)
+        const val TRENDING_FAQS_JSON = """
+        [
+          {"date": "2024-06-02T08:00:00+0200", "question": "Trending today", "answer": "Hot topic.", "visits": 250, "url": "https://www.example.org/content/3/200/en/trending-today.html"}
+        ]
+        """
+
+        // Paginated: attachments (standalone /attachments/{faqId} endpoint)
+        const val ATTACHMENTS_JSON = """
+        {
+          "success": true,
+          "data": [
+            {"id": 1, "filename": "guide.pdf", "filesize": 12345, "mime_type": "application/pdf", "url": "https://example.test/attachment/1"},
+            {"id": 2, "filename": "diagram.png", "filesize": 6789, "mime_type": "image/png", "url": "https://example.test/attachment/2"}
+          ],
+          "meta": {
+            "pagination": {"total": 2, "count": 2, "per_page": 25, "current_page": 1, "total_pages": 1}
+          }
         }
         """
 
