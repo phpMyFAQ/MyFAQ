@@ -11,6 +11,9 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.drop
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
 class SearchViewModel(
@@ -27,6 +30,21 @@ class SearchViewModel(
     val query: StateFlow<String> = _query.asStateFlow()
 
     private var searchJob: Job? = null
+
+    init {
+        // Reset results and refresh popular searches when language changes.
+        scope.launch {
+            aim.activeInstance
+                .map { it?.id to it?.language }
+                .distinctUntilChanged()
+                .drop(1)
+                .collect {
+                    _query.value = ""
+                    _results.value = UiState.Success(emptyList())
+                    loadPopularSearches()
+                }
+        }
+    }
 
     fun loadPopularSearches() {
         scope.launch {

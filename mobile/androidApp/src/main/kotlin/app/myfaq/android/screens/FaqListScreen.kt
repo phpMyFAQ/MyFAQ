@@ -19,7 +19,9 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import app.myfaq.android.R
 import app.myfaq.android.screens.components.ErrorRetry
 import app.myfaq.android.screens.components.FaqCard
 import app.myfaq.android.screens.components.LoadingIndicator
@@ -48,7 +50,7 @@ fun FaqListScreen(
                 title = { Text(categoryName) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.back))
                     }
                 },
             )

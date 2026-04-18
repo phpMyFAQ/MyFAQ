@@ -34,9 +34,13 @@ class FaqDetailViewModel(
         _attachments.value = UiState.Loading
         scope.launch {
             try {
-                _faq.value = UiState.Success(aim.repository.faqDetail(categoryId, faqId))
+                val detail = aim.repository.faqDetail(categoryId, faqId)
+                _faq.value = UiState.Success(detail)
+                // FAQ detail returns attachments inline; no separate request needed.
+                _attachments.value = UiState.Success(detail.attachments)
             } catch (e: Exception) {
                 _faq.value = UiState.Error(e.message ?: "Failed to load FAQ")
+                _attachments.value = UiState.Success(emptyList())
             }
         }
         scope.launch {
@@ -44,14 +48,6 @@ class FaqDetailViewModel(
                 _comments.value = UiState.Success(aim.repository.comments(faqId))
             } catch (e: Exception) {
                 _comments.value = UiState.Error(e.message ?: "Failed to load comments")
-            }
-        }
-        scope.launch {
-            try {
-                _attachments.value = UiState.Success(aim.repository.attachments(faqId))
-            } catch (_: Exception) {
-                // Attachments are optional — treat failure as empty rather than error
-                _attachments.value = UiState.Success(emptyList())
             }
         }
     }

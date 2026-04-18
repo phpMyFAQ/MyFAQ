@@ -16,19 +16,12 @@ private val DarkColors = darkColorScheme()
 private val LightColors = lightColorScheme()
 
 /** User-selectable theme mode, persisted via SharedPreferences. */
-enum class ThemeMode {
-    SYSTEM,
-    LIGHT,
-    DARK,
-    ;
-
-    val label: String
-        get() =
-            when (this) {
-                SYSTEM -> "System"
-                LIGHT -> "Light"
-                DARK -> "Dark"
-            }
+enum class ThemeMode(
+    val labelRes: Int,
+) {
+    SYSTEM(R.string.theme_system),
+    LIGHT(R.string.theme_light),
+    DARK(R.string.theme_dark),
 }
 
 /** Observable holder for the current theme preference. */

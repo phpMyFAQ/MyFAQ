@@ -30,8 +30,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
+import app.myfaq.android.R
 import app.myfaq.android.screens.components.ErrorRetry
 import app.myfaq.android.screens.components.LoadingIndicator
 import app.myfaq.shared.api.dto.NewsItem
@@ -55,10 +57,10 @@ fun NewsDetailScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("News") },
+                title = { Text(stringResource(R.string.news_title)) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.back))
                     }
                 },
             )

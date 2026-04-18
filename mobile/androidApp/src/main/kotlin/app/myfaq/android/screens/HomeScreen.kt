@@ -28,7 +28,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import app.myfaq.android.R
 import app.myfaq.android.screens.components.ErrorRetry
 import app.myfaq.android.screens.components.FaqCard
 import app.myfaq.android.screens.components.LoadingIndicator
@@ -40,13 +42,13 @@ import app.myfaq.shared.ui.UiState
 import org.koin.compose.koinInject
 
 private enum class HomeTab(
-    val label: String,
+    val labelRes: Int,
 ) {
-    Sticky("Sticky"),
-    Popular("Popular"),
-    Latest("Latest"),
-    Trending("Trending"),
-    News("News"),
+    Sticky(R.string.home_tab_sticky),
+    Popular(R.string.home_tab_popular),
+    Latest(R.string.home_tab_latest),
+    Trending(R.string.home_tab_trending),
+    News(R.string.home_tab_news),
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -65,7 +67,9 @@ fun HomeScreen(
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
-                title = { Text(title?.takeIf { it.isNotBlank() } ?: "MyFAQ") },
+                title = {
+                    Text(title?.takeIf { it.isNotBlank() } ?: stringResource(R.string.home_title_fallback))
+                },
             )
         },
     ) { padding ->
@@ -78,7 +82,7 @@ fun HomeScreen(
                     Tab(
                         selected = selectedTab == index,
                         onClick = { selectedTab = index },
-                        text = { Text(tab.label) },
+                        text = { Text(stringResource(tab.labelRes)) },
                     )
                 }
             }
@@ -88,7 +92,7 @@ fun HomeScreen(
                     FaqTabContent(
                         state = vm.sticky.collectAsState().value,
                         onRetry = { vm.loadSticky() },
-                        onRefresh = { vm.loadSticky() },
+                        onRefresh = { vm.refreshSticky() },
                         onItemClick = { item ->
                             val catId = item.parsedCategoryId
                             val faqId = item.parsedFaqId
@@ -101,7 +105,7 @@ fun HomeScreen(
                     FaqTabContent(
                         state = vm.popular.collectAsState().value,
                         onRetry = { vm.loadPopular() },
-                        onRefresh = { vm.loadPopular() },
+                        onRefresh = { vm.refreshPopular() },
                         onItemClick = { item ->
                             val catId = item.parsedCategoryId
                             val faqId = item.parsedFaqId
@@ -114,7 +118,7 @@ fun HomeScreen(
                     FaqTabContent(
                         state = vm.latest.collectAsState().value,
                         onRetry = { vm.loadLatest() },
-                        onRefresh = { vm.loadLatest() },
+                        onRefresh = { vm.refreshLatest() },
                         onItemClick = { item ->
                             val catId = item.parsedCategoryId
                             val faqId = item.parsedFaqId
@@ -127,7 +131,7 @@ fun HomeScreen(
                     FaqTabContent(
                         state = vm.trending.collectAsState().value,
                         onRetry = { vm.loadTrending() },
-                        onRefresh = { vm.loadTrending() },
+                        onRefresh = { vm.refreshTrending() },
                         onItemClick = { item ->
                             val catId = item.parsedCategoryId
                             val faqId = item.parsedFaqId
@@ -140,7 +144,7 @@ fun HomeScreen(
                     NewsTabContent(
                         state = vm.news.collectAsState().value,
                         onRetry = { vm.loadNews() },
-                        onRefresh = { vm.loadNews() },
+                        onRefresh = { vm.refreshNews() },
                         onNewsClick = onNewsClick,
                     )
             }
@@ -175,7 +179,7 @@ private fun FaqTabContent(
                         modifier = Modifier.fillMaxSize().padding(24.dp),
                         contentAlignment = androidx.compose.ui.Alignment.Center,
                     ) {
-                        Text("No FAQs found", style = MaterialTheme.typography.bodyLarge)
+                        Text(stringResource(R.string.no_faqs), style = MaterialTheme.typography.bodyLarge)
                     }
                 } else {
                     LazyColumn(
@@ -223,7 +227,7 @@ private fun NewsTabContent(
                         modifier = Modifier.fillMaxSize().padding(24.dp),
                         contentAlignment = androidx.compose.ui.Alignment.Center,
                     ) {
-                        Text("No news", style = MaterialTheme.typography.bodyLarge)
+                        Text(stringResource(R.string.no_news), style = MaterialTheme.typography.bodyLarge)
                     }
                 } else {
                     LazyColumn(

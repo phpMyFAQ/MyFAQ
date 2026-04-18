@@ -9,6 +9,9 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.drop
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
 class CategoriesViewModel(
@@ -20,6 +23,17 @@ class CategoriesViewModel(
 
     private val _faqList = MutableStateFlow<UiState<List<FaqSummary>>>(UiState.Loading)
     val faqList: StateFlow<UiState<List<FaqSummary>>> = _faqList.asStateFlow()
+
+    init {
+        // Reload categories when active instance or its language changes.
+        scope.launch {
+            aim.activeInstance
+                .map { it?.id to it?.language }
+                .distinctUntilChanged()
+                .drop(1)
+                .collect { loadCategories() }
+        }
+    }
 
     fun loadCategories() {
         _categories.value = UiState.Loading

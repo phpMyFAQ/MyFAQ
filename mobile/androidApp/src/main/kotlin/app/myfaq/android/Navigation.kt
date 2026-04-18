@@ -16,6 +16,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -71,13 +72,13 @@ object Routes {
 
 enum class BottomTab(
     val route: String,
-    val label: String,
+    val labelRes: Int,
     val icon: ImageVector,
 ) {
-    Home(Routes.HOME, "Home", Icons.Default.Home),
-    Categories(Routes.CATEGORIES, "Categories", Icons.Default.List),
-    Search(Routes.SEARCH, "Search", Icons.Default.Search),
-    Settings(Routes.SETTINGS, "Settings", Icons.Default.Settings),
+    Home(Routes.HOME, R.string.nav_home, Icons.Default.Home),
+    Categories(Routes.CATEGORIES, R.string.nav_categories, Icons.Default.List),
+    Search(Routes.SEARCH, R.string.nav_search, Icons.Default.Search),
+    Settings(Routes.SETTINGS, R.string.nav_settings, Icons.Default.Settings),
 }
 
 // ── Root scaffold with NavHost ─────────────────────────────────────
@@ -99,9 +100,10 @@ fun MyFaqNavHost(aim: ActiveInstanceManager = koinInject()) {
             if (showBottomBar) {
                 NavigationBar {
                     BottomTab.entries.forEach { tab ->
+                        val tabLabel = stringResource(tab.labelRes)
                         NavigationBarItem(
-                            icon = { Icon(tab.icon, contentDescription = tab.label) },
-                            label = { Text(tab.label) },
+                            icon = { Icon(tab.icon, contentDescription = tabLabel) },
+                            label = { Text(tabLabel) },
                             selected = currentRoute == tab.route,
                             onClick = {
                                 navController.navigate(tab.route) {

@@ -19,6 +19,7 @@ sqldelight = "2.0.2"
 koin = "4.0.0"
 
 androidxActivity = "1.9.3"
+androidxAppcompat = "1.7.0"
 androidxCore = "1.15.0"
 androidxSecurityCrypto = "1.1.0-alpha06"
 androidxLifecycle = "2.8.7"
@@ -58,6 +59,7 @@ koin-compose = { module = "io.insert-koin:koin-androidx-compose", version.ref = 
 
 # AndroidX
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidxActivity" }
+androidx-appcompat = { module = "androidx.appcompat:appcompat", version.ref = "androidxAppcompat" }
 androidx-core-ktx = { module = "androidx.core:core-ktx", version.ref = "androidxCore" }
 androidx-security-crypto = { module = "androidx.security:security-crypto", version.ref = "androidxSecurityCrypto" }
 androidx-lifecycle-runtime-ktx = { module = "androidx.lifecycle:lifecycle-runtime-ktx", version.ref = "androidxLifecycle" }

@@ -9,6 +9,9 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.drop
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
 class HomeViewModel(
@@ -32,6 +35,18 @@ class HomeViewModel(
 
     private val _title = MutableStateFlow<String?>(null)
     val title: StateFlow<String?> = _title.asStateFlow()
+
+    init {
+        // Reload when the active instance's identity OR language changes.
+        // drop(1) so we don't double-fire on first emission alongside loadAll().
+        scope.launch {
+            aim.activeInstance
+                .map { it?.id to it?.language }
+                .distinctUntilChanged()
+                .drop(1)
+                .collect { loadAll() }
+        }
+    }
 
     fun loadAll() {
         loadTitle()
@@ -61,6 +76,37 @@ class HomeViewModel(
     fun loadTrending() = loadInto(_trending) { aim.repository.faqsTrending() }
 
     fun loadNews() = loadInto(_news) { aim.repository.news() }
+
+    /**
+     * Pull-to-refresh handlers: nuke the per-instance cache so the next fetch
+     * goes to the network with the current Accept-Language header. Without
+     * this, a stale cache entry for "faqs/sticky" (etc.) would be returned
+     * even though the user's Accept-Language has changed.
+     */
+    fun refreshSticky() {
+        aim.repository.clearCache()
+        loadSticky()
+    }
+
+    fun refreshPopular() {
+        aim.repository.clearCache()
+        loadPopular()
+    }
+
+    fun refreshLatest() {
+        aim.repository.clearCache()
+        loadLatest()
+    }
+
+    fun refreshTrending() {
+        aim.repository.clearCache()
+        loadTrending()
+    }
+
+    fun refreshNews() {
+        aim.repository.clearCache()
+        loadNews()
+    }
 
     private fun <T> loadInto(
         flow: MutableStateFlow<UiState<T>>,

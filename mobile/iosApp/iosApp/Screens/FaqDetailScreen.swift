@@ -262,11 +262,19 @@ private struct HTMLView: UIViewRepresentable {
           }
           @media (prefers-color-scheme: dark) {
             body { color: #fff; }
-            a { color: #64b5f6; }
+            body, body *:not(a) {
+              color: #fff !important;
+              background-color: transparent !important;
+            }
+            a, a * { color: #64b5f6 !important; }
           }
           @media (prefers-color-scheme: light) {
             body { color: #000; }
-            a { color: #1a73e8; }
+            body, body *:not(a) {
+              color: #000 !important;
+              background-color: transparent !important;
+            }
+            a, a * { color: #1a73e8 !important; }
           }
           img { max-width: 100%; height: auto; }
           pre, code { overflow-x: auto; }

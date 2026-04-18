@@ -19,7 +19,9 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import app.myfaq.android.R
 
 private data class LibraryEntry(
     val name: String,
@@ -47,10 +49,10 @@ fun LicensesScreen(onBack: () -> Unit) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Licenses") },
+                title = { Text(stringResource(R.string.licenses)) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.back))
                     }
                 },
             )
@@ -64,16 +66,16 @@ fun LicensesScreen(onBack: () -> Unit) {
             item {
                 Column(modifier = Modifier.padding(16.dp)) {
                     Text(
-                        "MyFAQ.app",
+                        stringResource(R.string.licenses_app_name),
                         style = MaterialTheme.typography.titleMedium,
                     )
                     Text(
-                        "Native client for phpMyFAQ — © phpMyFAQ Team.",
+                        stringResource(R.string.licenses_app_subtitle),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                     Text(
-                        "Licensed under MPL 2.0.",
+                        stringResource(R.string.licenses_app_license),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )

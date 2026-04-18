@@ -1,4 +1,107 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">MyFAQ</string>
+
+    <!-- Navigation / tabs -->
+    <string name="nav_home">Home</string>
+    <string name="nav_categories">Categories</string>
+    <string name="nav_search">Search</string>
+    <string name="nav_settings">Settings</string>
+
+    <!-- Home -->
+    <string name="home_title_fallback">MyFAQ</string>
+    <string name="home_tab_sticky">Sticky</string>
+    <string name="home_tab_popular">Popular</string>
+    <string name="home_tab_latest">Latest</string>
+    <string name="home_tab_trending">Trending</string>
+    <string name="home_tab_news">News</string>
+    <string name="no_faqs">No FAQs found</string>
+    <string name="no_news">No news</string>
+
+    <!-- Workspaces -->
+    <string name="workspaces">Workspaces</string>
+    <string name="add_instance">Add Instance</string>
+    <string name="no_instances">No instances yet</string>
+    <string name="add_first_instance">Add your phpMyFAQ instance to get started.</string>
+    <string name="rename">Rename</string>
+    <string name="rename_instance">Rename Instance</string>
+    <string name="name">Name</string>
+
+    <!-- Add Instance -->
+    <string name="url_label">phpMyFAQ URL</string>
+    <string name="url_placeholder">https://faq.example.com</string>
+    <string name="connect">Connect</string>
+
+    <!-- FAQ Detail -->
+    <string name="faq">FAQ</string>
+    <string name="back">Back</string>
+    <string name="share">Share</string>
+    <string name="rate_faq">Rate this FAQ</string>
+    <string name="attachments">Attachments</string>
+    <string name="loading_comments">Loading comments…</string>
+    <string name="could_not_load_comments">Could not load comments</string>
+    <string name="no_comments">No comments yet</string>
+    <string name="show_comments">Show comments (%1$d)</string>
+    <string name="hide_comments">Hide comments (%1$d)</string>
+
+    <!-- Search -->
+    <string name="search_hint">Search FAQs…</string>
+    <string name="search_clear">Clear</string>
+    <string name="search_popular">Popular searches</string>
+
+    <!-- News -->
+    <string name="news_title">News</string>
+
+    <!-- Categories title -->
+    <string name="categories_title">Categories</string>
+
+    <!-- Workspaces extras -->
+    <string name="logo_content_description">phpMyFAQ logo</string>
+
+    <!-- Add Instance extras -->
+    <string name="phpmyfaq_version">phpMyFAQ %1$s</string>
+
+    <!-- Settings -->
+    <string name="settings">Settings</string>
+    <string name="active_instance">Active instance</string>
+    <string name="appearance">Appearance</string>
+    <string name="theme_system">System</string>
+    <string name="theme_light">Light</string>
+    <string name="theme_dark">Dark</string>
+    <string name="content_language">Content language</string>
+    <string name="change">Change</string>
+    <string name="switch_instance">Switch instance</string>
+    <string name="clear_cache">Clear cache</string>
+    <string name="cache_cleared">Cache cleared</string>
+    <string name="delete_instance">Delete instance</string>
+    <string name="delete_instance_title">Delete Instance</string>
+    <string name="delete_instance_message">Are you sure you want to delete \"%1$s\"? This cannot be undone.</string>
+    <string name="app_version">App version</string>
+    <string name="about">About</string>
+    <string name="about_subtitle">MyFAQ.app — Native client for phpMyFAQ</string>
+    <string name="open_source_licenses">Open source licenses</string>
+    <string name="licenses">Licenses</string>
+
+    <!-- Paywall -->
+    <string name="paywall_title">Unlock MyFAQ Pro</string>
+    <string name="paywall_feature_rate">Rate and vote on FAQs</string>
+    <string name="paywall_feature_ask">Submit questions</string>
+    <string name="paywall_feature_comment">Post comments</string>
+    <string name="paywall_feature_register">Register an account</string>
+    <string name="paywall_feature_support">Priority support</string>
+    <string name="annual_plan">Annual Plan</string>
+    <string name="lifetime_access">Lifetime Access</string>
+    <string name="restore_purchases">Restore purchases</string>
+    <string name="coming_soon">Coming soon</string>
+
+    <!-- Licenses -->
+    <string name="licenses_app_name">MyFAQ.app</string>
+    <string name="licenses_app_subtitle">Native client for phpMyFAQ — © phpMyFAQ Team.</string>
+    <string name="licenses_app_license">Licensed under MPL 2.0.</string>
+
+    <!-- Generic -->
+    <string name="cancel">Cancel</string>
+    <string name="save">Save</string>
+    <string name="delete">Delete</string>
+    <string name="retry">Retry</string>
 </resources>

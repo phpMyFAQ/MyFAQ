@@ -36,6 +36,11 @@ UPDATE instances
 SET display_name = ?, updated_at = ?
 WHERE id = ?;
 
+updateLanguage:
+UPDATE instances
+SET language = ?, updated_at = ?
+WHERE id = ?;
+
 deleteById:
 DELETE FROM instances WHERE id = ?;
 

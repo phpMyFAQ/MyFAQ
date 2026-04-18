@@ -40,6 +40,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import app.myfaq.android.R
 import app.myfaq.shared.data.ActiveInstanceManager
@@ -65,19 +66,19 @@ fun WorkspacesScreen(
     instanceToDelete?.let { instance ->
         AlertDialog(
             onDismissRequest = { instanceToDelete = null },
-            title = { Text("Delete Instance") },
-            text = { Text("Are you sure you want to delete \"${instance.displayName}\"? This cannot be undone.") },
+            title = { Text(stringResource(R.string.delete_instance_title)) },
+            text = { Text(stringResource(R.string.delete_instance_message, instance.displayName)) },
             confirmButton = {
                 TextButton(onClick = {
                     vm.deleteInstance(instance.id)
                     instanceToDelete = null
                 }) {
-                    Text("Delete", color = MaterialTheme.colorScheme.error)
+                    Text(stringResource(R.string.delete), color = MaterialTheme.colorScheme.error)
                 }
             },
             dismissButton = {
                 TextButton(onClick = { instanceToDelete = null }) {
-                    Text("Cancel")
+                    Text(stringResource(R.string.cancel))
                 }
             },
         )
@@ -87,12 +88,12 @@ fun WorkspacesScreen(
     instanceToRename?.let { instance ->
         AlertDialog(
             onDismissRequest = { instanceToRename = null },
-            title = { Text("Rename Instance") },
+            title = { Text(stringResource(R.string.rename_instance)) },
             text = {
                 OutlinedTextField(
                     value = renameText,
                     onValueChange = { renameText = it },
-                    label = { Text("Name") },
+                    label = { Text(stringResource(R.string.name)) },
                     singleLine = true,
                 )
             },
@@ -102,12 +103,12 @@ fun WorkspacesScreen(
                     if (trimmed.isNotEmpty()) vm.renameInstance(instance.id, trimmed)
                     instanceToRename = null
                 }) {
-                    Text("Save")
+                    Text(stringResource(R.string.save))
                 }
             },
             dismissButton = {
                 TextButton(onClick = { instanceToRename = null }) {
-                    Text("Cancel")
+                    Text(stringResource(R.string.cancel))
                 }
             },
         )
@@ -115,11 +116,11 @@ fun WorkspacesScreen(
 
     Scaffold(
         topBar = {
-            CenterAlignedTopAppBar(title = { Text("Workspaces") })
+            CenterAlignedTopAppBar(title = { Text(stringResource(R.string.workspaces)) })
         },
         floatingActionButton = {
             FloatingActionButton(onClick = onAddInstance) {
-                Icon(Icons.Default.Add, contentDescription = "Add instance")
+                Icon(Icons.Default.Add, contentDescription = stringResource(R.string.add_instance))
             }
         },
     ) { padding ->
@@ -184,14 +185,14 @@ private fun InstanceCard(
             IconButton(onClick = onRename) {
                 Icon(
                     Icons.Default.Edit,
-                    contentDescription = "Rename",
+                    contentDescription = stringResource(R.string.rename),
                     tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
             IconButton(onClick = onDelete) {
                 Icon(
                     Icons.Default.Delete,
-                    contentDescription = "Delete",
+                    contentDescription = stringResource(R.string.delete),
                     tint = MaterialTheme.colorScheme.error,
                 )
             }
@@ -211,23 +212,23 @@ private fun EmptyWorkspacesState(
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Image(
                 painter = painterResource(id = R.drawable.logo),
-                contentDescription = "phpMyFAQ logo",
+                contentDescription = stringResource(R.string.logo_content_description),
                 modifier = Modifier.height(120.dp),
             )
             Spacer(modifier = Modifier.height(24.dp))
             Text(
-                text = "No instances yet",
+                text = stringResource(R.string.no_instances),
                 style = MaterialTheme.typography.headlineSmall,
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
-                text = "Add your phpMyFAQ instance to get started.",
+                text = stringResource(R.string.add_first_instance),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
             Spacer(modifier = Modifier.height(16.dp))
             Button(onClick = onAdd) {
-                Text("Add Instance")
+                Text(stringResource(R.string.add_instance))
             }
         }
     }

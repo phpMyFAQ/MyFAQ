@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">MyFAQ</string>
+
+    <!-- Navigation / tabs -->
+    <string name="nav_home">Start</string>
+    <string name="nav_categories">Kategorien</string>
+    <string name="nav_search">Suche</string>
+    <string name="nav_settings">Einstellungen</string>
+
+    <!-- Home -->
+    <string name="home_title_fallback">MyFAQ</string>
+    <string name="home_tab_sticky">Wichtig</string>
+    <string name="home_tab_popular">Beliebt</string>
+    <string name="home_tab_latest">Neueste</string>
+    <string name="home_tab_trending">Im Trend</string>
+    <string name="home_tab_news">Neuigkeiten</string>
+    <string name="no_faqs">Keine FAQs gefunden</string>
+    <string name="no_news">Keine Neuigkeiten</string>
+
+    <!-- Workspaces -->
+    <string name="workspaces">Arbeitsbereiche</string>
+    <string name="add_instance">Instanz hinzufügen</string>
+    <string name="no_instances">Noch keine Instanzen</string>
+    <string name="add_first_instance">Fügen Sie Ihre phpMyFAQ-Instanz hinzu, um zu beginnen.</string>
+    <string name="rename">Umbenennen</string>
+    <string name="rename_instance">Instanz umbenennen</string>
+    <string name="name">Name</string>
+
+    <!-- Add Instance -->
+    <string name="url_label">phpMyFAQ-URL</string>
+    <string name="url_placeholder">https://faq.beispiel.de</string>
+    <string name="connect">Verbinden</string>
+
+    <!-- FAQ Detail -->
+    <string name="faq">FAQ</string>
+    <string name="back">Zurück</string>
+    <string name="share">Teilen</string>
+    <string name="rate_faq">Diese FAQ bewerten</string>
+    <string name="attachments">Anhänge</string>
+    <string name="loading_comments">Kommentare werden geladen…</string>
+    <string name="could_not_load_comments">Kommentare konnten nicht geladen werden</string>
+    <string name="no_comments">Noch keine Kommentare</string>
+    <string name="show_comments">Kommentare anzeigen (%1$d)</string>
+    <string name="hide_comments">Kommentare ausblenden (%1$d)</string>
+
+    <!-- Search -->
+    <string name="search_hint">FAQs durchsuchen…</string>
+    <string name="search_clear">Löschen</string>
+    <string name="search_popular">Beliebte Suchanfragen</string>
+
+    <!-- News -->
+    <string name="news_title">Neuigkeiten</string>
+
+    <!-- Categories title -->
+    <string name="categories_title">Kategorien</string>
+
+    <!-- Workspaces extras -->
+    <string name="logo_content_description">phpMyFAQ-Logo</string>
+
+    <!-- Add Instance extras -->
+    <string name="phpmyfaq_version">phpMyFAQ %1$s</string>
+
+    <!-- Settings -->
+    <string name="settings">Einstellungen</string>
+    <string name="active_instance">Aktive Instanz</string>
+    <string name="appearance">Erscheinungsbild</string>
+    <string name="theme_system">System</string>
+    <string name="theme_light">Hell</string>
+    <string name="theme_dark">Dunkel</string>
+    <string name="content_language">Inhaltssprache</string>
+    <string name="change">Ändern</string>
+    <string name="switch_instance">Instanz wechseln</string>
+    <string name="clear_cache">Cache leeren</string>
+    <string name="cache_cleared">Cache geleert</string>
+    <string name="delete_instance">Instanz löschen</string>
+    <string name="delete_instance_title">Instanz löschen</string>
+    <string name="delete_instance_message">Möchten Sie \"%1$s\" wirklich löschen? Dies kann nicht rückgängig gemacht werden.</string>
+    <string name="app_version">App-Version</string>
+    <string name="about">Über</string>
+    <string name="about_subtitle">MyFAQ.app — Nativer Client für phpMyFAQ</string>
+    <string name="open_source_licenses">Open-Source-Lizenzen</string>
+    <string name="licenses">Lizenzen</string>
+
+    <!-- Paywall -->
+    <string name="paywall_title">MyFAQ Pro freischalten</string>
+    <string name="paywall_feature_rate">FAQs bewerten</string>
+    <string name="paywall_feature_ask">Fragen stellen</string>
+    <string name="paywall_feature_comment">Kommentare schreiben</string>
+    <string name="paywall_feature_register">Konto registrieren</string>
+    <string name="paywall_feature_support">Bevorzugter Support</string>
+    <string name="annual_plan">Jahresabo</string>
+    <string name="lifetime_access">Lebenslanger Zugriff</string>
+    <string name="restore_purchases">Käufe wiederherstellen</string>
+    <string name="coming_soon">Demnächst verfügbar</string>
+
+    <!-- Licenses -->
+    <string name="licenses_app_name">MyFAQ.app</string>
+    <string name="licenses_app_subtitle">Nativer Client für phpMyFAQ — © phpMyFAQ Team.</string>
+    <string name="licenses_app_license">Lizenziert unter MPL 2.0.</string>
+
+    <!-- Generic -->
+    <string name="cancel">Abbrechen</string>
+    <string name="save">Speichern</string>
+    <string name="delete">Löschen</string>
+    <string name="retry">Wiederholen</string>
+</resources>

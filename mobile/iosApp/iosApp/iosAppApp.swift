@@ -4,6 +4,7 @@ import Shared
 @main
 struct MyFaqApp: App {
     @AppStorage("app_theme") private var themeMode: String = ThemeMode.system.rawValue
+    @AppStorage("app_language") private var appLanguage: String = ""
 
     init() {
         IosPlatformModuleKt.doInitKoinIos()
@@ -14,7 +15,12 @@ struct MyFaqApp: App {
             ContentView()
                 .preferredColorScheme(resolvedColorScheme)
                 .environment(\.themeMode, currentThemeMode)
+                .environment(\.locale, resolvedLocale)
         }
+    }
+
+    private var resolvedLocale: Locale {
+        appLanguage.isEmpty ? Locale.current : Locale(identifier: appLanguage)
     }
 
     private var currentThemeMode: ThemeMode {
@@ -37,7 +43,7 @@ enum ThemeMode: String, CaseIterable {
     case light
     case dark
 
-    var label: String {
+    var label: LocalizedStringKey {
         switch self {
         case .system: return "System"
         case .light: return "Light"

@@ -92,6 +92,18 @@ class WorkspacesViewModel(
         activeInstanceManager.setActive(instance)
     }
 
+    fun changeLanguage(
+        instanceId: String,
+        language: String,
+    ) {
+        val now = Clock.System.now().epochSeconds
+        db.instancesQueries.updateLanguage(language, now, instanceId)
+        if (activeInstanceManager.activeInstance.value?.id == instanceId) {
+            activeInstanceManager.setLanguage(language)
+        }
+        refreshList()
+    }
+
     fun renameInstance(
         instanceId: String,
         newName: String,

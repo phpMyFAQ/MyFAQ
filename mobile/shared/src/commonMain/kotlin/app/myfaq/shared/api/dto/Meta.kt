@@ -25,6 +25,15 @@ data class Meta(
     val availableLanguages: Map<String, String> = emptyMap(),
     val enabledFeatures: Map<String, Boolean> = emptyMap(),
     val publicLogoUrl: String? = null,
+    /**
+     * Theme color palettes from the server. Top-level keys are theme names
+     * ("light", "dark", "highContrast"); inner maps are CSS-variable name → value
+     * (e.g. {"--bs-primary": "#083c83"}).
+     *
+     * Native UI doesn't render Bootstrap CSS, but we surface the palette so
+     * future iOS/Android theming can mirror the server's brand colors.
+     */
+    val themeColors: Map<String, Map<String, String>> = emptyMap(),
     val oauthDiscovery: OAuthDiscovery? = null,
 ) {
     /** Convenience: list of language codes (keys). */

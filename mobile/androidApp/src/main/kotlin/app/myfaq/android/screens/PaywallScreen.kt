@@ -26,14 +26,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import app.myfaq.android.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PaywallScreen(onBack: () -> Unit) {
     val context = LocalContext.current
-    val comingSoon = { Toast.makeText(context, "Coming soon", Toast.LENGTH_SHORT).show() }
+    val comingSoonMessage = stringResource(R.string.coming_soon)
+    val comingSoon = { Toast.makeText(context, comingSoonMessage, Toast.LENGTH_SHORT).show() }
 
     Scaffold(
         topBar = {
@@ -41,7 +44,7 @@ fun PaywallScreen(onBack: () -> Unit) {
                 title = {},
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.back))
                     }
                 },
             )
@@ -58,7 +61,7 @@ fun PaywallScreen(onBack: () -> Unit) {
             Spacer(modifier = Modifier.height(24.dp))
 
             Text(
-                text = "Unlock MyFAQ Pro",
+                text = stringResource(R.string.paywall_title),
                 style = MaterialTheme.typography.headlineMedium,
                 textAlign = TextAlign.Center,
             )
@@ -67,14 +70,14 @@ fun PaywallScreen(onBack: () -> Unit) {
 
             val features =
                 listOf(
-                    "Rate and vote on FAQs",
-                    "Submit questions",
-                    "Post comments",
-                    "Register an account",
-                    "Priority support",
+                    R.string.paywall_feature_rate,
+                    R.string.paywall_feature_ask,
+                    R.string.paywall_feature_comment,
+                    R.string.paywall_feature_register,
+                    R.string.paywall_feature_support,
                 )
-            features.forEach { feature ->
-                ProFeatureRow(feature)
+            features.forEach { featureRes ->
+                ProFeatureRow(stringResource(featureRes))
                 Spacer(modifier = Modifier.height(8.dp))
             }
 
@@ -84,7 +87,7 @@ fun PaywallScreen(onBack: () -> Unit) {
                 onClick = comingSoon,
                 modifier = Modifier.fillMaxWidth(),
             ) {
-                Text("Annual Plan")
+                Text(stringResource(R.string.annual_plan))
             }
 
             Spacer(modifier = Modifier.height(12.dp))
@@ -93,13 +96,13 @@ fun PaywallScreen(onBack: () -> Unit) {
                 onClick = comingSoon,
                 modifier = Modifier.fillMaxWidth(),
             ) {
-                Text("Lifetime Access")
+                Text(stringResource(R.string.lifetime_access))
             }
 
             Spacer(modifier = Modifier.height(16.dp))
 
             TextButton(onClick = comingSoon) {
-                Text("Restore purchases")
+                Text(stringResource(R.string.restore_purchases))
             }
         }
     }

@@ -136,6 +136,8 @@ private enum HomeTab: String, CaseIterable {
     case latest = "Latest"
     case trending = "Trending"
     case news = "News"
+
+    var localizedKey: LocalizedStringKey { LocalizedStringKey(rawValue) }
 }
 
 struct HomeScreen: View {
@@ -156,7 +158,7 @@ struct HomeScreen: View {
     private var picker: some View {
         Picker("", selection: $selectedTab) {
             ForEach(HomeTab.allCases, id: \.self) { tab in
-                Text(tab.rawValue).tag(tab)
+                Text(tab.localizedKey).tag(tab)
             }
         }
         .pickerStyle(.segmented)
@@ -168,15 +170,15 @@ struct HomeScreen: View {
     private var tabContent: some View {
         switch selectedTab {
         case .sticky:
-            faqList(state: store.sticky, onRetry: { store.vm.loadSticky() })
+            faqList(state: store.sticky, onRetry: { store.vm.refreshSticky() })
         case .popular:
-            faqList(state: store.popular, onRetry: { store.vm.loadPopular() })
+            faqList(state: store.popular, onRetry: { store.vm.refreshPopular() })
         case .latest:
-            faqList(state: store.latest, onRetry: { store.vm.loadLatest() })
+            faqList(state: store.latest, onRetry: { store.vm.refreshLatest() })
         case .trending:
-            faqList(state: store.trending, onRetry: { store.vm.loadTrending() })
+            faqList(state: store.trending, onRetry: { store.vm.refreshTrending() })
         case .news:
-            newsList(state: store.news, onRetry: { store.vm.loadNews() })
+            newsList(state: store.news, onRetry: { store.vm.refreshNews() })
         }
     }
 
@@ -243,7 +245,7 @@ struct HomeScreen: View {
         }
     }
 
-    private func emptyView(_ text: String) -> some View {
+    private func emptyView(_ text: LocalizedStringKey) -> some View {
         VStack {
             Spacer()
             Text(text)

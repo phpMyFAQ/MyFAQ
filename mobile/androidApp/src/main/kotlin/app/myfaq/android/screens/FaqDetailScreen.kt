@@ -44,8 +44,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
+import app.myfaq.android.R
 import app.myfaq.android.screens.components.ErrorRetry
 import app.myfaq.android.screens.components.LoadingIndicator
 import app.myfaq.shared.api.dto.Comment
@@ -75,25 +77,26 @@ fun FaqDetailScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("FAQ") },
+                title = { Text(stringResource(R.string.faq)) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.back))
                     }
                 },
                 actions = {
                     if (faqState is UiState.Success) {
                         val context = LocalContext.current
                         val faq = (faqState as UiState.Success<FaqDetail>).data
+                        val shareLabel = stringResource(R.string.share)
                         IconButton(onClick = {
                             val sendIntent =
                                 Intent(Intent.ACTION_SEND).apply {
                                     type = "text/plain"
                                     putExtra(Intent.EXTRA_TEXT, faq.question)
                                 }
-                            context.startActivity(Intent.createChooser(sendIntent, "Share"))
+                            context.startActivity(Intent.createChooser(sendIntent, shareLabel))
                         }) {
-                            Icon(Icons.Default.Share, contentDescription = "Share")
+                            Icon(Icons.Default.Share, contentDescription = shareLabel)
                         }
                     }
                 },
@@ -233,7 +236,7 @@ private fun FaqDetailContent(
             modifier = Modifier.fillMaxWidth(),
         ) {
             Icon(Icons.Default.Star, contentDescription = null)
-            Text("  Rate this FAQ", style = MaterialTheme.typography.labelLarge)
+            Text("  " + stringResource(R.string.rate_faq), style = MaterialTheme.typography.labelLarge)
         }
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -247,7 +250,7 @@ private fun FaqDetailContent(
 @Composable
 private fun AttachmentsSection(attachments: List<app.myfaq.shared.api.dto.Attachment>) {
     val context = LocalContext.current
-    Text("Attachments", style = MaterialTheme.typography.titleSmall)
+    Text(stringResource(R.string.attachments), style = MaterialTheme.typography.titleSmall)
     Spacer(modifier = Modifier.height(4.dp))
     attachments.forEach { attachment ->
         TextButton(
@@ -270,14 +273,14 @@ private fun CommentsSection(state: UiState<List<Comment>>) {
     when (state) {
         is UiState.Loading -> {
             Text(
-                "Loading comments...",
+                stringResource(R.string.loading_comments),
                 style = MaterialTheme.typography.bodySmall,
                 modifier = Modifier.padding(top = 8.dp),
             )
         }
         is UiState.Error -> {
             Text(
-                "Could not load comments",
+                stringResource(R.string.could_not_load_comments),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.error,
                 modifier = Modifier.padding(top = 8.dp),
@@ -286,7 +289,7 @@ private fun CommentsSection(state: UiState<List<Comment>>) {
         is UiState.Success -> {
             if (state.data.isEmpty()) {
                 Text(
-                    "No comments yet",
+                    stringResource(R.string.no_comments),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.padding(top = 8.dp),
@@ -295,9 +298,9 @@ private fun CommentsSection(state: UiState<List<Comment>>) {
                 TextButton(onClick = { expanded = !expanded }) {
                     Text(
                         if (expanded) {
-                            "Hide comments (${state.data.size})"
+                            stringResource(R.string.hide_comments, state.data.size)
                         } else {
-                            "Show comments (${state.data.size})"
+                            stringResource(R.string.show_comments, state.data.size)
                         },
                     )
                 }
@@ -359,8 +362,14 @@ private fun buildHtml(
         margin: 0;
         word-wrap: break-word;
       }
+      /* Override any inline color/background from server HTML so
+         dark-mode content stays readable. */
+      body, body *:not(a) {
+        color: $fgColor !important;
+        background-color: transparent !important;
+      }
+      a, a * { color: #64b5f6 !important; }
       img { max-width: 100%; height: auto; }
-      a { color: #1a73e8; }
       pre, code { overflow-x: auto; }
     </style>
     </head>

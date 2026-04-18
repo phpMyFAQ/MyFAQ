@@ -3,16 +3,41 @@ package app.myfaq.shared.data
 import kotlinx.datetime.Clock
 
 /**
- * TTL-based JSON cache backed by the `cache_entries` SQLDelight table.
+ * TTL-based JSON cache abstraction.
  *
- * Phase 1 caches raw JSON strings keyed by (instanceId, cacheKey).
+ * Phase 1 ships [SqlCacheStore] backed by the `cache_entries` SQLDelight
+ * table. Tests use an in-memory implementation in `commonTest`.
  * Phase 2 replaces this with typed content tables; this layer remains
  * for any endpoint that doesn't warrant a dedicated table.
  */
-class CacheStore(
-    private val db: MyFaqDatabase,
-) {
+interface CacheStore {
     fun get(
+        instanceId: String,
+        key: String,
+    ): String?
+
+    /** Returns cached JSON even if expired (for stale-while-revalidate). */
+    fun getStale(
+        instanceId: String,
+        key: String,
+    ): String?
+
+    fun put(
+        instanceId: String,
+        key: String,
+        json: String,
+        ttlSeconds: Long,
+    )
+
+    fun clearInstance(instanceId: String)
+
+    fun evictExpired()
+}
+
+class SqlCacheStore(
+    private val db: MyFaqDatabase,
+) : CacheStore {
+    override fun get(
         instanceId: String,
         key: String,
     ): String? {
@@ -27,10 +52,7 @@ class CacheStore(
         return entry.json_body
     }
 
-    /**
-     * Returns cached JSON even if expired (for stale-while-revalidate).
-     */
-    fun getStale(
+    override fun getStale(
         instanceId: String,
         key: String,
     ): String? =
@@ -39,7 +61,7 @@ class CacheStore(
             .executeAsOneOrNull()
             ?.json_body
 
-    fun put(
+    override fun put(
         instanceId: String,
         key: String,
         json: String,
@@ -49,11 +71,11 @@ class CacheStore(
         db.cacheEntriesQueries.upsert(instanceId, key, json, now, ttlSeconds)
     }
 
-    fun clearInstance(instanceId: String) {
+    override fun clearInstance(instanceId: String) {
         db.cacheEntriesQueries.deleteByInstance(instanceId)
     }
 
-    fun evictExpired() {
+    override fun evictExpired() {
         val now = Clock.System.now().epochSeconds
         db.cacheEntriesQueries.deleteExpired(now)
     }

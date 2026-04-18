@@ -26,7 +26,9 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import app.myfaq.android.R
 import app.myfaq.android.screens.components.ErrorRetry
 import app.myfaq.android.screens.components.LoadingIndicator
 import app.myfaq.shared.data.ActiveInstanceManager
@@ -50,19 +52,19 @@ fun SearchScreen(
 
     Scaffold(
         topBar = {
-            CenterAlignedTopAppBar(title = { Text("Search") })
+            CenterAlignedTopAppBar(title = { Text(stringResource(R.string.nav_search)) })
         },
     ) { padding ->
         Column(modifier = Modifier.padding(padding)) {
             OutlinedTextField(
                 value = query,
                 onValueChange = { vm.onQueryChanged(it) },
-                placeholder = { Text("Search FAQs...") },
+                placeholder = { Text(stringResource(R.string.search_hint)) },
                 leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
                 trailingIcon = {
                     if (query.isNotEmpty()) {
                         IconButton(onClick = { vm.onQueryChanged("") }) {
-                            Icon(Icons.Default.Clear, contentDescription = "Clear")
+                            Icon(Icons.Default.Clear, contentDescription = stringResource(R.string.search_clear))
                         }
                     }
                 },
@@ -81,7 +83,7 @@ fun SearchScreen(
                     is UiState.Success -> {
                         if (s.data.isNotEmpty()) {
                             Text(
-                                text = "Popular searches",
+                                text = stringResource(R.string.search_popular),
                                 style = MaterialTheme.typography.titleSmall,
                                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
                             )

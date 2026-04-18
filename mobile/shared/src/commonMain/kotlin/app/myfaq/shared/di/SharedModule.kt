@@ -4,6 +4,7 @@ import app.myfaq.shared.data.ActiveInstanceManager
 import app.myfaq.shared.data.CacheStore
 import app.myfaq.shared.data.DatabaseFactory
 import app.myfaq.shared.data.MyFaqDatabase
+import app.myfaq.shared.data.SqlCacheStore
 import org.koin.core.context.startKoin
 import org.koin.dsl.KoinAppDeclaration
 import org.koin.dsl.module
@@ -16,8 +17,8 @@ val sharedModule =
     module {
         single { DatabaseFactory(get(), get()) }
         single<MyFaqDatabase> { get<DatabaseFactory>().create() }
-        single { CacheStore(get()) }
-        single { ActiveInstanceManager(get(), get()) }
+        single<CacheStore> { SqlCacheStore(get()) }
+        single { ActiveInstanceManager(get()) }
     }
 
 /**

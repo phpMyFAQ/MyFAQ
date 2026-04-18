@@ -28,7 +28,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import app.myfaq.android.R
 import app.myfaq.shared.data.ActiveInstanceManager
 import app.myfaq.shared.ui.AddInstanceState
 import app.myfaq.shared.ui.WorkspacesViewModel
@@ -53,10 +55,10 @@ fun AddInstanceSheet(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Add Instance") },
+                title = { Text(stringResource(R.string.add_instance)) },
                 navigationIcon = {
                     IconButton(onClick = onDismiss) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.back))
                     }
                 },
             )
@@ -72,8 +74,8 @@ fun AddInstanceSheet(
             OutlinedTextField(
                 value = url,
                 onValueChange = { url = it },
-                label = { Text("phpMyFAQ URL") },
-                placeholder = { Text("https://faq.example.com") },
+                label = { Text(stringResource(R.string.url_label)) },
+                placeholder = { Text(stringResource(R.string.url_placeholder)) },
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth(),
             )
@@ -87,7 +89,7 @@ fun AddInstanceSheet(
                         enabled = url.isNotBlank(),
                         modifier = Modifier.fillMaxWidth(),
                     ) {
-                        Text("Connect")
+                        Text(stringResource(R.string.connect))
                     }
                 }
 
@@ -119,7 +121,7 @@ fun AddInstanceSheet(
                         onClick = { vm.probeInstance(url) },
                         modifier = Modifier.fillMaxWidth(),
                     ) {
-                        Text("Retry")
+                        Text(stringResource(R.string.retry))
                     }
                 }
             }
@@ -146,7 +148,7 @@ private fun ConfirmationCard(
                 style = MaterialTheme.typography.titleMedium,
             )
             Text(
-                text = "phpMyFAQ $version",
+                text = stringResource(R.string.phpmyfaq_version, version),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSecondaryContainer,
             )
@@ -155,7 +157,7 @@ private fun ConfirmationCard(
                 onClick = onConfirm,
                 modifier = Modifier.fillMaxWidth(),
             ) {
-                Text("Add Instance")
+                Text(stringResource(R.string.add_instance))
             }
         }
     }
